@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Save Our World? - SDG Trolley Dilemma</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Patrick+Hand&display=swap');
+
+:root {
+  --ink: #111111;
+  --paper: #ffffff;
+  --muted: #686868;
+  --line: #dadada;
+  --red: #ef5b5b;
+  --blue: #4978e8;
+  --green: #38a169;
+  --yellow: #f4c542;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: #ffffff;
+  color: var(--ink);
+  font-family: "DM Sans", Arial, sans-serif;
+}
+
+button {
+  font: inherit;
+}
+
+.app {
+  width: min(1080px, calc(100% - 32px));
+  min-height: 100vh;
+  margin: auto;
+  padding: 22px 0 34px;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 0 4px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.level {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.creator {
+  font-family: "Patrick Hand", cursive;
+  font-size: 22px;
+}
+
+.intro {
+  max-width: 680px;
+  margin: auto;
+  text-align: center;
+  padding: 78px 20px 50px;
+}
+
+.intro h1 {
+  margin: 0 0 12px;
+  font-family: "Patrick Hand", cursive;
+  font-size: clamp(48px, 8vw, 86px);
+  font-weight: 400;
+  line-height: .9;
+}
+
+.intro p {
+  margin: 0 auto 30px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.start-button, .reset-button, .next-button {
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.start-button, .reset-button {
+  padding: 15px 28px;
+  background: var(--ink);
+  color: #ffffff;
+}
+
+.start-button:hover, .reset-button:hover, .next-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 7px 0 rgba(17,17,17,.16);
+}
+
+.creator-credit {
+  margin-top: 30px;
+  font-family: "Patrick Hand", cursive;
+  font-size: 24px;
+}
+
+.game {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+}
+
+.scene-wrap {
+  position: relative;
+  width: 100%;
+  margin: 20px auto 0;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #ffffff;
+}
+
+.question-area {
+  max-width: 850px;
+  margin: 18px auto 0;
+  text-align: center;
+}
+
+.question-tag {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.question-title {
+  margin: 7px 0 10px;
+  font-family: "Patrick Hand", cursive;
+  font-size: clamp(38px, 6vw, 62px);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.question-description {
+  max-width: 760px;
+  margin: auto;
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 27px auto 0;
+}
+
+.choice {
+  min-height: 104px;
+  padding: 18px 20px;
+  border: 2px solid var(--ink);
+  border-radius: 18px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 16px;
+  line-height: 1.45;
+  transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease;
+}
+
+.choice:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 7px 0 rgba(17,17,17,.15);
+}
+
+.choice:disabled {
+  cursor: default;
+  opacity: .5;
+  transform: none;
+  box-shadow: none;
+}
+
+.choice-a {
+  background: #fff3f3;
+  border-color: var(--red);
+}
+
+.choice-b {
+  background: #f1f5ff;
+  border-color: var(--blue);
+}
+
+.choice-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.game-credit {
+  margin-top: 27px;
+  color: var(--muted);
+  text-align: center;
+  font-family: "Patrick Hand", cursive;
+  font-size: 21px;
+}
+
+.overlay {
+  position: absolute;
+  inset: 7% 8%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(255,255,255,.96);
+  border: 2px solid var(--ink);
+  border-radius: 24px;
+  text-align: center;
+  animation: reveal .45s ease both;
+}
+
+.overlay.show {
+  display: flex;
+}
+
+.overlay-card {
+  width: min(560px, 100%);
+}
+
+.overlay h2 {
+  margin: 0 0 8px;
+  font-family: "Patrick Hand", cursive;
+  font-size: 46px;
+  font-weight: 400;
+}
+
+.overlay p {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.stats {
+  margin: 20px auto;
+  text-align: left;
+}
+
+.stat-line {
+  display: grid;
+  grid-template-columns: 112px 1fr 48px;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.stat-bar {
+  height: 15px;
+  overflow: hidden;
+  background: #eeeeee;
+  border: 1px solid var(--ink);
+  border-radius: 20px;
+}
+
+.stat-fill {
+  height: 100%;
+  transition: width .6s ease;
+}
+
+.fill-a { background: var(--red); }
+.fill-b { background: var(--blue); }
+
+.next-button {
+  padding: 12px 22px;
+  background: #ffffff;
+  color: var(--ink);
+}
+
+.summary {
+  display: none;
+  max-width: 820px;
+  margin: auto;
+  padding: 65px 0 30px;
+  text-align: center;
+}
+
+.summary h1 {
+  margin: 0 0 10px;
+  font-family: "Patrick Hand", cursive;
+  font-size: clamp(48px, 8vw, 78px);
+  font-weight: 400;
+  line-height: .95;
+}
+
+.summary p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.summary-credit {
+  display: inline-block;
+  margin: 20px 0;
+  padding: 9px 15px;
+  color: var(--ink);
+  border-bottom: 3px solid var(--yellow);
+  font-family: "Patrick Hand", cursive;
+  font-size: 25px;
+}
+
+.summary-list {
+  display: grid;
+  gap: 9px;
+  margin: 23px 0 30px;
+  text-align: left;
+}
+
+.summary-row {
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.summary-row strong { font-size: 15px; }
+.summary-choice { color: var(--blue); font-weight: 700; }
+
+@keyframes reveal {
+  from { opacity: 0; transform: scale(.94) translateY(15px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@media (max-width: 700px) {
+  .app { width: min(100% - 22px, 1080px); padding-top: 15px; }
+  .topbar { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .creator { font-size: 19px; }
+  .intro { padding: 70px 10px 30px; }
+  .choices { grid-template-columns: 1fr; }
+  .choice { min-height: 90px; }
+  .overlay { inset: 3% 2%; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div id="levelIndicator" class="level">Level 1 of 15</div>
+    <div class="creator">Thought and created by Rishabh Manuj</div>
+  </header>
+
+  <section id="intro" class="intro">
+    <h1>Save Our World?</h1>
+    <p>Fifteen unique levels with 15 different vehicles. Evaluate each dilemma to choose the path of greatest global good.</p>
+    <button id="startButton" class="start-button">Start the game</button>
+    <div class="creator-credit">Thought and created by Rishabh Manuj</div>
+  </section>
+
+  <section id="game" class="game">
+    <div class="scene-wrap">
+      <canvas id="scene" width="1100" height="470"></canvas>
+      <div id="resultOverlay" class="overlay">
+        <div class="overlay-card">
+          <h2>That was a choice.</h2>
+          <p id="choiceMessage"></p>
+          <div class="stats">
+            <div class="stat-line">
+              <span>Straight</span>
+              <div class="stat-bar"><div id="fillA" class="stat-fill fill-a"></div></div>
+              <span id="percentA">0%</span>
+            </div>
+            <div class="stat-line">
+              <span>Divert</span>
+              <div class="stat-bar"><div id="fillB" class="stat-fill fill-b"></div></div>
+              <span id="percentB">0%</span>
+            </div>
+          </div>
+          <button id="nextButton" class="next-button">Next dilemma</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="question-area">
+      <div id="questionTag" class="question-tag">SDG 1 & 2: Poverty & Hunger</div>
+      <h1 id="questionTitle" class="question-title"></h1>
+      <p class="question-description">Resources are finite. Redirect investments toward the path that maximizes long-term human welfare and environmental stability.</p>
+      <div class="choices">
+        <button id="buttonA" class="choice choice-a">
+          <span class="choice-label">Keep going straight and...</span>
+          <span id="textA"></span>
+        </button>
+        <button id="buttonB" class="choice choice-b">
+          <span class="choice-label">Pull the lever to divert and...</span>
+          <span id="textB"></span>
+        </button>
+      </div>
+    </div>
+    <div class="game-credit">Thought and created by Rishabh Manuj</div>
+  </section>
+
+  <section id="summary" class="summary">
+    <h1>Global Fair Results</h1>
+    <div class="summary-credit">Thought and created by Rishabh Manuj</div>
+    <p>Your choices reflect how you prioritize global development goals. Compare your decisions to overall cumulative outcomes.</p>
+    <div id="summaryList" class="summary-list"></div>
+    <button id="resetButton" class="reset-button">Reset Station for Next Guest</button>
+  </section>
+</div>
+
+<script>
+const dilemmas = [
+  { tag: "SDG 1 & 2: Poverty & Hunger", straight: "allocate $10 billion directly to emergency food aid relief for 5 million starving people.", divert: "invest $10 billion in building resilient agricultural infrastructure to lift 20 million out of poverty long-term.", countStraight: 1, countDivert: 4, vehicleType: "trolley", vehicleName: "Classic Trolley" },
+  { tag: "SDG 3: Good Health & Well-being", straight: "fund vaccine development to eradicate a rare infectious disease affecting 100,000 children annually.", divert: "fund universal primary healthcare access that prevents chronic illnesses for 10 million underserved people.", countStraight: 1, countDivert: 5, vehicleType: "car", vehicleName: "Electric Car" },
+  { tag: "SDG 4: Quality Education", straight: "provide high-speed digital devices and internet to 1 million urban public school students.", divert: "build safe primary school buildings with clean water for 3 million rural children.", countStraight: 1, countDivert: 3, vehicleType: "ship", vehicleName: "Cargo Ship" },
+  { tag: "SDG 5: Gender Equality", straight: "mandate strict gender quotas to achieve 50/50 representation in corporate boardrooms worldwide.", divert: "fund microloans and literacy programs targeting 50 million women in rural economies.", countStraight: 2, countDivert: 5, vehicleType: "bus", vehicleName: "City Bus" },
+  { tag: "SDG 6: Clean Water & Sanitation", straight: "build modern desalination plants to provide freshwater to 2 million coastal residents.", divert: "rehabilitate natural watersheds to secure clean water for 10 million inland rural residents.", countStraight: 2, countDivert: 6, vehicleType: "bullet_train", vehicleName: "Bullet Train" },
+  { tag: "SDG 7: Affordable & Clean Energy", straight: "subsidize rooftop solar panels for 2 million high-energy suburban homes.", divert: "build off-grid solar microgrids to bring electricity access to 15 million rural households.", countStraight: 1, countDivert: 4, vehicleType: "truck", vehicleName: "Delivery Truck" },
+  { tag: "SDG 8: Decent Work & Economic Growth", straight: "enforce strict labor protections guaranteeing a living wage for 1 million factory workers.", divert: "fund vocational upskilling programs helping 5 million unemployed youth secure sustainable jobs.", countStraight: 1, countDivert: 5, vehicleType: "bulldozer", vehicleName: "Bulldozer" },
+  { tag: "SDG 9: Industry & Infrastructure", straight: "construct a high-speed electric rail link connecting major economic metropolitan hubs.", divert: "pave and maintain rural access roads to connect isolated farm communities to markets.", countStraight: 3, countDivert: 3, vehicleType: "rover", vehicleName: "Solar Rover" },
+  { tag: "SDG 10: Reduced Inequalities", straight: "implement a wealth tax to fund direct safety-net income transfers to poorest 10% households.", divert: "eliminate all tuition fees for higher education for low-income citizens.", countStraight: 2, countDivert: 4, vehicleType: "steam_train", vehicleName: "Steam Train" },
+  { tag: "SDG 11: Sustainable Cities", straight: "convert downtown city centers into fully pedestrianized, zero-emission green transit zones.", divert: "retrofit suburban high-density housing developments with thermal insulation and energy efficiency.", countStraight: 4, countDivert: 2, vehicleType: "ambulance", vehicleName: "Ambulance" },
+  { tag: "SDG 12: Responsible Consumption", straight: "ban all single-use plastics globally, accepting higher packaging costs.", divert: "subsidize circular supply chains to mandate 80% recycling rates across electronics.", countStraight: 5, countDivert: 3, vehicleType: "garbage_truck", vehicleName: "Recycling Truck" },
+  { tag: "SDG 13: Climate Action", straight: "invest $50 billion into carbon capture technologies to pull CO2 directly from air.", divert: "invest $50 billion into rapid reforestation and coastal wetland restoration.", countStraight: 1, countDivert: 6, vehicleType: "monorail", vehicleName: "Monorail Pod" },
+  { tag: "SDG 14: Life Below Water", straight: "enforce a complete fishing ban in 30% of global oceans to restore declining biodiversity.", divert: "fund cleanup technology and pollution controls on the top 20 polluting rivers.", countStraight: 3, countDivert: 4, vehicleType: "tugboat", vehicleName: "Ocean Tugboat" },
+  { tag: "SDG 15: Life on Land", straight: "purchase and permanently protect 5 million hectares of pristine virgin rainforest.", divert: "fund soil regeneration across 20 million hectares of degraded land.", countStraight: 2, countDivert: 5, vehicleType: "tractor", vehicleName: "Farm Tractor" },
+  { tag: "SDG 16 & 17: Peace & Partnerships", straight: "fund global anti-corruption taskforces to audit and secure political integrity.", divert: "fund international open-technology transfer frameworks so developing countries access clean tech patent-free.", countStraight: 2, countDivert: 3, vehicleType: "hovercraft", vehicleName: "Futuristic Hovercraft" }
+];
+
+const storageKey = "rishabhManujFairTrolleyVotes";
+const intro = document.getElementById("intro");
+const game = document.getElementById("game");
+const summary = document.getElementById("summary");
+const canvas = document.getElementById("scene");
+const ctx = canvas.getContext("2d");
+const levelIndicator = document.getElementById("levelIndicator");
+const questionTag = document.getElementById("questionTag");
+const questionTitle = document.getElementById("questionTitle");
+const textA = document.getElementById("textA");
+const textB = document.getElementById("textB");
+const buttonA = document.getElementById("buttonA");
+const buttonB = document.getElementById("buttonB");
+const resultOverlay = document.getElementById("resultOverlay");
+const choiceMessage = document.getElementById("choiceMessage");
+const fillA = document.getElementById("fillA");
+const fillB = document.getElementById("fillB");
+const percentA = document.getElementById("percentA");
+const percentB = document.getElementById("percentB");
+const summaryList = document.getElementById("summaryList");
+
+let questionIndex = 0;
+let personalChoices = [];
+let animationState = "idle";
+let selectedChoice = "";
+let animationStarted = 0;
+let width = 1100;
+let height = 470;
+let scale = 1;
+
+function getVotes() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(storageKey));
+    if (Array.isArray(stored) && stored.length === dilemmas.length) {
+      return stored.map(item => ({ straight: Number(item.straight) || 0, divert: Number(item.divert) || 0 }));
+    }
+  } catch (e) {}
+  return dilemmas.map(() => ({ straight: 0, divert: 0 }));
+}
+
+function saveVotes(votes) {
+  localStorage.setItem(storageKey, JSON.stringify(votes));
+}
+
+function resizeCanvas() {
+  const rect = canvas.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  width = Math.max(320, rect.width);
+  height = width < 620 ? 410 : 470;
+  canvas.style.height = `${height}px`;
+  canvas.width = Math.floor(width * dpr);
+  canvas.height = Math.floor(height * dpr);
+  scale = width / 1100;
+  ctx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
+}
+
+function text(value, x, y, size, color = "#111111", align = "center", family = "DM Sans") {
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.font = `${size}px "${family}"`;
+  ctx.textAlign = align;
+  ctx.textBaseline = "middle";
+  ctx.fillText(value, x, y);
+  ctx.restore();
+}
+
+function drawTrack() {
+  const mainY = 285;
+  const upperY = 125;
+  const gauge = 44;
+
+  ctx.save();
+  ctx.fillStyle = "#e2e8f0";
+  ctx.fillRect(40, mainY - gauge/2 - 14, 1010, gauge + 28);
+  ctx.beginPath();
+  ctx.moveTo(410, mainY - gauge/2 - 14);
+  ctx.bezierCurveTo(510, mainY - gauge/2 - 14, 570, upperY - gauge/2 - 14, 670, upperY - gauge/2 - 14);
+  ctx.lineTo(1050, upperY - gauge/2 - 14);
+  ctx.lineTo(1050, upperY + gauge/2 + 14);
+  ctx.lineTo(670, upperY + gauge/2 + 14);
+  ctx.bezierCurveTo(570, upperY + gauge/2 + 14, 510, mainY + gauge/2 + 14, 410, mainY + gauge/2 + 14);
+  ctx.fill();
+  ctx.restore();
+
+  for (let x = 55; x <= 1045; x += 22) {
+    ctx.fillStyle = "#8d6e63";
+    ctx.fillRect(x, mainY - 32, 10, 64);
+  }
+  for (let x = 675; x <= 1045; x += 22) {
+    ctx.fillStyle = "#8d6e63";
+    ctx.fillRect(x, upperY - 32, 10, 64);
+  }
+
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = "#334155";
+  ctx.beginPath();
+  ctx.moveTo(50, mainY - gauge/2); ctx.lineTo(1050, mainY - gauge/2);
+  ctx.moveTo(50, mainY + gauge/2); ctx.lineTo(1050, mainY + gauge/2);
+  ctx.moveTo(420, mainY - gauge/2);
+  ctx.bezierCurveTo(520, mainY - gauge/2, 580, upperY - gauge/2, 670, upperY - gauge/2);
+  ctx.lineTo(1050, upperY - gauge/2);
+  ctx.moveTo(420, mainY + gauge/2);
+  ctx.bezierCurveTo(520, mainY + gauge/2, 580, upperY + gauge/2, 670, upperY + gauge/2);
+  ctx.lineTo(1050, upperY + gauge/2);
+  ctx.stroke();
+
+  const currentDilemma = dilemmas[questionIndex];
+  drawPeopleCluster(820, mainY - 22, currentDilemma.countStraight, "#ef5b5b");
+  drawPeopleCluster(820, upperY + 22, currentDilemma.countDivert, "#4978e8");
+}
+
+function drawPeopleCluster(baseX, baseY, count, color) {
+  const spacing = 22;
+  const startX = baseX - ((count - 1) * spacing) / 2;
+  for (let i = 0; i < count; i++) {
+    drawTarget(startX + i * spacing, baseY, color);
+  }
+}
+
+function drawTarget(x, y, color) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 4;
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.arc(0, -31, 10, 0, Math.PI * 2);
+  ctx.moveTo(0, -20); ctx.lineTo(0, 13);
+  ctx.moveTo(0, -10); ctx.lineTo(-17, 1);
+  ctx.moveTo(0, -10); ctx.lineTo(17, 1);
+  ctx.moveTo(0, 13); ctx.lineTo(-14, 34);
+  ctx.moveTo(0, 13); ctx.lineTo(14, 34);
+  ctx.stroke();
+  ctx.restore();
+}
+
+/* UNIQUE VEHICLE DRAWING FOR EVERY SINGLE LEVEL */
+function drawVehicle(x, y, type, angle) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  ctx.strokeStyle = "#111111";
+  ctx.lineWidth = 4;
+
+  if (type === "trolley") {
+    ctx.fillStyle = "#f4c542";
+    ctx.beginPath(); ctx.roundRect(-65, -40, 130, 70, 10); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath(); ctx.roundRect(-45, -25, 30, 25, 4); ctx.roundRect(15, -25, 30, 25, 4); ctx.fill(); ctx.stroke();
+  }
+  else if (type === "car") {
+    ctx.fillStyle = "#38a169";
+    ctx.beginPath(); ctx.roundRect(-50, -25, 100, 45, 12); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath(); ctx.roundRect(-20, -20, 40, 35, 6); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#111111";
+    ctx.beginPath(); ctx.arc(-30, 22, 10, 0, Math.PI * 2); ctx.arc(30, 22, 10, 0, Math.PI * 2); ctx.fill();
+  }
+  else if (type === "ship") {
+    ctx.fillStyle = "#2b6cb0";
+    ctx.beginPath();
+    ctx.moveTo(-70, -25); ctx.lineTo(50, -25); ctx.lineTo(75, 15); ctx.lineTo(-60, 15);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#ef5b5b";
+    ctx.fillRect(-30, -45, 40, 20); ctx.strokeRect(-30, -45, 40, 20);
+  }
+  else if (type === "bus") {
+    ctx.fillStyle = "#ed8936";
+    ctx.beginPath(); ctx.roundRect(-75, -42, 150, 75, 8); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(-55, -28, 25, 25); ctx.fillRect(-20, -28, 25, 25); ctx.fillRect(15, -28, 25, 25);
+    ctx.strokeRect(-55, -28, 25, 25); ctx.strokeRect(-20, -28, 25, 25); ctx.strokeRect(15, -28, 25, 25);
+  }
+  else if (type === "bullet_train") {
+    ctx.fillStyle = "#cbd5e1";
+    ctx.beginPath();
+    ctx.moveTo(-85, -30); ctx.lineTo(30, -30); ctx.lineTo(85, 20); ctx.lineTo(-85, 20);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#2563eb";
+    ctx.fillRect(-85, -5, 170, 8);
+  }
+  else if (type === "truck") {
+    ctx.fillStyle = "#64748b";
+    ctx.beginPath(); ctx.roundRect(-70, -38, 90, 60, 4); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#e2e8f0";
+    ctx.beginPath(); ctx.roundRect(20, -28, 45, 50, 8); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#111111";
+    ctx.beginPath(); ctx.arc(-40, 25, 10, 0, Math.PI * 2); ctx.arc(40, 25, 10, 0, Math.PI * 2); ctx.fill();
+  }
+  else if (type === "bulldozer") {
+    ctx.fillStyle = "#eab308";
+    ctx.beginPath(); ctx.roundRect(-45, -30, 80, 50, 6); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#1e293b"; ctx.fillRect(35, -20, 20, 40);
+    ctx.beginPath(); ctx.arc(-10, 20, 16, 0, Math.PI * 2); ctx.arc(20, 20, 16, 0, Math.PI * 2); ctx.fill();
+  }
+  else if (type === "rover") {
+    ctx.fillStyle = "#94a3b8";
+    ctx.beginPath(); ctx.roundRect(-40, -20, 80, 35, 10); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#0284c7"; ctx.fillRect(-30, -32, 60, 8);
+    ctx.fillStyle = "#111111";
+    ctx.beginPath(); ctx.arc(-30, 18, 8, 0, Math.PI * 2); ctx.arc(0, 18, 8, 0, Math.PI * 2); ctx.arc(30, 18, 8, 0, Math.PI * 2); ctx.fill();
+  }
+  else if (type === "steam_train") {
+    ctx.fillStyle = "#1e293b";
+    ctx.beginPath(); ctx.fillRect(-70, -35, 110, 55); ctx.strokeRect(-70, -35, 110, 55);
+    ctx.fillRect(10, -55, 15, 20); ctx.fillRect(-50, -55, 30, 20);
+    ctx.fillStyle = "#ef4444";
+    ctx.beginPath(); ctx.arc(-35, 22, 14, 0, Math.PI * 2); ctx.arc(5, 22, 14, 0, Math.PI * 2); ctx.fill();
+  }
+  else if (type === "ambulance") {
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath(); ctx.roundRect(-55, -30, 110, 55, 8); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#ef4444";
+    ctx.fillRect(-10, -15, 20, 6); ctx.fillRect(-3, -22, 6, 20);
+  }
+  else if (type === "garbage_truck") {
+    ctx.fillStyle = "#15803d";
+    ctx.beginPath(); ctx.roundRect(-75, -40, 100, 65, 6); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(25, -25, 35, 50); ctx.strokeRect(25, -25, 35, 50);
+  }
+  else if (type === "monorail") {
+    ctx.fillStyle = "#06b6d4";
+    ctx.beginPath(); ctx.roundRect(-60, -25, 120, 45, 20); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(-40, -15, 80, 12);
+  }
+  else if (type === "tugboat") {
+    ctx.fillStyle = "#b91c1c";
+    ctx.beginPath(); ctx.ellipse(0, 0, 55, 22, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#ffffff"; ctx.fillRect(-15, -25, 30, 20); ctx.strokeRect(-15, -25, 30, 20);
+  }
+  else if (type === "tractor") {
+    ctx.fillStyle = "#16a34a";
+    ctx.beginPath(); ctx.roundRect(-20, -35, 50, 50, 6); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#111111";
+    ctx.beginPath(); ctx.arc(-25, 15, 22, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(20, 20, 12, 0, Math.PI * 2); ctx.fill();
+  }
+  else if (type === "hovercraft") {
+    ctx.fillStyle = "#8b5cf6";
+    ctx.beginPath(); ctx.roundRect(-65, -25, 130, 45, 22); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#1e293b"; ctx.fillRect(-60, 15, 120, 8);
+  }
+
+  ctx.restore();
+}
+
+function drawSplash(x, y, color, impactProgress) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.globalAlpha = Math.min(impactProgress * 2, 0.85);
+  ctx.beginPath();
+  ctx.ellipse(0, 15, 65 * Math.min(impactProgress * 1.5, 1), 22 * Math.min(impactProgress * 1.5, 1), 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  text("SPLASH!", 0, -60, 48, color, "center", "Patrick Hand");
+  ctx.restore();
+}
+
+function drawScene(time) {
+  ctx.setTransform((window.devicePixelRatio || 1) * scale, 0, 0, (window.devicePixelRatio || 1) * scale, 0, 0);
+  ctx.clearRect(0, 0, 1100, height / scale);
+  drawTrack();
+
+  let progress = 0.08;
+  let choice = "straight";
+  let angle = 0;
+
+  if (animationState === "moving" || animationState === "result") {
+    const elapsed = time - animationStarted;
+    progress = elapsed / 2200;
+    choice = selectedChoice;
+    angle = selectedChoice === "divert" ? -0.1 * Math.min(progress, 1) : 0;
+   
+    if (progress >= 0.7 && animationState === "moving") {
+      animationState = "result";
+      showResults();
+    }
+  }
+
+  const startX = 160;
+  const startY = 235;
+  const endX = 1180;
+  let posX = startX + (endX - startX) * progress;
+  let posY = choice === "divert" ? startY - Math.sin(Math.min(progress * 1.4, 1) * Math.PI / 2) * 160 : startY;
+
+  const vehicleType = dilemmas[questionIndex].vehicleType;
+  drawVehicle(posX, posY, vehicleType, angle);
+
+  if (progress >= 0.68) {
+    const impactProgress = Math.min((progress - 0.68) / 0.15, 1);
+    const splashColor = selectedChoice === "straight" ? "#ef5b5b" : "#4978e8";
+    const splashY = selectedChoice === "straight" ? 285 - 22 : 125 + 22;
+    drawSplash(820, splashY, splashColor, impactProgress);
+  }
+
+  requestAnimationFrame(drawScene);
+}
+
+function loadQuestion() {
+  const item = dilemmas[questionIndex];
+  levelIndicator.textContent = `Level ${questionIndex + 1} of ${dilemmas.length} — ${item.vehicleName}`;
+  questionTag.textContent = item.tag;
+  questionTitle.textContent = "Which path do you choose?";
+  textA.textContent = item.straight;
+  textB.textContent = item.divert;
+  buttonA.disabled = false;
+  buttonB.disabled = false;
+  resultOverlay.classList.remove("show");
+  animationState = "idle";
+  selectedChoice = "";
+}
+
+function choose(choice) {
+  if (animationState !== "idle") return;
+  selectedChoice = choice;
+  personalChoices[questionIndex] = choice;
+  const votes = getVotes();
+  votes[questionIndex][choice] += 1;
+  saveVotes(votes);
+  buttonA.disabled = true;
+  buttonB.disabled = true;
+  animationStarted = performance.now();
+  animationState = "moving";
+}
+
+function showResults() {
+  const votes = getVotes()[questionIndex];
+  const total = votes.straight + votes.divert;
+  const straightPercent = total ? Math.round(votes.straight / total * 100) : 0;
+  const divertPercent = 100 - straightPercent;
+  const chosenPercent = selectedChoice === "straight" ? straightPercent : divertPercent;
+
+  choiceMessage.textContent = `${chosenPercent}% of players made this same choice.`;
+  fillA.style.width = `${straightPercent}%`;
+  fillB.style.width = `${divertPercent}%`;
+  percentA.textContent = `${straightPercent}%`;
+  percentB.textContent = `${divertPercent}%`;
+  resultOverlay.classList.add("show");
+}
+
+function showSummary() {
+  game.style.display = "none";
+  summary.style.display = "block";
+  const votes = getVotes();
+  summaryList.innerHTML = "";
+
+  dilemmas.forEach((item, index) => {
+    const total = votes[index].straight + votes[index].divert;
+    const straightPercent = total ? Math.round(votes[index].straight / total * 100) : 0;
+    const divertPercent = 100 - straightPercent;
+    const personal = personalChoices[index] === "straight" ? "Straight Path" : "Diverted Track";
+    const row = document.createElement("div");
+    row.className = "summary-row";
+    row.innerHTML = `<strong>Level ${index + 1} — ${item.tag} (${item.vehicleName})</strong><br><span class="summary-choice">Your choice: ${personal}</span><br>Fair results: Straight ${straightPercent}% · Divert ${divertPercent}%`;
+    summaryList.appendChild(row);
+  });
+}
+
+document.getElementById("startButton").addEventListener("click", () => {
+  intro.style.display = "none";
+  summary.style.display = "none";
+  game.style.display = "flex";
+  questionIndex = 0;
+  personalChoices = [];
+  resizeCanvas();
+  loadQuestion();
+});
+
+buttonA.addEventListener("click", () => choose("straight"));
+buttonB.addEventListener("click", () => choose("divert"));
+
+document.getElementById("nextButton").addEventListener("click", () => {
+  if (questionIndex === dilemmas.length - 1) {
+    showSummary();
+  } else {
+    questionIndex += 1;
+    loadQuestion();
+  }
+});
+
+document.getElementById("resetButton").addEventListener("click", () => {
+  summary.style.display = "none";
+  intro.style.display = "block";
+});
+
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+requestAnimationFrame(drawScene);
+</script>
+</body>
+</html>
