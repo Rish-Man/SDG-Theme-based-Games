@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDG Interactive Arcade</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #111111;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #1b4332;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 1.1rem;
+            color: #555555;
+            font-weight: 600;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            width: 100%;
+        }
+        .card {
+            background: #ffffff;
+            border: 2px solid #111111;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            text-decoration: none;
+            color: #111111;
+            box-shadow: 0 6px 0 #111111;
+            transition: all 0.1s ease;
+            cursor: pointer;
+        }
+        .card:active {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0 #111111;
+        }
+        .card h3 {
+            font-size: 1.3rem;
+            margin: 0 0 10px 0;
+            color: #2d6a4f;
+        }
+        .card p {
+            font-size: 0.95rem;
+            color: #666666;
+            margin: 0;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>SDG Interactive Arcade</h1>
+        <div class="subtitle">Thought and created by Rishabh Manuj</div>
+    </header>
+
+    <div class="grid">
+        <a href="Save%20Our%20World.html" class="card">
+            <h3>Save Our World</h3>
+            <p>Interactive environmental challenge built for parents.</p>
+        </a>
+        <a href="Word%20Search%20Game.html" class="card">
+            <h3>Word Search Game</h3>
+            <p>Find the 7 hidden sustainability concepts in the matrix.</p>
+        </a>
+        <a href="Garbage%20Truck%20Game.html" class="card">
+            <h3>Garbage Truck Game</h3>
+            <p>Test your waste management sorting efficiency skills.</p>
+        </a>
+        <a href="Avinash%20Game%20(2).html" class="card">
+            <h3>Avinash's Special Game</h3>
+            <p>An amazing collaborative structural arcade challenge.</p>
+        </a>
+    </div>
+
+</body>
+</html>
