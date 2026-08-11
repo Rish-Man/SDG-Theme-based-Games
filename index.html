@@ -5,10 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SDG Interactive Arcade</title>
     <style>
+        :root {
+            --neon-green: #39ff14;
+            --neon-blue: #00f0ff;
+            --dark-bg: #0d1117;
+            --card-bg: #161b22;
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            background-color: #ffffff;
-            color: #111111;
+            background-color: var(--dark-bg);
+            color: #ffffff;
             margin: 0;
             padding: 40px 20px;
             display: flex;
@@ -16,82 +22,213 @@
             align-items: center;
             min-height: 100vh;
             box-sizing: border-box;
+            overflow-x: hidden;
+            position: relative;
+        }
+        /* Dynamic Matrix Particle Background */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.25;
+        }
+        .container {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 900px;
         }
         header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
         }
         h1 {
-            font-size: 2.5rem;
-            color: #1b4332;
-            margin-bottom: 10px;
+            font-size: 3.2rem;
+            color: #ffffff;
+            margin: 0 0 10px 0;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green);
+            animation: glowPulse 2s infinite alternate;
         }
         .subtitle {
-            font-size: 1.1rem;
-            color: #555555;
+            font-size: 1.2rem;
+            color: #8b949e;
             font-weight: 600;
+            letter-spacing: 0.5px;
         }
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            max-width: 800px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
             width: 100%;
         }
+        /* High-Interactivity Arcade Cards */
         .card {
-            background: #ffffff;
-            border: 2px solid #111111;
-            border-radius: 12px;
-            padding: 24px;
+            background: var(--card-bg);
+            border: 2px solid #30363d;
+            border-radius: 16px;
+            padding: 30px 24px;
             text-align: center;
             text-decoration: none;
-            color: #111111;
-            box-shadow: 0 6px 0 #111111;
-            transition: all 0.1s ease;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
-        .card:active {
-            transform: translateY(6px);
-            box-shadow: 0 0px 0 #111111;
+        /* Animated Hover States */
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3), 0 10px 30px rgba(0,0,0,0.7);
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+            transition: 0.5s;
+        }
+        .card:hover::before {
+            left: 100%;
         }
         .card h3 {
-            font-size: 1.3rem;
-            margin: 0 0 10px 0;
-            color: #2d6a4f;
+            font-size: 1.5rem;
+            margin: 0 0 12px 0;
+            color: var(--neon-green);
+            transition: color 0.3s ease;
+        }
+        .card:hover h3 {
+            color: #ffffff;
+            text-shadow: 0 0 8px var(--neon-green);
         }
         .card p {
-            font-size: 0.95rem;
-            color: #666666;
+            font-size: 1rem;
+            color: #8b949e;
             margin: 0;
-            line-height: 1.4;
+            line-height: 1.5;
+            transition: color 0.3s ease;
+        }
+        .card:hover p {
+            color: #c9d1d9;
+        }
+        /* Glowing Header Animation */
+        @keyframes glowPulse {
+            from { text-shadow: 0 0 8px var(--neon-green), 0 0 15px var(--neon-green); }
+            to { text-shadow: 0 0 15px var(--neon-green), 0 0 30px var(--neon-green), 0 0 40px var(--neon-green); }
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 2.2rem; }
+            .grid { gap: 20px; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>SDG Interactive Arcade</h1>
-        <div class="subtitle">Thought and created by Rishabh Manuj</div>
-    </header>
+    <!-- Floating Background Particles -->
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="container">
+        <header>
+            <h1>SDG Interactive Arcade</h1>
+            <div class="subtitle">Thought and created by Rishabh Manuj</div>
+        </header>
 
         <div class="grid">
-        <a href="Save%20Our%20World.html" class="card">
-            <h3>Save Our World?</h3>
-            <p>Will you pull the lever? Absurd, relatable ethical dilemmas cooked up just for parents.</p>
-        </a>
-        <a href="Word%20Search%20Game.html" class="card">
-            <h3>The Green Search</h3>
-            <p>Find 7 hidden environmental terms to unlock mind-blowing world secrets nobody knows!</p>
-        </a>
-        <a href="Garbage%20Truck%20Game.html" class="card">
-            <h3>Road Cleanin'</h3>
-            <p>Stop the millisecond countdown clock at exactly 10.000 seconds. Highly addictive!</p>
-        </a>
-        <a href="Avinash%20Game%20(2).html" class="card">
-            <h3>Pro Level Cleanin'</h3>
-            <p>Can you remember what Maggi or a Maruti 800 cost in the 80s and 90s? Test your memory!</p>
-        </a>
+            <a href="Save%20Our%20World.html" class="card">
+                <h3>Save Our World?</h3>
+                <p>Will you pull the lever? Absurd, relatable ethical dilemmas cooked up just for parents.</p>
+            </a>
+            <a href="Word%20Search%20Game.html" class="card">
+                <h3>The Green Search</h3>
+                <p>Find 7 hidden environmental terms to unlock mind-blowing world secrets nobody knows!</p>
+            </a>
+            <a href="Garbage%20Truck%20Game.html" class="card">
+                <h3>Road Cleanin'</h3>
+                <p>Stop the millisecond countdown clock at exactly 10.000 seconds. Highly addictive!</p>
+            </a>
+            <a href="Avinash%20Game%20(2).html" class="card">
+                <h3>Pro Level Cleanin'</h3>
+                <p>Can you remember what Maggi or a Maruti 800 cost in the 80s and 90s? Test your memory!</p>
+            </a>
+        </div>
     </div>
 
+    <script>
+        // High-performance Particle Background Engine
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = -Math.random() * 0.8 - 0.2;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.y < 0) {
+                    this.y = canvas.height;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            draw() {
+                ctx.fillStyle = '#39ff14';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = Math.min(80, Math.floor(canvas.width / 15));
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle());
+            }
+        }
+        initParticles();
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Visual Click Pulse Interactive System
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Keep navigation working but add subtle haptic zoom state instantly
+                this.style.transform = 'scale(0.96)';
+            });
+        });
+    </script>
 </body>
 </html>
