@@ -1,234 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SDG Interactive Arcade</title>
-    <style>
-        :root {
-            --neon-green: #39ff14;
-            --neon-blue: #00f0ff;
-            --dark-bg: #0d1117;
-            --card-bg: #161b22;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            background-color: var(--dark-bg);
-            color: #ffffff;
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-            overflow-x: hidden;
-            position: relative;
-        }
-        /* Dynamic Matrix Particle Background */
-        #bg-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-            opacity: 0.25;
-        }
-        .container {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 900px;
-        }
-        header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        h1 {
-            font-size: 3.2rem;
-            color: #ffffff;
-            margin: 0 0 10px 0;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green);
-            animation: glowPulse 2s infinite alternate;
-        }
-        .subtitle {
-            font-size: 1.2rem;
-            color: #8b949e;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            width: 100%;
-        }
-        /* High-Interactivity Arcade Cards */
-        .card {
-            background: var(--card-bg);
-            border: 2px solid #30363d;
-            border-radius: 16px;
-            padding: 30px 24px;
-            text-align: center;
-            text-decoration: none;
-            color: #ffffff;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-        /* Animated Hover States */
-        .card:hover {
-            transform: translateY(-8px) scale(1.02);
-            border-color: var(--neon-blue);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3), 0 10px 30px rgba(0,0,0,0.7);
-        }
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-            transition: 0.5s;
-        }
-        .card:hover::before {
-            left: 100%;
-        }
-        .card h3 {
-            font-size: 1.5rem;
-            margin: 0 0 12px 0;
-            color: var(--neon-green);
-            transition: color 0.3s ease;
-        }
-        .card:hover h3 {
-            color: #ffffff;
-            text-shadow: 0 0 8px var(--neon-green);
-        }
-        .card p {
-            font-size: 1rem;
-            color: #8b949e;
-            margin: 0;
-            line-height: 1.5;
-            transition: color 0.3s ease;
-        }
-        .card:hover p {
-            color: #c9d1d9;
-        }
-        /* Glowing Header Animation */
-        @keyframes glowPulse {
-            from { text-shadow: 0 0 8px var(--neon-green), 0 0 15px var(--neon-green); }
-            to { text-shadow: 0 0 15px var(--neon-green), 0 0 30px var(--neon-green), 0 0 40px var(--neon-green); }
-        }
-        @media (max-width: 600px) {
-            h1 { font-size: 2.2rem; }
-            .grid { gap: 20px; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SDG Interactive Educational Games Hub</title>
+  <style>
+    :root {
+      --bg: #04130f;
+      --card-bg: #09271f;
+      --card-border: #19755b;
+      --green: #42d590;
+      --yellow: #f6d365;
+      --text: #effff6;
+      --muted: #b8e8cf;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 8%, #18543e, #04130f 63%);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 15px;
+    }
+
+    header {
+      text-align: center;
+      max-width: 800px;
+      margin-bottom: 35px;
+    }
+
+    h1 {
+      color: var(--green);
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      margin-bottom: 8px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      width: min(1000px, 100%);
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--green);
+    }
+
+    .card-tag {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--yellow);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .card-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.45;
+      margin-bottom: 18px;
+      flex-grow: 1;
+    }
+
+    .play-btn {
+      display: inline-block;
+      text-align: center;
+      background: #15956e;
+      color: white;
+      text-decoration: none;
+      font-weight: 800;
+      padding: 10px 16px;
+      border-radius: 6px;
+      transition: background 0.2s ease;
+    }
+
+    .play-btn:hover {
+      background: #25c58f;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    footer span {
+      color: var(--yellow);
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Floating Background Particles -->
-    <canvas id="bg-canvas"></canvas>
+  <header>
+    <h1>SDG Theme-Based Educational Games</h1>
+    <p>Explore interactive simulations and puzzle games created to support Sustainable Development Goals.</p>
+  </header>
 
-    <div class="container">
-        <header>
-            <h1>SDG Interactive Arcade</h1>
-            <div class="subtitle">Thought and created by Rishabh Manuj</div>
-        </header>
+  <main class="grid">
+    <!-- Game 1 -->
+    <article class="card">
+      <div>
+        <div class="card-tag">SDG 12: Responsible Consumption</div>
+        <h2 class="card-title">Sustainable Waste Sorting Challenge</h2>
+        <p class="card-desc">Drag items to correct funnels before time runs out. Learn effective recycling and hazardous waste management.</p>
+      </div>
+      <a href="game1.html" class="play-btn">Play Game</a>
+    </article>
 
-        <div class="grid">
-            <a href="Save%20Our%20World.html" class="card">
-                <h3>Save Our World?</h3>
-                <p>Will you pull the lever? Absurd, relatable ethical dilemmas cooked up just for parents.</p>
-            </a>
-            <a href="Word%20Search%20Game.html" class="card">
-                <h3>The Green Search</h3>
-                <p>Find 7 hidden environmental terms to unlock mind-blowing world secrets nobody knows!</p>
-            </a>
-            <a href="Garbage%20Truck%20Game.html" class="card">
-                <h3>Road Cleanin'</h3>
-                <p>Stop the millisecond countdown clock at exactly 10.000 seconds. Highly addictive!</p>
-            </a>
-            <a href="Avinash%20Game%20(2).html" class="card">
-                <h3>Pro Level Cleanin'</h3>
-                <p>Can you remember what Maggi or a Maruti 800 cost in the 80s and 90s? Test your memory!</p>
-            </a>
-        </div>
-    </div>
+    <!-- Game 2 -->
+    <article class="card">
+      <div>
+        <div class="card-tag">SDG Dilemma Simulator</div>
+        <h2 class="card-title">Save Our World?</h2>
+        <p class="card-desc">Navigate policy trade-offs across 15 global dilemmas and evaluate choices against an AI welfare baseline.</p>
+      </div>
+      <a href="game2.html" class="play-btn">Play Game</a>
+    </article>
 
-    <script>
-        // High-performance Particle Background Engine
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
+    <!-- Game 3 -->
+    <article class="card">
+      <div>
+        <div class="card-tag">SDG Word Search</div>
+        <h2 class="card-title">The Sustainability Search</h2>
+        <p class="card-desc">Find sustainability-focused key terms hidden across the grid and reveal rare environmental facts.</p>
+      </div>
+      <a href="game3.html" class="play-btn">Play Game</a>
+    </article>
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+    <!-- Game 4 -->
+    <article class="card">
+      <div>
+        <div class="card-tag">SDG 13: Climate Action</div>
+        <h2 class="card-title">Eco-Precision</h2>
+        <p class="card-desc">Test your precision timing skills to activate climate action milestones with exact precision.</p>
+      </div>
+      <a href="game4.html" class="play-btn">Play Game</a>
+    </article>
 
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 1;
-                this.speedX = (Math.random() - 0.5) * 0.5;
-                this.speedY = -Math.random() * 0.8 - 0.2;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.y < 0) {
-                    this.y = canvas.height;
-                    this.x = Math.random() * canvas.width;
-                }
-            }
-            draw() {
-                ctx.fillStyle = '#39ff14';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
+    <!-- Game 5 -->
+    <article class="card">
+      <div>
+        <div class="card-tag">SDG Theme Challenge</div>
+        <h2 class="card-title">SDG Challenge 5</h2>
+        <p class="card-desc">Interactive game addressing key sustainability targets and global environmental impact.</p>
+      </div>
+      <a href="game5.html" class="play-btn">Play Game</a>
+    </article>
 
-        function initParticles() {
-            particles = [];
-            const count = Math.min(80, Math.floor(canvas.width / 15));
-            for (let i = 0; i < count; i++) {
-                particles.push(new Particle());
-            }
-        }
-        initParticles();
+    <!-- Game 6 -->
+    <article class="card">
+      <div>
+        <div class="card-tag">SDG Theme Challenge</div>
+        <h2 class="card-title">SDG Challenge 6</h2>
+        <p class="card-desc">Test your knowledge and actions on renewable systems and global goals.</p>
+      </div>
+      <a href="game6.html" class="play-btn">Play Game</a>
+    </article>
+  </main>
 
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-            requestAnimationFrame(animate);
-        }
-        animate();
+  <footer>
+    Thought and Created by <span>Rishabh Manuj & Collaborators</span>
+  </footer>
 
-        // Visual Click Pulse Interactive System
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('click', function(e) {
-                // Keep navigation working but add subtle haptic zoom state instantly
-                this.style.transform = 'scale(0.96)';
-            });
-        });
-    </script>
 </body>
 </html>
