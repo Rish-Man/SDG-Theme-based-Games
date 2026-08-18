@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Collect SDGs - Eco Odyssey</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+   
+    html, body {
+      width: 100%; height: 100%;
+      background: #020617; color: #f8fafc;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+    }
+
+    #gameCanvas {
+      position: absolute; top: 0; left: 0;
+      width: 100vw; height: 100vh; display: block;
+      background: #09170a;
+    }
+
+    #hud {
+      position: absolute;
+      top: 16px; left: 16px; right: 240px;
+      display: flex; justify-content: space-between; align-items: center;
+      pointer-events: none; z-index: 5;
+    }
+
+    .hud-panel {
+      background: rgba(15, 23, 42, 0.9);
+      border: 2px solid rgba(74, 222, 128, 0.5);
+      backdrop-filter: blur(12px);
+      padding: 8px 16px; border-radius: 16px;
+      display: flex; gap: 14px; align-items: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+      pointer-events: auto;
+    }
+
+    .title { font-size: 1.05rem; font-weight: 900; color: #4ade80; text-shadow: 0 0 10px rgba(74, 222, 128, 0.5); }
+    .stats { font-size: 0.88rem; font-weight: 800; display: flex; gap: 12px; }
+
+    #sdg-bar { display: flex; gap: 5px; flex-wrap: wrap; }
+
+    .chip {
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 900; opacity: 0.25;
+      border: 2px solid rgba(255,255,255,0.3); transition: all 0.3s ease; color: #fff;
+    }
+    .chip.active { opacity: 1; transform: scale(1.15); box-shadow: 0 0 12px currentColor; border-color: #fff; }
+    #c3 { background: #4c9f38; } #c4 { background: #c5192d; }
+    #c6 { background: #26bde2; } #c7 { background: #fcc30b; color: #000; }
+    #c13 { background: #3f7e44; } #c15 { background: #56c02b; }
+
+    .audio-btn {
+      background: #1e293b; border: 1.5px solid #4ade80; color: #4ade80;
+      border-radius: 8px; padding: 4px 10px; font-size: 0.75rem; font-weight: 800; cursor: pointer;
+    }
+
+    #toast {
+      position: absolute; top: 80px; left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      background: rgba(15, 23, 42, 0.95); border: 2px solid #4ade80; color: #fff;
+      padding: 10px 22px; border-radius: 20px; font-size: 0.9rem; font-weight: 700;
+      text-align: center; pointer-events: none; opacity: 0; transition: all 0.3s ease;
+      z-index: 6; box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Modals & Overlays */
+    .modal-overlay {
+      position: absolute; inset: 0; background: rgba(2, 6, 23, 0.95);
+      backdrop-filter: blur(16px); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 20px;
+      text-align: center; gap: 14px; z-index: 10; overflow-y: auto;
+    }
+    .modal-overlay.hidden, .hidden { display: none !important; }
+    .modal-overlay h1 { color: #4ade80; font-size: 2.5rem; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 25px rgba(74, 222, 128, 0.5); }
+    .modal-overlay p { font-size: 0.95rem; color: #94a3b8; max-width: 520px; line-height: 1.4; }
+
+    .btn {
+      background: linear-gradient(135deg, #4ade80, #16a34a); color: #020617;
+      border: none; padding: 12px 34px; font-size: 1.05rem; font-weight: 900;
+      border-radius: 30px; cursor: pointer; box-shadow: 0 0 25px rgba(74, 222, 128, 0.5);
+      transition: transform 0.15s, box-shadow 0.2s;
+    }
+    .btn:hover { transform: scale(1.05); box-shadow: 0 0 35px rgba(74, 222, 128, 0.7); }
+
+    /* Skin Selector */
+    .skin-selector { display: flex; gap: 12px; margin: 6px 0; }
+    .skin-card {
+      width: 70px; height: 85px; border-radius: 14px; background: rgba(30, 41, 59, 0.8);
+      border: 2px solid rgba(255,255,255,0.2); cursor: pointer; display: flex;
+      flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .skin-card:hover, .skin-card.selected { transform: translateY(-4px); border-color: #4ade80; box-shadow: 0 0 15px rgba(74, 222, 128, 0.4); }
+    .skin-card.selected { background: rgba(74, 222, 128, 0.15); }
+    .skin-preview { width: 30px; height: 30px; border-radius: 50%; }
+
+    /* Scoreboard Table */
+    .score-breakdown {
+      background: rgba(15, 23, 42, 0.85); border: 2px solid #38bdf8;
+      border-radius: 16px; padding: 14px; width: 100%; max-width: 480px; text-align: left;
+    }
+    .score-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.88rem; }
+    .score-row.total { font-weight: 900; font-size: 1.1rem; color: #4ade80; border-bottom: none; padding-top: 10px; }
+
+    .leaderboard-box {
+      background: rgba(15, 23, 42, 0.85); border: 2px solid #facc15;
+      border-radius: 16px; padding: 14px; width: 100%; max-width: 480px; margin-top: 8px;
+    }
+    .lb-header { color: #facc15; font-weight: 900; font-size: 1rem; margin-bottom: 8px; text-align: center; }
+
+    /* Climate Choice Grid */
+    .climate-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 10px 0; }
+    .climate-btn {
+      background: rgba(30, 41, 59, 0.9); border: 2px solid #38bdf8;
+      border-radius: 14px; padding: 12px 14px; color: #fff; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .climate-btn:hover { transform: scale(1.04); box-shadow: 0 0 18px rgba(56, 189, 248, 0.5); }
+
+    /* Trash Cans Mini-Game */
+    .bins-container { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin: 16px 0; }
+    .trash-can {
+      width: 140px; padding: 12px; border-radius: 16px; border: 3px solid;
+      background: rgba(15, 23, 42, 0.85); display: flex; flex-direction: column;
+      align-items: center; gap: 6px; cursor: pointer; transition: transform 0.2s;
+    }
+    .trash-can:hover { transform: translateY(-4px); }
+
+    #bin-1 { border-color: #3b82f6; color: #60a5fa; }
+    #bin-2 { border-color: #f59e0b; color: #fbbf24; }
+    #bin-3 { border-color: #10b981; color: #34d399; }
+
+    .current-sdg-card {
+      background: rgba(30, 41, 59, 0.9); border: 2px solid #38bdf8;
+      border-radius: 14px; padding: 12px 20px; display: flex; align-items: center; gap: 12px;
+      margin-top: 10px;
+    }
+    .sdg-badge { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 900; color: #fff; }
+
+    #mobile-controls {
+      position: absolute; bottom: 16px; left: 16px; right: 16px;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      pointer-events: none; z-index: 5;
+    }
+    .dpad { display: grid; grid-template-columns: repeat(3, 46px); gap: 4px; pointer-events: auto; }
+    .dbtn {
+      width: 46px; height: 46px; background: rgba(15, 23, 42, 0.85);
+      border: 2px solid rgba(74, 222, 128, 0.5); color: #4ade80;
+      font-size: 1.1rem; font-weight: bold; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; touch-action: manipulation;
+    }
+    #btn-u { grid-column: 2; } #btn-l { grid-column: 1; grid-row: 2; }
+    #btn-d { grid-column: 2; grid-row: 2; } #btn-r { grid-column: 3; grid-row: 2; }
+
+    .action-group { display: flex; gap: 10px; pointer-events: auto; }
+    .act-btn {
+      width: 65px; height: 65px; border-radius: 50%; color: #fff; font-weight: 900;
+      font-size: 0.7rem; border: none; cursor: pointer; touch-action: manipulation;
+    }
+    #atk-btn { background: linear-gradient(135deg, #ef4444, #dc2626); border: 2px solid #fca5a5; }
+    #dash-btn { background: linear-gradient(135deg, #3b82f6, #1d4ed8); border: 2px solid #93c5fd; }
+  </style>
+</head>
+<body>
+
+<canvas id="gameCanvas"></canvas>
+
+<div id="hud">
+  <div class="hud-panel">
+    <div class="title" id="biome-title">COLLECT SDGs</div>
+  </div>
+
+  <div id="sdg-bar">
+    <div id="c3" class="chip">3</div>
+    <div id="c4" class="chip">4</div>
+    <div id="c6" class="chip">6</div>
+    <div id="c7" class="chip">7</div>
+    <div id="c13" class="chip">13</div>
+    <div id="c15" class="chip">15</div>
+  </div>
+
+  <div class="hud-panel">
+    <div class="stats">
+      <div>TIME: <span id="timer-txt" style="color:#facc15;">100</span>s</div>
+      <div>HP: <span id="hp-txt" style="color:#4ade80;">100</span></div>
+      <div>SCORE: <span id="score-txt" style="color:#c084fc;">0</span></div>
+    </div>
+    <button class="audio-btn" onclick="toggleBGM()">🎵 BGM: ON</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- Start Overlay -->
+<div id="startModal" class="modal-overlay">
+  <h1>COLLECT SDGs</h1>
+  <p>Outsmart pursuing drones, collect SDG cores, sort eco-waste, and clear climate levels!</p>
+ 
+  <div style="font-weight:800; color:#4ade80; font-size:0.9rem;">CHOOSE BALL SKIN</div>
+  <div class="skin-selector">
+    <div class="skin-card selected" onclick="selectSkin('eco', this)">
+      <div class="skin-preview" style="background: radial-gradient(circle, #86efac, #22c55e);"></div>
+      <span style="font-size:0.75rem; color:#fff; font-weight:700;">Eco</span>
+    </div>
+    <div class="skin-card" onclick="selectSkin('solar', this)">
+      <div class="skin-preview" style="background: radial-gradient(circle, #fde047, #eab308);"></div>
+      <span style="font-size:0.75rem; color:#fff; font-weight:700;">Solar</span>
+    </div>
+    <div class="skin-card" onclick="selectSkin('hydro', this)">
+      <div class="skin-preview" style="background: radial-gradient(circle, #67e8f9, #06b6d4);"></div>
+      <span style="font-size:0.75rem; color:#fff; font-weight:700;">Hydro</span>
+    </div>
+    <div class="skin-card" onclick="selectSkin('cyber', this)">
+      <div class="skin-preview" style="background: radial-gradient(circle, #f472b6, #c084fc);"></div>
+      <span style="font-size:0.75rem; color:#fff; font-weight:700;">Cyber</span>
+    </div>
+    <div class="skin-card" onclick="selectSkin('magma', this)">
+      <div class="skin-preview" style="background: radial-gradient(circle, #fca5a5, #ef4444);"></div>
+      <span style="font-size:0.75rem; color:#fff; font-weight:700;">Magma</span>
+    </div>
+  </div>
+
+  <button class="btn" onclick="startGame()">START MISSION</button>
+
+  <div class="leaderboard-box">
+    <div class="lb-header">🏆 PERSISTENT HIGH SCORES</div>
+    <div id="start-leaderboard-list"></div>
+  </div>
+</div>
+
+<!-- Waste Segregation Modal -->
+<div id="sortModal" class="modal-overlay hidden">
+  <h2 style="color:#facc15; font-size: 1.8rem;">ECO SEGREGATION CHALLENGE</h2>
+
+  <!-- Active Sorting View -->
+  <div id="sort-active-content">
+    <p>Categorize collected SDG Cores into correct bins (+10 pts each)!</p>
+    <div class="current-sdg-card">
+      <div class="sdg-badge" id="card-badge">3</div>
+      <div style="text-align: left;">
+        <div id="card-title" style="font-size:1rem; font-weight:800; color:#fff;">SDG 3: Good Health</div>
+        <div id="card-desc" style="font-size:0.78rem; color:#94a3b8;">Ensure healthy lives and promote well-being.</div>
+      </div>
+    </div>
+
+    <div class="bins-container">
+      <div class="trash-can" id="bin-1" onclick="sortSDG('WATER_LAND')">
+        <div style="font-size:2rem;">🗑️💧</div>
+        <div style="font-size:0.85rem; font-weight:900;">WATER & LAND</div>
+        <div style="font-size:0.7rem; color:#94a3b8;">SDGs 6, 15</div>
+      </div>
+      <div class="trash-can" id="bin-2" onclick="sortSDG('ENERGY_CLIMATE')">
+        <div style="font-size:2rem;">🗑️⚡</div>
+        <div style="font-size:0.85rem; font-weight:900;">ENERGY & CLIMATE</div>
+        <div style="font-size:0.7rem; color:#94a3b8;">SDGs 7, 13</div>
+      </div>
+      <div class="trash-can" id="bin-3" onclick="sortSDG('HEALTH_SOCIAL')">
+        <div style="font-size:2rem;">🗑️❤️</div>
+        <div style="font-size:0.85rem; font-weight:900;">HEALTH & EDU</div>
+        <div style="font-size:0.7rem; color:#94a3b8;">SDGs 3, 4</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty Collected SDGs State -->
+  <div id="sort-empty-content" class="hidden">
+    <p style="font-size: 1.25rem; color: #38bdf8; font-weight: 800; margin: 15px 0;">Nothing to segregate now</p>
+    <button class="btn" onclick="finishSorting()">CONTINUE TO NEXT LEVEL</button>
+  </div>
+</div>
+
+<!-- Climate Selection Modal -->
+<div id="climateModal" class="modal-overlay hidden">
+  <h2 style="color:#38bdf8; font-size:2rem; font-weight:900;">SELECT LEVEL CLIMATE</h2>
+  <p>Choose weather condition for Stage <span id="next-lvl-num">2</span> (+200 pts level clear awarded!):</p>
+
+  <div class="climate-grid">
+    <div class="climate-btn" onclick="chooseClimate('DAY')">
+      <div style="font-size:1.6rem;">☀️</div>
+      <div style="font-size:0.85rem; font-weight:800;">DAY</div>
+    </div>
+    <div class="climate-btn" onclick="chooseClimate('NIGHT')">
+      <div style="font-size:1.6rem;">🌙</div>
+      <div style="font-size:0.85rem; font-weight:800;">NIGHT</div>
+    </div>
+    <div class="climate-btn" onclick="chooseClimate('RAIN')">
+      <div style="font-size:1.6rem;">🌧️</div>
+      <div style="font-size:0.85rem; font-weight:800;">RAIN</div>
+    </div>
+    <div class="climate-btn" onclick="chooseClimate('CLOUDY')">
+      <div style="font-size:1.6rem;">☁️</div>
+      <div style="font-size:0.85rem; font-weight:800;">CLOUDY</div>
+    </div>
+    <div class="climate-btn" onclick="chooseClimate('FOG')">
+      <div style="font-size:1.6rem;">🌫️</div>
+      <div style="font-size:0.85rem; font-weight:800;">FOG</div>
+    </div>
+  </div>
+</div>
+
+<!-- Game Over & Scoreboard Modal -->
+<div id="gameOverModal" class="modal-overlay hidden">
+  <h1 id="go-title" style="color:#ef4444;">MISSION FAILED</h1>
+  <p id="go-desc">Your ball was destroyed by pursuers.</p>
+
+  <div class="score-breakdown">
+    <div class="score-row"><span>Enemies Destroyed (<span id="sb-enemies-count">0</span> × 50 pts):</span><span id="sb-enemies-pts">0</span></div>
+    <div class="score-row"><span>SDG Goals Collected (<span id="sb-goals-count">0</span> × 100 pts):</span><span id="sb-goals-pts">0</span></div>
+    <div class="score-row"><span>Correct Waste Segregations (<span id="sb-sort-count">0</span> × 10 pts):</span><span id="sb-sort-pts">0</span></div>
+    <div class="score-row"><span>Levels Completed (<span id="sb-lvl-count">0</span> × 200 pts):</span><span id="sb-lvl-pts">0</span></div>
+    <div class="score-row total"><span>FINAL SCORE:</span><span id="sb-total-pts">0</span></div>
+  </div>
+
+  <div style="margin-top: 6px; display:flex; gap: 8px;">
+    <input type="text" id="player-name-input" placeholder="Enter Name for Leaderboard" style="padding: 10px 14px; border-radius: 20px; border: 2px solid #4ade80; background: #0f172a; color:#fff; font-weight:700;">
+    <button class="btn" onclick="saveScoreAndRestart()">SAVE SCORE & RETRY</button>
+  </div>
+
+  <div class="leaderboard-box">
+    <div class="lb-header">🏆 ALL-TIME HIGH SCORES</div>
+    <div id="end-leaderboard-list"></div>
+  </div>
+</div>
+
+<div id="mobile-controls">
+  <div class="dpad">
+    <div class="dbtn" id="btn-u">▲</div>
+    <div class="dbtn" id="btn-l">◄</div>
+    <div class="dbtn" id="btn-d">▼</div>
+    <div class="dbtn" id="btn-r">►</div>
+  </div>
+  <div class="action-group">
+    <button class="act-btn" id="atk-btn">ATTACK<br><small>[SPACE]</small></button>
+    <button class="act-btn" id="dash-btn">DASH<br><small>[SHIFT]</small></button>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+const COLS = 31, ROWS = 31, TILE = 64;
+
+let maze = [], items = [], drones = [], particles = [], projectiles = [], grassBlades = [], trailParticles = [], weatherParticles = [], shockwaves = [];
+let bouncyWalls = {};
+
+let level = 1, timeLeft = 100, gameActive = false, timerInterval = null, globalTime = 0;
+let collectedSDGs = new Set(), shake = 0, levelCompleting = false;
+let lastTime = performance.now(), audioCtx = null, bgmNode = null, bgmEnabled = true;
+let camX = 0, camY = 0;
+
+let currentClimate = 'DAY';
+let selectedSkin = 'eco';
+
+let gameStats = {
+  enemiesKilled: 0,
+  goalsCollected: 0,
+  segregationsCorrect: 0,
+  levelsCompleted: 0
+};
+
+function calculateTotalScore() {
+  return (gameStats.enemiesKilled * 50) +
+         (gameStats.goalsCollected * 100) +
+         (gameStats.segregationsCorrect * 10) +
+         (gameStats.levelsCompleted * 200);
+}
+
+const SKINS = {
+  eco: { main: '#22c55e', light: '#86efac', dark: '#14532d', trail: '#4ade80' },
+  solar: { main: '#eab308', light: '#fde047', dark: '#854d0e', trail: '#facc15' },
+  hydro: { main: '#06b6d4', light: '#67e8f9', dark: '#164e63', trail: '#38bdf8' },
+  cyber: { main: '#c084fc', light: '#f472b6', dark: '#581c87', trail: '#e879f9' },
+  magma: { main: '#ef4444', light: '#fca5a5', dark: '#7f1d1d', trail: '#f87171' }
+};
+
+const SDG_DATA = {
+  3: { name: "Good Health & Well-being", color: "#4c9f38", category: "HEALTH_SOCIAL", desc: "Promote health & well-being for all." },
+  4: { name: "Quality Education", color: "#c5192d", category: "HEALTH_SOCIAL", desc: "Ensure equitable quality education." },
+  6: { name: "Clean Water & Sanitation", color: "#26bde2", category: "WATER_LAND", desc: "Ensure availability of clean water." },
+  7: { name: "Affordable & Clean Energy", color: "#fcc30b", category: "ENERGY_CLIMATE", desc: "Promote affordable, clean energy." },
+  13: { name: "Climate Action", color: "#3f7e44", category: "ENERGY_CLIMATE", desc: "Take urgent action against climate change." },
+  15: { name: "Life on Land", color: "#56c02b", category: "WATER_LAND", desc: "Protect & restore terrestrial ecosystems." }
+};
+
+let player = {
+  x: TILE * 1.5, y: TILE * 1.5,
+  vx: 0, vy: 0, radius: TILE * 0.28, hp: 100,
+  restitution: 0.65, friction: 0.93, accelPower: 1350, rotation: 0,
+  dashCooldown: 0, attackCooldown: 0, maxDashCooldown: 0.55
+};
+
+function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+generateMaze();
+renderLeaderboard('start-leaderboard-list');
+
+const KEYS = {};
+window.addEventListener('keydown', e => {
+  if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' ','Shift'].includes(e.key)) e.preventDefault();
+  KEYS[e.key.toLowerCase()] = true;
+  if (e.key === ' ' && gameActive) triggerAttack();
+  if (e.key === 'Shift' && gameActive) triggerDash();
+});
+window.addEventListener('keyup', e => KEYS[e.key.toLowerCase()] = false);
+
+function bindTouch(id, keyName) {
+  const el = document.getElementById(id);
+  const start = (e) => { e.preventDefault(); KEYS[keyName] = true; };
+  const end = (e) => { e.preventDefault(); KEYS[keyName] = false; };
+  el.addEventListener('touchstart', start); el.addEventListener('touchend', end);
+  el.addEventListener('mousedown', start); el.addEventListener('mouseup', end);
+}
+bindTouch('btn-u', 'w'); bindTouch('btn-d', 's'); bindTouch('btn-l', 'a'); bindTouch('btn-r', 'd');
+document.getElementById('atk-btn').addEventListener('click', () => triggerAttack());
+document.getElementById('dash-btn').addEventListener('click', () => triggerDash());
+
+function showToast(text) {
+  const t = document.getElementById('toast');
+  t.innerText = text; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+function initAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function playSound(freq, duration = 0.1, type = 'sine') {
+  try {
+    initAudio();
+    let osc = audioCtx.createOscillator();
+    let gain = audioCtx.createGain();
+    osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + duration);
+  } catch(e){}
+}
+
+function startBGM() {
+  if (!bgmEnabled) return;
+  initAudio();
+  if (bgmNode) return;
+
+  const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+  let step = 0;
+
+  bgmNode = setInterval(() => {
+    if (!gameActive || !bgmEnabled) return;
+    try {
+      let osc = audioCtx.createOscillator();
+      let gain = audioCtx.createGain();
+      osc.type = step % 4 === 0 ? 'triangle' : 'sine';
+      let freq = notes[step % notes.length];
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.22);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.22);
+      step++;
+    } catch(e){}
+  }, 220);
+}
+
+function toggleBGM() {
+  bgmEnabled = !bgmEnabled;
+  const btn = document.querySelector('.audio-btn');
+  btn.innerText = bgmEnabled ? "🎵 BGM: ON" : "🔇 BGM: OFF";
+  if (bgmEnabled) startBGM();
+}
+
+function selectSkin(skinKey, cardEl) {
+  selectedSkin = skinKey;
+  document.querySelectorAll('.skin-card').forEach(c => c.classList.remove('selected'));
+  cardEl.classList.add('selected');
+}
+
+function generateMaze() {
+  maze = Array(ROWS).fill(0).map(() => Array(COLS).fill(1));
+  function carve(r, c) {
+    maze[r][c] = 0;
+    const dirs = [[-2,0],[2,0],[0,-2],[0,2]].sort(() => Math.random() - 0.5);
+    for (let [dr, dc] of dirs) {
+      let nr = r + dr, nc = c + dc;
+      if (nr > 0 && nr < ROWS-1 && nc > 0 && nc < COLS-1 && maze[nr][nc] === 1) {
+        maze[r + dr/2][c + dc/2] = 0;
+        carve(nr, nc);
+      }
+    }
+  }
+  carve(1, 1);
+  for (let i = 0; i < 55; i++) {
+    let r = Math.floor(Math.random() * (ROWS - 2)) + 1;
+    let c = Math.floor(Math.random() * (COLS - 2)) + 1;
+    maze[r][c] = 0;
+  }
+  maze[ROWS-2][COLS-2] = 0; maze[ROWS-2][COLS-3] = 0;
+
+  grassBlades = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (maze[r][c] === 0) {
+        for (let k = 0; k < 3; k++) {
+          grassBlades.push({
+            x: c * TILE + Math.random() * TILE,
+            y: r * TILE + Math.random() * TILE,
+            height: Math.random() * 8 + 4,
+            swayOffset: Math.random() * Math.PI * 2
+          });
+        }
+      }
+    }
+  }
+
+  weatherParticles = [];
+  let count = currentClimate === 'RAIN' ? 120 : (currentClimate === 'NIGHT' ? 40 : 25);
+  for (let i = 0; i < count; i++) {
+    weatherParticles.push({
+      x: Math.random() * COLS * TILE, y: Math.random() * ROWS * TILE,
+      speed: Math.random() * 200 + 300, length: Math.random() * 15 + 10,
+      phase: Math.random() * Math.PI * 2, size: Math.random() * 30 + 20
+    });
+  }
+}
+
+function buildLevel() {
+  generateMaze();
+  collectedSDGs.clear();
+  levelCompleting = false;
+
+  document.getElementById('biome-title').innerText = `STAGE ${level} — ${currentClimate}`;
+
+  player.x = TILE * 1.5; player.y = TILE * 1.5;
+  player.vx = 0; player.vy = 0; player.hp = 100; player.rotation = 0;
+
+  let openSpots = [];
+  for (let r = 1; r < ROWS - 1; r++) {
+    for (let c = 1; c < COLS - 1; c++) {
+      if (maze[r][c] === 0 && !(r === 1 && c === 1) && !(r === ROWS-2 && c === COLS-2)) {
+        openSpots.push({ c, r });
+      }
+    }
+  }
+  openSpots.sort(() => Math.random() - 0.5);
+
+  const types = [3, 4, 6, 7, 13, 15];
+  items = types.map(id => {
+    let spot = openSpots.pop();
+    return { id, x: spot.c * TILE + TILE/2, y: spot.r * TILE + TILE/2, color: SDG_DATA[id].color };
+  });
+
+  drones = [];
+  let droneCount = 5 + level * 2;
+  for (let i = 0; i < droneCount; i++) {
+    if (openSpots.length > 0) {
+      let spot = openSpots.pop();
+      drones.push({
+        x: spot.c * TILE + TILE/2, y: spot.r * TILE + TILE/2,
+        vx: 0, vy: 0, speed: 120 + level * 14,
+        radius: TILE * 0.25, hp: 2, angle: Math.random() * Math.PI * 2
+      });
+    }
+  }
+  particles = []; projectiles = []; trailParticles = []; shockwaves = []; bouncyWalls = {};
+  updateUI();
+}
+
+function startGame() {
+  document.getElementById('startModal').classList.add('hidden');
+  gameStats = { enemiesKilled: 0, goalsCollected: 0, segregationsCorrect: 0, levelsCompleted: 0 };
+  level = 1;
+  buildLevel();
+  timeLeft = 100;
+  gameActive = true; lastTime = performance.now();
+  startBGM();
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (!gameActive || levelCompleting) return;
+    timeLeft--;
+    updateUI();
+    if (timeLeft <= 0) gameOver('TIME EXPIRED', 'The environmental degradation timer ran out.');
+  }, 1000);
+}
+
+function triggerAttack() {
+  if (!gameActive || player.attackCooldown > 0 || levelCompleting) return;
+  player.attackCooldown = 0.22;
+ 
+  let speed = 880;
+  let len = Math.hypot(player.vx, player.vy);
+  let dirX = len > 20 ? player.vx / len : 1;
+  let dirY = len > 20 ? player.vy / len : 0;
+ 
+  projectiles.push({ x: player.x, y: player.y, vx: dirX * speed, vy: dirY * speed, radius: 9, life: 1.0 });
+  playSound(720, 0.08, 'sawtooth');
+  shake = 4;
+}
+
+function triggerDash() {
+  if (!gameActive || player.dashCooldown > 0 || levelCompleting) return;
+  player.dashCooldown = player.maxDashCooldown;
+  let speed = Math.hypot(player.vx, player.vy);
+  let dirX = speed > 20 ? player.vx / speed : 1;
+  let dirY = speed > 20 ? player.vy / speed : 0;
+  player.vx += dirX * 620; player.vy += dirY * 620;
+  shake = 7; playSound(490);
+}
+
+function updateBallPhysics(dt) {
+  let ax = 0, ay = 0;
+  if (KEYS['w'] || KEYS['arrowup']) ay -= player.accelPower;
+  if (KEYS['s'] || KEYS['arrowdown']) ay += player.accelPower;
+  if (KEYS['a'] || KEYS['arrowleft']) ax -= player.accelPower;
+  if (KEYS['d'] || KEYS['arrowright']) ax += player.accelPower;
+
+  player.vx += ax * dt; player.vy += ay * dt;
+  player.vx *= Math.pow(player.friction, dt * 60);
+  player.vy *= Math.pow(player.friction, dt * 60);
+
+  player.x += player.vx * dt; player.y += player.vy * dt;
+
+  let moveDist = Math.hypot(player.vx, player.vy) * dt;
+  player.rotation += moveDist / player.radius;
+
+  if (moveDist > 2) {
+    trailParticles.push({
+      x: player.x, y: player.y, radius: player.radius * 0.65,
+      alpha: 0.5, color: SKINS[selectedSkin].trail
+    });
+  }
+
+  let minCol = Math.max(0, Math.floor((player.x - player.radius) / TILE));
+  let maxCol = Math.min(COLS - 1, Math.floor((player.x + player.radius) / TILE));
+  let minRow = Math.max(0, Math.floor((player.y - player.radius) / TILE));
+  let maxRow = Math.min(ROWS - 1, Math.floor((player.y + player.radius) / TILE));
+
+  for (let r = minRow; r <= maxRow; r++) {
+    for (let c = minCol; c <= maxCol; c++) {
+      if (maze[r][c] === 1) {
+        let boxL = c * TILE, boxT = r * TILE, boxR = boxL + TILE, boxB = boxT + TILE;
+        let closestX = Math.max(boxL, Math.min(player.x, boxR));
+        let closestY = Math.max(boxT, Math.min(player.y, boxB));
+        let distX = player.x - closestX, distY = player.y - closestY;
+        let distSq = distX * distX + distY * distY;
+
+        if (distSq < player.radius * player.radius && distSq > 0) {
+          let dist = Math.sqrt(distSq);
+          let overlap = player.radius - dist;
+          let nx = distX / dist, ny = distY / dist;
+
+          player.x += nx * overlap; player.y += ny * overlap;
+
+          let dot = player.vx * nx + player.vy * ny;
+          if (dot < 0) {
+            player.vx -= (1 + player.restitution) * dot * nx;
+            player.vy -= (1 + player.restitution) * dot * ny;
+            if (Math.abs(dot) > 40) {
+              playSound(190 + Math.abs(dot) * 0.1, 0.05);
+              shockwaves.push({ x: closestX, y: closestY, radius: 4, alpha: 0.8 });
+              bouncyWalls[`${r}_${c}`] = 1.0;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+function update(dt) {
+  if (!gameActive) return;
+  globalTime += dt;
+
+  if (player.dashCooldown > 0) player.dashCooldown -= dt;
+  if (player.attackCooldown > 0) player.attackCooldown -= dt;
+
+  if (!levelCompleting) updateBallPhysics(dt);
+
+  camX += (player.x - canvas.width / 2 - camX) * 0.1;
+  camY += (player.y - canvas.height / 2 - camY) * 0.1;
+
+  for (let key in bouncyWalls) {
+    bouncyWalls[key] -= dt * 4;
+    if (bouncyWalls[key] <= 0) delete bouncyWalls[key];
+  }
+
+  for (let i = trailParticles.length - 1; i >= 0; i--) {
+    let tp = trailParticles[i];
+    tp.alpha -= dt * 2.2; tp.radius *= 0.94;
+    if (tp.alpha <= 0) trailParticles.splice(i, 1);
+  }
+
+  for (let i = shockwaves.length - 1; i >= 0; i--) {
+    let sw = shockwaves[i];
+    sw.radius += dt * 85; sw.alpha -= dt * 2.5;
+    if (sw.alpha <= 0) shockwaves.splice(i, 1);
+  }
+
+  weatherParticles.forEach(p => {
+    if (currentClimate === 'RAIN') {
+      p.y += p.speed * dt; p.x += p.speed * 0.15 * dt;
+      if (p.y > ROWS * TILE) { p.y = 0; p.x = Math.random() * COLS * TILE; }
+    } else {
+      p.x += Math.cos(globalTime + p.phase) * 20 * dt;
+      p.y += Math.sin(globalTime + p.phase) * 20 * dt;
+    }
+  });
+
+  // Projectiles
+  for (let i = projectiles.length - 1; i >= 0; i--) {
+    let p = projectiles[i];
+    p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
+
+    let gx = Math.floor(p.x / TILE), gy = Math.floor(p.y / TILE);
+    if (gy < 0 || gy >= ROWS || gx < 0 || gx >= COLS || maze[gy][gx] === 1 || p.life <= 0) {
+      projectiles.splice(i, 1); continue;
+    }
+
+    for (let j = drones.length - 1; j >= 0; j--) {
+      let d = drones[j];
+      if (Math.hypot(p.x - d.x, p.y - d.y) < p.radius + d.radius) {
+        d.hp -= 1; playSound(260, 0.08, 'square');
+        projectiles.splice(i, 1);
+
+        if (d.hp <= 0) {
+          for (let k = 0; k < 12; k++) {
+            particles.push({
+              x: d.x, y: d.y,
+              vx: (Math.random() - 0.5) * 260, vy: (Math.random() - 0.5) * 260,
+              life: 0.5, color: '#ef4444', size: Math.random() * 5 + 3
+            });
+          }
+          drones.splice(j, 1);
+          gameStats.enemiesKilled++;
+          updateUI();
+        }
+        break;
+      }
+    }
+  }
+
+  // SDG Goal Collections
+  items.forEach((item, idx) => {
+    if (Math.hypot(player.x - item.x, player.y - item.y) < TILE * 0.45) {
+      playSound(650);
+      collectedSDGs.add(item.id);
+      gameStats.goalsCollected++;
+      showToast(`Goal Core SDG ${item.id} Collected! (+100 pts)`);
+      items.splice(idx, 1);
+      updateUI();
+    }
+  });
+
+  // Improved AI Drone Pursuit Behavior (Direct Steering & Wall Sliding, No Bouncing)
+  drones.forEach(d => {
+    d.angle += dt * 4;
+    let dx = player.x - d.x, dy = player.y - d.y;
+    let dist = Math.hypot(dx, dy);
+
+    if (dist > 0.1) {
+      let targetVx = (dx / dist) * d.speed;
+      let targetVy = (dy / dist) * d.speed;
+      d.vx += (targetVx - d.vx) * 6.0 * dt;
+      d.vy += (targetVy - d.vy) * 6.0 * dt;
+    }
+
+    // Move Along X Axis with Sliding Collision
+    let nextX = d.x + d.vx * dt;
+    let checkGridX = Math.floor((nextX + Math.sign(d.vx) * (d.radius + 2)) / TILE);
+    let currentGridY = Math.floor(d.y / TILE);
+
+    if (checkGridX >= 0 && checkGridX < COLS && currentGridY >= 0 && currentGridY < ROWS) {
+      if (maze[currentGridY][checkGridX] === 1) {
+        nextX = d.x;
+        d.vx = 0;
+      }
+    }
+    d.x = nextX;
+
+    // Move Along Y Axis with Sliding Collision
+    let nextY = d.y + d.vy * dt;
+    let checkGridY = Math.floor((nextY + Math.sign(d.vy) * (d.radius + 2)) / TILE);
+    let currentGridX = Math.floor(d.x / TILE);
+
+    if (checkGridY >= 0 && checkGridY < ROWS && currentGridX >= 0 && currentGridX < COLS) {
+      if (maze[checkGridY][currentGridX] === 1) {
+        nextY = d.y;
+        d.vy = 0;
+      }
+    }
+    d.y = nextY;
+
+    // Attack Player on Contact
+    if (!levelCompleting && Math.hypot(player.x - d.x, player.y - d.y) < player.radius + d.radius) {
+      player.hp -= 45 * dt; shake = 6; playSound(120);
+      if (player.hp <= 0) gameOver('MISSION FAILED', 'Your Eco-Ball was destroyed by pursuing drones!');
+    }
+  });
+
+  for (let i = particles.length - 1; i >= 0; i--) {
+    let p = particles[i];
+    p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
+    if (p.life <= 0) particles.splice(i, 1);
+  }
+
+  // Always Accessible Exit Portal
+  let exitX = (COLS - 1.5) * TILE, exitY = (ROWS - 1.5) * TILE;
+  if (Math.hypot(player.x - exitX, player.y - exitY) < TILE * 0.55 && !levelCompleting) {
+    levelCompleting = true;
+    playSound(950, 0.4);
+    setTimeout(() => startSortingMiniGame(), 400);
+  }
+}
+
+let sortQueue = [];
+let currentSortingSDG = null;
+
+function startSortingMiniGame() {
+  sortQueue = Array.from(collectedSDGs);
+  document.getElementById('sortModal').classList.remove('hidden');
+
+  if (sortQueue.length === 0) {
+    document.getElementById('sort-active-content').classList.add('hidden');
+    document.getElementById('sort-empty-content').classList.remove('hidden');
+  } else {
+    document.getElementById('sort-active-content').classList.remove('hidden');
+    document.getElementById('sort-empty-content').classList.add('hidden');
+    nextSortingItem();
+  }
+}
+
+function finishSorting() {
+  document.getElementById('sortModal').classList.add('hidden');
+  gameStats.levelsCompleted++;
+  document.getElementById('next-lvl-num').innerText = level + 1;
+  document.getElementById('climateModal').classList.remove('hidden');
+}
+
+function nextSortingItem() {
+  if (sortQueue.length === 0) {
+    finishSorting();
+    return;
+  }
+
+  let sdgId = sortQueue.pop();
+  currentSortingSDG = SDG_DATA[sdgId];
+  currentSortingSDG.id = sdgId;
+
+  document.getElementById('card-badge').innerText = sdgId;
+  document.getElementById('card-badge').style.background = currentSortingSDG.color;
+  document.getElementById('card-title').innerText = `SDG ${sdgId}: ${currentSortingSDG.name}`;
+  document.getElementById('card-desc').innerText = currentSortingSDG.desc;
+}
+
+function sortSDG(chosenCategory) {
+  if (currentSortingSDG.category === chosenCategory) {
+    playSound(780, 0.15);
+    gameStats.segregationsCorrect++;
+    showToast("Correct Waste Bin! (+10 pts)");
+  } else {
+    playSound(140, 0.25, 'sawtooth');
+    showToast(`Incorrect Waste Bin!`);
+  }
+  updateUI();
+  nextSortingItem();
+}
+
+function chooseClimate(climate) {
+  currentClimate = climate;
+  document.getElementById('climateModal').classList.add('hidden');
+  level++;
+  buildLevel();
+  timeLeft = 100; gameActive = true; lastTime = performance.now();
+}
+
+function updateUI() {
+  document.getElementById('hp-txt').innerText = Math.max(0, Math.floor(player.hp));
+  document.getElementById('timer-txt').innerText = timeLeft;
+  document.getElementById('score-txt').innerText = calculateTotalScore();
+
+  [3, 4, 6, 7, 13, 15].forEach(id => {
+    const chip = document.getElementById(`c${id}`);
+    if (collectedSDGs.has(id)) chip.classList.add('active');
+    else chip.classList.remove('active');
+  });
+}
+
+function gameOver(title, desc) {
+  gameActive = false;
+  clearInterval(timerInterval);
+
+  document.getElementById('go-title').innerText = title;
+  document.getElementById('go-desc').innerText = desc;
+
+  document.getElementById('sb-enemies-count').innerText = gameStats.enemiesKilled;
+  document.getElementById('sb-enemies-pts').innerText = gameStats.enemiesKilled * 50;
+
+  document.getElementById('sb-goals-count').innerText = gameStats.goalsCollected;
+  document.getElementById('sb-goals-pts').innerText = gameStats.goalsCollected * 100;
+
+  document.getElementById('sb-sort-count').innerText = gameStats.segregationsCorrect;
+  document.getElementById('sb-sort-pts').innerText = gameStats.segregationsCorrect * 10;
+
+  document.getElementById('sb-lvl-count').innerText = gameStats.levelsCompleted;
+  document.getElementById('sb-lvl-pts').innerText = gameStats.levelsCompleted * 200;
+
+  document.getElementById('sb-total-pts').innerText = calculateTotalScore();
+
+  renderLeaderboard('end-leaderboard-list');
+  document.getElementById('gameOverModal').classList.remove('hidden');
+}
+
+function getStoredScores() {
+  try {
+    return JSON.parse(localStorage.getItem('eco_odyssey_scores')) || [];
+  } catch(e) { return []; }
+}
+
+function saveScoreAndRestart() {
+  let nameInput = document.getElementById('player-name-input').value.trim() || 'Eco Ranger';
+  let totalScore = calculateTotalScore();
+
+  let scores = getStoredScores();
+  scores.push({ name: nameInput, score: totalScore, date: new Date().toLocaleDateString() });
+  scores.sort((a, b) => b.score - a.score);
+  scores = scores.slice(0, 5);
+
+  localStorage.setItem('eco_odyssey_scores', JSON.stringify(scores));
+
+  document.getElementById('gameOverModal').classList.add('hidden');
+  startGame();
+}
+
+function renderLeaderboard(elementId) {
+  let scores = getStoredScores();
+  let container = document.getElementById(elementId);
+  if (!scores.length) {
+    container.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8; text-align:center;">No high scores stored yet!</div>';
+    return;
+  }
+  let html = '';
+  scores.forEach((s, idx) => {
+    html += `<div class="score-row"><span>#${idx+1} ${s.name} (${s.date})</span><span style="color:#facc15; font-weight:800;">${s.score} pts</span></div>`;
+  });
+  container.innerHTML = html;
+}
+
+function drawMinimap() {
+  const mapSize = 180;
+  const scaleX = mapSize / (COLS * TILE);
+  const scaleY = mapSize / (ROWS * TILE);
+  const mx = canvas.width - mapSize - 16;
+  const my = 16;
+
+  ctx.save();
+  ctx.fillStyle = 'rgba(10, 15, 30, 0.92)';
+  ctx.strokeStyle = '#4ade80'; ctx.lineWidth = 2;
+  ctx.fillRect(mx, my, mapSize, mapSize);
+  ctx.strokeRect(mx, my, mapSize, mapSize);
+
+  let scanY = my + ((globalTime * 60) % mapSize);
+  ctx.strokeStyle = 'rgba(74, 222, 128, 0.25)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(mx, scanY); ctx.lineTo(mx + mapSize, scanY); ctx.stroke();
+
+  ctx.fillStyle = 'rgba(34, 197, 94, 0.35)';
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      if (maze[r] && maze[r][c] === 1) {
+        ctx.fillRect(mx + c * TILE * scaleX, my + r * TILE * scaleY, Math.max(1, TILE * scaleX), Math.max(1, TILE * scaleY));
+      }
+    }
+  }
+
+  items.forEach(item => {
+    ctx.fillStyle = item.color; ctx.beginPath();
+    ctx.arc(mx + item.x * scaleX, my + item.y * scaleY, 3.5, 0, Math.PI * 2); ctx.fill();
+  });
+
+  drones.forEach(d => {
+    ctx.fillStyle = '#ef4444'; ctx.beginPath();
+    ctx.arc(mx + d.x * scaleX, my + d.y * scaleY, 4, 0, Math.PI * 2); ctx.fill();
+  });
+
+  let exitX = (COLS - 1.5) * TILE, exitY = (ROWS - 1.5) * TILE;
+  ctx.strokeStyle = '#facc15'; ctx.lineWidth = 2; ctx.beginPath();
+  ctx.arc(mx + exitX * scaleX, my + exitY * scaleY, 5, 0, Math.PI * 2); ctx.stroke();
+
+  let px = mx + player.x * scaleX, py = my + player.y * scaleY;
+  let pAngle = Math.atan2(player.vy, player.vx);
+  ctx.save(); ctx.translate(px, py); ctx.rotate(pAngle);
+  ctx.fillStyle = '#ffffff'; ctx.beginPath();
+  ctx.moveTo(6, 0); ctx.lineTo(-4, -4); ctx.lineTo(-2, 0); ctx.lineTo(-4, 4);
+  ctx.closePath(); ctx.fill(); ctx.restore();
+
+  ctx.restore();
+}
+
+function draw() {
+  ctx.save();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  let currentShakeX = (Math.random() - 0.5) * shake;
+  let currentShakeY = (Math.random() - 0.5) * shake;
+  if (shake > 0) shake *= 0.88;
+
+  ctx.translate(-camX + currentShakeX, -camY + currentShakeY);
+
+  let wallTop = '#166534', wallBase = '#0f3d20', floorColor = '#153317';
+  if (currentClimate === 'NIGHT') { wallTop = '#1e1b4b'; wallBase = '#0f172a'; floorColor = '#020617'; }
+  else if (currentClimate === 'RAIN') { wallTop = '#1e293b'; wallBase = '#0f172a'; floorColor = '#091e3a'; }
+  else if (currentClimate === 'CLOUDY') { wallTop = '#334155'; wallBase = '#1e293b'; floorColor = '#1e293b'; }
+  else if (currentClimate === 'FOG') { wallTop = '#475569'; wallBase = '#334155'; floorColor = '#334155'; }
+
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      let x = c * TILE, y = r * TILE;
+      if (maze[r] && maze[r][c] === 1) {
+        ctx.save();
+        let bounce = bouncyWalls[`${r}_${c}`] || 0;
+        let scale = 1 + bounce * 0.18;
+       
+        ctx.translate(x + TILE/2, y + TILE/2);
+        ctx.scale(scale, scale);
+        ctx.translate(-(x + TILE/2), -(y + TILE/2));
+
+        let wallGrad = ctx.createLinearGradient(x, y, x, y + TILE);
+        wallGrad.addColorStop(0, wallTop); wallGrad.addColorStop(1, wallBase);
+        ctx.fillStyle = wallGrad;
+        ctx.fillRect(x, y, TILE, TILE);
+
+        ctx.fillStyle = 'rgba(255,255,255,0.15)';
+        ctx.fillRect(x, y, TILE, 6);
+        ctx.restore();
+      } else {
+        ctx.fillStyle = floorColor;
+        ctx.fillRect(x, y, TILE, TILE);
+        ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+        ctx.strokeRect(x, y, TILE, TILE);
+      }
+    }
+  }
+
+  grassBlades.forEach(b => {
+    let sway = Math.sin(globalTime * 3 + b.swayOffset) * 3;
+    ctx.strokeStyle = currentClimate === 'NIGHT' ? '#312e81' : '#2d5e2e';
+    ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(b.x + sway, b.y - b.height); ctx.stroke();
+  });
+
+  weatherParticles.forEach(p => {
+    ctx.save();
+    if (currentClimate === 'RAIN') {
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.6)'; ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + 3, p.y + p.length); ctx.stroke();
+    } else if (currentClimate === 'NIGHT') {
+      let glow = Math.sin(globalTime * 3 + p.phase) * 0.5 + 0.5;
+      ctx.fillStyle = `rgba(250, 204, 21, ${glow})`;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2); ctx.fill();
+    } else if (currentClimate === 'CLOUDY') {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+  });
+
+  shockwaves.forEach(sw => {
+    ctx.save();
+    ctx.strokeStyle = `rgba(74, 222, 128, ${sw.alpha})`; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2); ctx.stroke();
+    ctx.restore();
+  });
+
+  trailParticles.forEach(tp => {
+    ctx.save(); ctx.globalAlpha = tp.alpha; ctx.fillStyle = tp.color;
+    ctx.beginPath(); ctx.arc(tp.x, tp.y, tp.radius, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  });
+
+  items.forEach(item => {
+    ctx.save();
+    let hoverY = item.y + Math.sin(globalTime * 4 + item.id) * 6;
+    ctx.strokeStyle = item.color; ctx.lineWidth = 3;
+    ctx.shadowBlur = 15; ctx.shadowColor = item.color;
+    ctx.beginPath(); ctx.arc(item.x, hoverY, TILE * 0.35, 0, Math.PI * 2); ctx.stroke();
+
+    let orbGrad = ctx.createRadialGradient(item.x - 5, hoverY - 5, 2, item.x, hoverY, TILE * 0.28);
+    orbGrad.addColorStop(0, '#ffffff'); orbGrad.addColorStop(0.5, item.color); orbGrad.addColorStop(1, '#000000');
+    ctx.fillStyle = orbGrad;
+    ctx.beginPath(); ctx.arc(item.x, hoverY, TILE * 0.28, 0, Math.PI * 2); ctx.fill();
+
+    ctx.fillStyle = '#fff'; ctx.font = '900 14px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(item.id, item.x, hoverY);
+    ctx.restore();
+  });
+
+  let exitX = (COLS - 1.5) * TILE, exitY = (ROWS - 1.5) * TILE;
+  ctx.save(); ctx.shadowBlur = 20; ctx.shadowColor = '#facc15';
+  for (let r = 3; r >= 1; r--) {
+    ctx.strokeStyle = r % 2 === 0 ? '#facc15' : '#eab308'; ctx.lineWidth = 3; ctx.beginPath();
+    ctx.arc(exitX, exitY, TILE * (0.12 * r + 0.1), globalTime * (r % 2 === 0 ? 3 : -3), globalTime * (r % 2 === 0 ? 3 : -3) + Math.PI * 1.5);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  drones.forEach(d => {
+    ctx.save(); ctx.shadowBlur = 12; ctx.shadowColor = '#ef4444';
+    let droneGrad = ctx.createRadialGradient(d.x - 4, d.y - 4, 2, d.x, d.y, d.radius);
+    droneGrad.addColorStop(0, '#fca5a5'); droneGrad.addColorStop(0.5, '#ef4444'); droneGrad.addColorStop(1, '#7f1d1d');
+    ctx.fillStyle = droneGrad; ctx.beginPath(); ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2); ctx.fill();
+
+    ctx.fillStyle = '#ffffff'; ctx.beginPath();
+    ctx.arc(d.x + Math.cos(d.angle)*6, d.y + Math.sin(d.angle)*6, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  });
+
+  projectiles.forEach(p => {
+    ctx.save(); ctx.shadowBlur = 12; ctx.shadowColor = '#38bdf8'; ctx.fillStyle = '#38bdf8';
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  });
+
+  ctx.save();
+  let skin = SKINS[selectedSkin];
+  ctx.shadowBlur = 20; ctx.shadowColor = skin.main;
+
+  let ballGrad = ctx.createRadialGradient(
+    player.x - player.radius * 0.35, player.y - player.radius * 0.35, player.radius * 0.1,
+    player.x, player.y, player.radius
+  );
+  ballGrad.addColorStop(0, '#ffffff'); ballGrad.addColorStop(0.3, skin.light);
+  ballGrad.addColorStop(0.7, skin.main); ballGrad.addColorStop(1, skin.dark);
+
+  ctx.fillStyle = ballGrad; ctx.beginPath(); ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2); ctx.fill();
+
+  ctx.save();
+  ctx.translate(player.x, player.y); ctx.rotate(player.rotation);
+  ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(0, 0, player.radius * 0.6, 0, Math.PI * 1.2); ctx.stroke();
+  ctx.restore();
+
+  if (player.dashCooldown > 0) {
+    let dashProgress = (1 - player.dashCooldown / player.maxDashCooldown);
+    ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3; ctx.beginPath();
+    ctx.arc(player.x, player.y, player.radius + 6, -Math.PI / 2, -Math.PI / 2 + dashProgress * Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  let fogRadius = currentClimate === 'FOG' ? TILE * 4.5 : TILE * 8.5;
+  let grad = ctx.createRadialGradient(player.x, player.y, TILE * 1.5, player.x, player.y, fogRadius);
+  grad.addColorStop(0, 'rgba(0,0,0,0)');
+  grad.addColorStop(1, currentClimate === 'FOG' ? 'rgba(15, 23, 42, 0.96)' : 'rgba(2, 6, 23, 0.88)');
+  ctx.fillStyle = grad; ctx.fillRect(camX - 100, camY - 100, canvas.width + 200, canvas.height + 200);
+
+  ctx.restore();
+
+  drawMinimap();
+}
+
+function loop(now) {
+  let dt = (now - lastTime) / 1000;
+  if (dt > 0.1) dt = 0.1;
+  lastTime = now;
+  update(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
+
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
