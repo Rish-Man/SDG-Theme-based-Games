@@ -5,52 +5,643 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Sustainable Waste Sorting Challenge</title>
 <style>
-:root{--bg:#04130f;--panel:#09271f;--green:#42d590;--teal:#20bd91;--orange:#ff7651;--yellow:#f6d365;--text:#effff6;--muted:#b8e8cf}
-*{box-sizing:border-box;user-select:none}html,body{margin:0;min-height:100%;overflow:hidden}body{background:radial-gradient(circle at 50% 8%,#18543e,#04130f 63%);font-family:Segoe UI,Arial,sans-serif;color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center}header{text-align:center;margin-bottom:6px;line-height:1.12}h1{margin:0;color:var(--green);font-size:clamp(1.15rem,3vw,1.75rem);letter-spacing:1px;text-shadow:0 2px 9px #000}header p{margin:3px 0 0;color:var(--muted);font-size:.83rem}.credit{color:var(--yellow);font-weight:700;font-size:.77rem}.game{position:relative;width:min(850px,calc(100vw - 14px));border:3px solid #19755b;border-radius:10px;overflow:hidden;background:#061712;box-shadow:0 16px 50px #000c}.game.shake{animation:shake .2s linear}.game canvas{display:block;width:100%;height:auto;cursor:grab}.game canvas:active{cursor:grabbing}.hud{position:absolute;z-index:5;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;pointer-events:none}.panel{background:#06231ddd;border:1px solid #23866a;border-radius:7px;padding:6px 9px;box-shadow:0 3px 15px #0007;font-size:.76rem;line-height:1.4}.score{color:var(--yellow);font-weight:800}.high{color:#9fe8ff;font-weight:800}.combo{color:#81f0c4;font-weight:800}.timer{font-weight:900}.danger{color:#ff8b70}.legend{position:absolute;z-index:6;inset:38px 28px 42px;background:#061a15f7;border:2px solid #2c9a76;border-radius:11px;padding:16px;box-shadow:0 8px 30px #000b;display:flex;flex-direction:column;justify-content:center;gap:12px}.legend h2{margin:0;text-align:center;color:var(--yellow);font-size:1.15rem}.legend p{margin:0;text-align:center;color:var(--muted);font-size:.78rem}.guide-columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}.guide-box{border-radius:8px;padding:10px;font-size:.76rem;line-height:1.45}.guide-box h3{margin:0 0 6px;text-align:center;font-size:.82rem}.guide-box ul{padding-left:18px;margin:0}.recycle{border:2px solid var(--green);background:#0a3828}.hazard{border:2px solid var(--orange);background:#3a1d17}.legend-note{text-align:center;color:#d8fff0;font-size:.75rem}.banner{position:absolute;z-index:7;left:50%;top:43%;transform:translate(-50%,-50%);font-size:clamp(1rem,3.5vw,1.85rem);font-weight:900;white-space:nowrap;text-align:center;opacity:0;text-shadow:0 3px 8px #000;pointer-events:none}.banner.show{animation:banner 1.25s ease-out}.controls{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;justify-content:center}button{border:0;border-radius:5px;padding:8px 14px;background:#15956e;color:white;font-weight:800;cursor:pointer;box-shadow:0 4px 12px #0007}button:hover{background:#25c58f}button:disabled{opacity:.45;cursor:not-allowed}.tip{font-size:.7rem;color:#bdebd2;margin-top:5px;text-align:center;min-height:15px}@keyframes shake{0%,100%{transform:translate(0)}20%{transform:translate(3px,-2px)}40%{transform:translate(-3px,2px)}60%{transform:translate(2px,1px)}80%{transform:translate(-1px,-1px)}}@keyframes banner{0%{opacity:0;transform:translate(-50%,-25%) scale(.65)}15%,58%{opacity:1}100%{opacity:0;transform:translate(-50%,-145%) scale(1.08)}}
+:root{--bg:#04130f;--panel:#09271f;--green:#42d590;--orange:#ff7651;--yellow:#f6d365;--text:#effff6;--muted:#b8e8cf}
+*{box-sizing:border-box;user-select:none}
+html,body{margin:0;min-height:100vh;overflow:hidden;background:radial-gradient(circle at 50% 8%,#18543e,#04130f 63%);font-family:'Segoe UI',Arial,sans-serif;color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center}
+header{text-align:center;margin-bottom:6px;line-height:1.12}
+h1{margin:0;color:var(--green);font-size:clamp(1.15rem,3vw,1.75rem);letter-spacing:1px;text-shadow:0 2px 9px #000}
+header p{margin:3px 0 0;color:var(--muted);font-size:.83rem}
+.credit{color:var(--yellow);font-weight:700;font-size:.85rem;margin-top:2px}
+.game{position:relative;width:850px;height:620px;border:3px solid #19755b;border-radius:10px;overflow:hidden;background:#061712;box-shadow:0 16px 50px #000c}
+.game canvas{display:block;width:850px;height:620px;cursor:grab;touch-action:none}
+.game canvas:active{cursor:grabbing}
+.hud{position:absolute;z-index:5;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;pointer-events:none}
+.panel{background:#06231ddd;border:1px solid #23866a;border-radius:7px;padding:6px 9px;box-shadow:0 3px 15px #0007;font-size:.76rem;line-height:1.4}
+.score{color:var(--yellow);font-weight:800}.high{color:#9fe8ff;font-weight:800}.combo{color:#81f0c4;font-weight:800}.timer{font-weight:900}
+.legend,.scoreboard{position:absolute;z-index:10;inset:12px;background:#051914fc;border:3px solid #2c9a76;border-radius:12px;padding:14px;box-shadow:0 12px 40px #000f;display:flex;flex-direction:column;justify-content:space-between;overflow-y:auto}
+.legend h2,.scoreboard h2{margin:0 0 4px;text-align:center;color:var(--yellow);font-size:1.3rem;letter-spacing:.5px}
+.legend-subtitle{margin:0 0 10px;text-align:center;color:var(--muted);font-size:.82rem}
+.guide-columns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px}
+.guide-box{border-radius:10px;padding:10px;box-shadow:inset 0 0 10px #0006}
+.recycle{border:2px solid var(--green);background:#072b1f}
+.hazard{border:2px solid var(--orange);background:#2e1510}
+.guide-box h3{margin:0 0 8px;text-align:center;font-size:.92rem;letter-spacing:.5px}
+.recycle h3{color:var(--green)}
+.hazard h3{color:var(--orange)}
+.item-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.item-card{display:flex;align-items:center;gap:8px;background:#0005;padding:6px 8px;border-radius:6px;border:1px solid #ffffff15}
+.item-card canvas{width:36px;height:36px;flex-shrink:0;background:#111;border-radius:4px;padding:2px}
+.item-card span{font-size:.76rem;font-weight:700;line-height:1.2;color:#fff}
+.legend-footer,.score-footer{display:flex;flex-direction:column;align-items:center;gap:8px}
+.banner{position:absolute;z-index:7;left:50%;top:48%;transform:translate(-50%,-50%);font-size:clamp(1rem,3.5vw,1.85rem);font-weight:900;white-space:nowrap;text-align:center;opacity:0;text-shadow:0 3px 8px #000;pointer-events:none}
+.banner.show{animation:banner 1.25s ease-out}
+.controls{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;justify-content:center}
+button{border:0;border-radius:6px;padding:9px 18px;background:#15956e;color:white;font-weight:800;font-size:.88rem;cursor:pointer;box-shadow:0 4px 12px #0007;transition:all .15s}
+button:hover{background:#25c58f;transform:translateY(-1px)}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-primary{background:#f6d365;color:#04130f;font-size:1rem;padding:10px 24px}
+.btn-primary:hover{background:#ffea9f}
+.btn-danger{background:#ff673f;color:#fff}
+.btn-danger:hover{background:#ff8866}
+.tip{font-size:.75rem;color:#bdebd2;margin-top:5px;text-align:center;min-height:16px;font-weight:600}
+.score-table-container{max-height:220px;overflow-y:auto;border:1px solid #23866a;border-radius:8px;margin:10px 0;background:#0004}
+table{width:100%;border-collapse:collapse;text-align:left;font-size:.85rem}
+th,td{padding:8px 12px;border-bottom:1px solid #ffffff15}
+th{background:#09271f;color:var(--yellow);position:sticky;top:0}
+tr:nth-child(even){background:#ffffff08}
+@keyframes banner{0%{opacity:0;transform:translate(-50%,-25%) scale(.65)}15%,58%{opacity:1}100%{opacity:0;transform:translate(-50%,-145%) scale(1.08)}}
 </style>
 </head>
 <body>
-<header><h1>Sustainable Waste Sorting Challenge</h1><p>Learn the right recovery stream, then beat the 45-second fair score!</p><p class="credit">Thought and Created by Rishabh Manuj</p></header>
+
+<header>
+  <h1>Sustainable Waste Sorting Challenge</h1>
+  <p>Learn the right recovery stream, then beat the 45-second fair score!</p>
+  <p class="credit">Thought and Created by Rishabh Manuj</p>
+</header>
+
 <div class="game" id="game">
-<div class="hud"><div class="panel">Score: <span id="score" class="score">0</span><br>Processed: <span id="count">0</span> · Combo: <span id="combo" class="combo">x1</span></div><div class="panel">Time: <span id="time" class="timer">45</span>s<br>Session High: <span id="high" class="high">0</span></div></div>
-<div class="legend" id="guide"><h2>Sorting Guide / Legend</h2><p>Drag each item into the correct clean funnel. The timer and spawner are paused until you begin.</p><div class="guide-columns"><div class="guide-box recycle"><h3>♻ RECYCLABLE</h3><ul><li>Plastic Water Bottle</li><li>Aluminum Soda Can</li><li>Cardboard Box</li><li>Electronic Circuit Board</li></ul></div><div class="guide-box hazard"><h3>⚠ NON-RECYCLABLE / HAZARDOUS</h3><ul><li>Food Scraps / Organic</li><li>Lithium Battery</li><li>Dirty Food Container</li><li>Styrofoam</li></ul></div></div><div class="legend-note">Correct recycling earns points and builds combos. Batteries and other hazards require special handling.</div></div>
-<div class="banner" id="banner"></div><canvas id="world" width="850" height="620"></canvas></div>
-<div class="controls"><button id="start">Start Challenge</button><button id="spawn" disabled>Spawn Waste</button><button id="clear">Clear Debris</button></div><div id="tip" class="tip">Review the Sorting Guide before starting.</div>
+  <div class="hud">
+    <div class="panel">Score: <span id="score" class="score">0</span><br>Processed: <span id="count">0</span> · Combo: <span id="combo" class="combo">x1</span></div>
+    <div class="panel">Time: <span id="time" class="timer">45</span>s<br>Session High: <span id="high" class="high">0</span></div>
+  </div>
+
+  <div class="legend" id="guide">
+    <div>
+      <h2>Visual Sorting Guide</h2>
+      <p class="legend-subtitle">Review proper waste classification before beginning!</p>
+      
+      <!-- Parent Instructional Banner -->
+      <div style="background:#ffcc00;color:#000;border:2px solid #ff9900;border-radius:8px;padding:10px 14px;margin:12px 0;text-align:center;font-weight:700;font-size:.9rem;box-shadow:0 3px 12px #0006;">
+        📌 <strong>PARENT NOTE:</strong> To drag an object, please click slightly ABOVE or to the LEFT of it (not directly on top of it).
+      </div>
+      
+      <div class="guide-columns">
+        <div class="guide-box recycle">
+          <h3>♻ RECYCLABLE BIN</h3>
+          <div class="item-grid" id="recycleGrid"></div>
+        </div>
+        <div class="guide-box hazard">
+          <h3>⚠ NON-RECYCLABLE BIN</h3>
+          <div class="item-grid" id="hazardGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend-footer">
+      <button class="btn-primary" onclick="start()">Start Challenge Now</button>
+    </div>
+  </div>
+
+  <div class="scoreboard" id="scoreboard" style="display:none;">
+    <div>
+      <h2>Game Over - Score History</h2>
+      <p class="legend-subtitle" id="finalScoreMsg">Your Score: 0</p>
+      
+      <div class="score-table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Date & Time</th>
+              <th>Score</th>
+              <th>Items Processed</th>
+            </tr>
+          </thead>
+          <tbody id="scoreTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="score-footer">
+      <div style="display:flex;gap:10px;">
+        <button class="btn-primary" onclick="start()">Play Again</button>
+        <button class="btn-danger" onclick="clearScores()">Clear Scores</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="banner" id="banner"></div>
+  <canvas id="world" width="850" height="620"></canvas>
+</div>
+
+<div class="controls">
+  <button id="start" onclick="start()">Start Challenge</button>
+  <button id="spawn" onclick="spawn()" disabled>Spawn Waste</button>
+  <button id="clear" onclick="clearDebris()">Clear Debris</button>
+  <button onclick="toggleGuide()">View Sorting Guide</button>
+  <button onclick="showScoreboard()">View Score History</button>
+</div>
+
+<div id="tip" class="tip">Review the Visual Sorting Guide above to prepare!</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
 <script>
 'use strict';
-const{Engine,Runner,Bodies,Composite,Mouse,MouseConstraint,Events,Body}=Matter;
-const W=850,H=620,ROUND=45,MAX_ITEMS=10,MAX_DEBRIS=180,MAX_PARTICLES=170;
-const canvas=document.getElementById('world'),ctx=canvas.getContext('2d'),game=document.getElementById('game');
-const engine=Engine.create({enableSleeping:true});engine.gravity.y=.72;engine.positionIterations=6;engine.velocityIterations=5;engine.constraintIterations=2;
-const runner=Runner.create({delta:1000/60,isFixed:true});
-const svg={bottle:'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><path d="M42 8h16v12l7 9v50H35V29l7-9z" fill="%2358c9ee" stroke="white" stroke-width="2"/><text x="50" y="56" text-anchor="middle" font-size="8">WATER</text></svg>',can:'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect x="27" y="10" width="46" height="76" rx="8" fill="%23c5d2d1" stroke="%23607c77" stroke-width="3"/><text x="50" y="54" text-anchor="middle" font-size="10" fill="%23065b43">CAN</text></svg>',box:'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect x="16" y="17" width="68" height="65" fill="%23c99b5c" stroke="%23734d24" stroke-width="3"/><path d="M16 17l34 23 34-23M50 40v42" fill="none" stroke="%23734d24" stroke-width="3"/><text x="50" y="65" text-anchor="middle" font-size="9" fill="white">PAPER</text></svg>',ewaste:'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect x="12" y="17" width="75" height="65" rx="5" fill="%23086a43" stroke="%235de399" stroke-width="3"/><path d="M20 28h26M20 68h50M72 26v27" stroke="%23f6d365" stroke-width="3"/><circle cx="38" cy="47" r="10" fill="%23222222"/></svg>',organic:'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><path d="M15 57C20 20 62 8 78 18c-1 35-23 55-63 48z" fill="%2378b159" stroke="%233d7134" stroke-width="3"/><path d="M20 64Q46 42 73 21" fill="none" stroke="%23d7ef9b" stroke-width="3"/></svg>',battery:'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect x="25" y="17" width="30" height="61" rx="4" fill="%23e28b35" stroke="%23ffd7a1" stroke-width="3"/><rect x="33" y="10" width="14" height="8" fill="%23ffd7a1"/><text x="40" y="53" text-anchor="middle" font-size="8" fill="white">HAZ</text></svg>',container:'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><path d="M16 25h68l-6 57H22z" fill="%238b552e" stroke="%23ffd4a3" stroke-width="3"/><path d="M11 25h78M27 16h46l4 9H23z" fill="%23a06c3e" stroke="%23ffd4a3" stroke-width="3"/><path d="M37 43h27M37 57h27" stroke="%23f5e1c7" stroke-width="4"/></svg>',foam:'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><path d="M18 28h49l-7 48H24z" fill="%23e9f2ed" stroke="%23a9c3b8" stroke-width="3"/><path d="M18 28l15-13h35l-1 13" fill="%23f8fffc" stroke="%23a9c3b8" stroke-width="3"/><circle cx="38" cy="45" r="5" fill="%23c4ddd1"/><circle cx="53" cy="61" r="6" fill="%23c4ddd1"/></svg>'};
-const types=[{name:'Plastic Water Bottle',radius:31,texture:'bottle',stream:'recycle',points:100,tip:'Plastic belongs in Recyclables.'},{name:'Aluminum Soda Can',radius:29,texture:'can',stream:'recycle',points:100,tip:'Aluminum cans are valuable recyclable materials.'},{name:'Cardboard Box',radius:35,texture:'box',stream:'recycle',points:100,tip:'Clean cardboard belongs in Recyclables.'},{name:'Electronic Circuit Board',radius:33,texture:'ewaste',stream:'recycle',points:150,tip:'E-waste should go to an approved recovery stream.'},{name:'Food Scraps / Organic',radius:29,texture:'organic',stream:'other',points:-50,tip:'Food scraps belong in composting, not recycling.'},{name:'Lithium Battery',radius:28,texture:'battery',stream:'other',points:-50,tip:'Batteries are Hazardous Waste! Never place them in a normal recycling stream.'},{name:'Dirty Food Container',radius:30,texture:'container',stream:'other',points:-50,tip:'Dirty containers can contaminate recyclable materials.'},{name:'Styrofoam',radius:31,texture:'foam',stream:'other',points:-50,tip:'Styrofoam usually needs a special drop-off, not regular recycling.'}];
-const images={};Object.keys(svg).forEach(k=>{images[k]=new Image();images[k].src=svg[k]});let items=[],debris=[],particles=[],rings=[],score=0,high=Number(localStorage.getItem('sustainableSortingHigh')||0),processed=0,combo=1,lastCorrect=0,timeLeft=ROUND,playing=false,spawnClock=0,shakeUntil=0;
-const ground=Bodies.rectangle(W/2,H+26,W,48,{isStatic:true,restitution:.82}),ceiling=Bodies.rectangle(W/2,-24,W,48,{isStatic:true,restitution:.82}),wallL=Bodies.rectangle(-22,H/2,44,H,{isStatic:true,restitution:.82}),wallR=Bodies.rectangle(W+22,H/2,44,H,{isStatic:true,restitution:.82});
-const topShelf=Bodies.rectangle(W/2,143.5,740,14,{isStatic:true,restitution:.1,friction:.8});
-const leftGuide=Bodies.rectangle(235,H-90,22,165,{isStatic:true,angle:-Math.PI/6}),rightGuide=Bodies.rectangle(615,H-90,22,165,{isStatic:true,angle:Math.PI/6});Composite.add(engine.world,[ground,ceiling,wallL,wallR,topShelf,leftGuide,rightGuide]);
-const mouse=Mouse.create(canvas),drag=MouseConstraint.create(engine,{mouse,constraint:{stiffness:.6,damping:.24,angularStiffness:.1,render:{visible:false}}});Composite.add(engine.world,drag);const recycleZone={x:80,y:H-120,w:335,h:95},otherZone={x:435,y:H-120,w:335,h:95};
-function spawn(){if(!playing||items.length>=MAX_ITEMS)return;const t=types[Math.floor(Math.random()*types.length)],x=100+Math.random()*(W-200),b=Bodies.circle(x,60,t.radius,{restitution:.08,friction:.58,frictionAir:.022,density:.00135,sleepThreshold:18});b.data=t;b.image=images[t.texture];items.push(b);Composite.add(engine.world,b)}
-function banner(text,color){const e=document.getElementById('banner');e.innerHTML=text;e.style.color=color;e.classList.remove('show');void e.offsetWidth;e.classList.add('show')}
-function hud(){document.getElementById('score').textContent=score;document.getElementById('high').textContent=high;document.getElementById('count').textContent=processed;document.getElementById('combo').textContent='x'+combo;document.getElementById('time').textContent=Math.ceil(timeLeft)}
-function burst(x,y,color,n=45){for(let i=0;i<n&&particles.length<MAX_PARTICLES;i++){const a=Math.random()*Math.PI*2,s=130+Math.random()*370;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-220,life:.7+Math.random()*.4,max:1,color,size:2+Math.random()*4})}}
-function explode(x,y){const colors=['#2bd39e','#8af0bd','#f6d365','#c1fff0','#69b9ff'];for(let i=0;i<44&&debris.length<MAX_DEBRIS;i++){const s=4+Math.random()*9,b=Bodies.rectangle(x+(Math.random()-.5)*30,y+(Math.random()-.5)*22,s,s,{restitution:.9,friction:.15,frictionAir:.002,density:.002});const a=Math.random()*Math.PI*2,v=7+Math.random()*9;Body.setVelocity(b,{x:Math.cos(a)*v,y:Math.sin(a)*v-8-Math.random()*6});b.customColor=colors[i%colors.length];b.size=s;debris.push(b);Composite.add(engine.world,b)}burst(x,y,'#f6d365',82);rings.push({x,y,r:5,life:.55});shakeUntil=performance.now()+260}
-function correct(b){const now=performance.now();combo=now-lastCorrect<2800?Math.min(combo+1,5):1;lastCorrect=now;const gain=b.data.points*combo;score+=gain;processed++;banner('+'+gain+(combo>1?' &nbsp; COMBO x'+combo+'!':''),'#8af0bd');document.getElementById('tip').textContent=b.data.tip;explode(b.position.x,b.position.y)}
-function wrong(b){score=Math.max(0,score-50);combo=1;lastCorrect=0;banner('WRONG FUNNEL! &nbsp; −50','#ff8065');document.getElementById('tip').textContent=b.data.tip;burst(b.position.x,b.position.y,'#ff704f',28);rings.push({x:b.position.x,y:b.position.y,r:4,life:.3})}
-function process(b,stream){if(b.data.stream===stream)correct(b);else wrong(b);if(score>high){high=score;localStorage.setItem('sustainableSortingHigh',high)}hud()}
-function clearDebris(){debris.splice(0).forEach(b=>Composite.remove(engine.world,b));particles.length=0;rings.length=0}
-function start(){clearDebris();items.splice(0).forEach(b=>Composite.remove(engine.world,b));score=0;processed=0;combo=1;lastCorrect=0;timeLeft=ROUND;spawnClock=0;playing=true;document.getElementById('guide').style.display='none';document.getElementById('start').disabled=true;document.getElementById('spawn').disabled=false;banner('SORT SMART!','#f6d365');hud()}
-function stop(){playing=false;document.getElementById('start').disabled=false;document.getElementById('spawn').disabled=true;banner('TIME UP! &nbsp; SCORE '+score,'#f6d365')}
-document.getElementById('start').onclick=start;document.getElementById('spawn').onclick=spawn;document.getElementById('clear').onclick=clearDebris;
-Events.on(engine,'beforeUpdate',()=>{for(let i=items.length-1;i>=0;i--){const b=items[i],p=b.position;if(p.y>H-128){let stream=null;if(p.x>recycleZone.x&&p.x<recycleZone.x+recycleZone.w)stream='recycle';else if(p.x>otherZone.x&&p.x<otherZone.x+otherZone.w)stream='other';if(stream){items.splice(i,1);Composite.remove(engine.world,b);process(b,stream)}}}for(let i=debris.length-1;i>=0;i--){const b=debris[i];if(b.position.x<-120||b.position.x>W+120||b.position.y>H+120){debris.splice(i,1);Composite.remove(engine.world,b)}}});
-let previous=performance.now();function draw(now){const dt=Math.min((now-previous)/1000,.033);previous=now;ctx.clearRect(0,0,W,H);ctx.fillStyle='#0a2920';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#16493a';ctx.lineWidth=1;for(let x=0;x<W;x+=50){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=0;y<H;y+=50){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
-// Clean, separate funnel openings.
-ctx.fillStyle='#0d4b35';ctx.strokeStyle='#45d590';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(65,H-116);ctx.lineTo(410,H-116);ctx.lineTo(350,H-26);ctx.lineTo(125,H-26);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#071612';ctx.beginPath();ctx.moveTo(137,H-26);ctx.lineTo(338,H-26);ctx.lineTo(306,H+3);ctx.lineTo(169,H+3);ctx.closePath();ctx.fill();ctx.strokeStyle='#45d590';ctx.stroke();ctx.fillStyle='#ff673f';ctx.strokeStyle='#ff9a60';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(440,H-116);ctx.lineTo(785,H-116);ctx.lineTo(725,H-26);ctx.lineTo(500,H-26);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#1c100d';ctx.beginPath();ctx.moveTo(512,H-26);ctx.lineTo(713,H-26);ctx.lineTo(681,H+3);ctx.lineTo(544,H+3);ctx.closePath();ctx.fill();ctx.strokeStyle='#ff9a60';ctx.stroke();ctx.fillStyle='#d9fff0';ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.fillText('RECYCLABLES',237,H-91);ctx.fillStyle='#ffe0d0';ctx.fillText('NON-RECYCLABLE / HAZARDOUS',612,H-91);
-// Resting top tray: items settle gently here instead of falling off-screen.
-ctx.fillStyle='#17473a';ctx.strokeStyle='#57ad88';ctx.lineWidth=3;ctx.fillRect(55,137,740,13);ctx.strokeRect(55,137,740,13);ctx.font='11px sans-serif';ctx.fillStyle='#bfeedd';ctx.fillText('PICK UP AND DRAG EACH ITEM TO THE CORRECT FUNNEL',W/2,125);
-items.forEach(b=>{const{x,y}=b.position;ctx.save();ctx.translate(x,y);ctx.rotate(b.angle);ctx.shadowBlur=8;ctx.shadowColor=b.data.stream==='recycle'?'#45d590':'#ff754f';if(b.image.complete)ctx.drawImage(b.image,-b.data.radius,-b.data.radius,b.data.radius*2,b.data.radius*2);ctx.restore()});debris.forEach(b=>{const{x,y}=b.position;ctx.save();ctx.translate(x,y);ctx.rotate(b.angle);ctx.shadowBlur=13;ctx.shadowColor=b.customColor;ctx.fillStyle=b.customColor;ctx.fillRect(-b.size/2,-b.size/2,b.size,b.size);ctx.restore()});particles.forEach((p,i)=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=520*dt;p.life-=dt;ctx.globalAlpha=Math.max(0,p.life/p.max);ctx.shadowBlur=18;ctx.shadowColor=p.color;ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();if(p.life<=0)particles.splice(i,1)});rings.forEach((r,i)=>{r.r+=420*dt;r.life-=dt;ctx.globalAlpha=Math.max(0,r.life/.55);ctx.strokeStyle='#d1fff0';ctx.lineWidth=4;ctx.beginPath();ctx.arc(r.x,r.y,r.r,0,Math.PI*2);ctx.stroke();if(r.life<=0)rings.splice(i,1)});ctx.globalAlpha=1;ctx.shadowBlur=0;if(performance.now()<shakeUntil)game.style.transform='translate('+(Math.random()*8-4)+'px,'+(Math.random()*8-4)+'px)';else game.style.transform='';if(playing){timeLeft-=dt;if(timeLeft<=0){timeLeft=0;stop()}spawnClock+=dt;if(spawnClock>2.6){spawnClock=0;spawn()}}hud();requestAnimationFrame(draw)}
-Runner.run(runner,engine);requestAnimationFrame(draw);hud();
+const { Engine, Runner, Bodies, Composite, Events, Body } = Matter;
+
+const W = 850, H = 620, ROUND = 45, MAX_ITEMS = 6;
+const SHELF_Y = 170; 
+const SHELF_LINE_WIDTH = 6;
+
+const canvas = document.getElementById('world');
+
+const engine = Engine.create();
+engine.gravity.y = 1.0; 
+
+const runner = Runner.create();
+
+const types = [
+  { id: 'container', name: 'Dirty Food Box', radius: 36, stream: 'recycle', points: 100, tip: 'Dirty Food Box belongs in Recyclable Bin.' },
+  { id: 'organic', name: 'Food Scrap', radius: 34, stream: 'recycle', points: 100, tip: 'Food Scrap belongs in Recyclable Bin.' },
+  { id: 'box', name: 'Cardboard Box', radius: 38, stream: 'recycle', points: 100, tip: 'Cardboard Box belongs in Recyclable Bin.' },
+
+  { id: 'bottle', name: 'Plastic Bottle', radius: 35, stream: 'other', points: 100, tip: 'Plastic Bottle belongs in Non-Recyclable Bin.' },
+  { id: 'ewaste', name: 'Circuit Board', radius: 36, stream: 'other', points: 100, tip: 'Circuit Board belongs in Non-Recyclable Bin.' },
+  { id: 'battery', name: 'Lithium Battery', radius: 32, stream: 'other', points: 100, tip: 'Lithium Battery belongs in Non-Recyclable Bin.' },
+  { id: 'foam', name: 'Styrofoam Cup', radius: 35, stream: 'other', points: 100, tip: 'Styrofoam Cup belongs in Non-Recyclable Bin.' },
+  { id: 'can', name: 'Aluminium Can', radius: 34, stream: 'other', points: 100, tip: 'Aluminium Can belongs in Non-Recyclable Bin.' }
+];
+
+// Draw icon paths centered relative to (0,0)
+function drawIconPaths(ctx, id) {
+  if (id === 'bottle') {
+    ctx.fillStyle = '#58c9ee'; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(-8,-35); ctx.lineTo(8,-35); ctx.lineTo(8,-23); ctx.lineTo(15,-14); ctx.lineTo(15,36); ctx.lineTo(-15,36); ctx.lineTo(-15,-14); ctx.lineTo(-8,-23); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+  } else if (id === 'can') {
+    ctx.fillStyle = '#c5d2d1'; ctx.strokeStyle = '#065b43'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.roundRect(-13,-33,26,66,8); ctx.fill(); ctx.stroke();
+  } else if (id === 'box') {
+    ctx.fillStyle = '#c99b5c'; ctx.strokeStyle = '#734d24'; ctx.lineWidth = 4;
+    ctx.fillRect(-24,-27,48,55); ctx.strokeRect(-24,-27,48,55);
+  } else if (id === 'ewaste') {
+    ctx.fillStyle = '#086a43'; ctx.strokeStyle = '#5de399'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.roundRect(-18,-27,36,55,5); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#f6d365'; ctx.fillRect(-10,-16,26,4); ctx.fillRect(-10,6,35,4);
+  } else if (id === 'organic') {
+    ctx.fillStyle = '#78b159'; ctx.strokeStyle = '#3d7134'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(-25,20); ctx.quadraticCurveTo(-20,-17,38,-19); ctx.quadraticCurveTo(37,16,-25,20); ctx.fill(); ctx.stroke();
+  } else if (id === 'battery') {
+    ctx.fillStyle = '#e28b35'; ctx.strokeStyle = '#ffd7a1'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.roundRect(-10,-20,20,55,4); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#ffd7a1'; ctx.fillRect(-5,-28,10,8);
+  } else if (id === 'container') {
+    ctx.fillStyle = '#8b552e'; ctx.strokeStyle = '#ffd4a3'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(-31,-23); ctx.lineTo(37,-23); ctx.lineTo(31,24); ctx.lineTo(-25,24); ctx.closePath(); ctx.fill(); ctx.stroke();
+  } else if (id === 'foam') {
+    ctx.fillStyle = '#e9f2ed'; ctx.strokeStyle = '#a9c3b8'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(-22,-24); ctx.lineTo(27,-24); ctx.lineTo(20,24); ctx.lineTo(-15,24); ctx.closePath(); ctx.fill(); ctx.stroke();
+  }
+}
+
+// Main game canvas - renders centered at body position with rotation
+function renderItemIcon(ctx, id, size) {
+  const s = size / 80;
+  ctx.save();
+  ctx.scale(s, s);
+  drawIconPaths(ctx, id);
+  ctx.restore();
+}
+
+// Guide modal preview canvases - renders centered in 36x36 box
+function renderPreviewIcon(ctx, id, size) {
+  ctx.clearRect(0, 0, size, size);
+  const s = (size / 80) * 0.45;
+  ctx.save();
+  ctx.translate(size / 2, size / 2);
+  ctx.scale(s, s);
+  drawIconPaths(ctx, id);
+  ctx.restore();
+}
+
+function populateGuide() {
+  const recycleGrid = document.getElementById('recycleGrid');
+  const hazardGrid = document.getElementById('hazardGrid');
+  recycleGrid.innerHTML = '';
+  hazardGrid.innerHTML = '';
+
+  types.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    const c = document.createElement('canvas');
+    c.width = 36; c.height = 36;
+    renderPreviewIcon(c.getContext('2d'), t.id, 36);
+    
+    const label = document.createElement('span');
+    label.textContent = t.name;
+
+    card.appendChild(c);
+    card.appendChild(label);
+
+    if (t.stream === 'recycle') recycleGrid.appendChild(card);
+    else hazardGrid.appendChild(card);
+  });
+}
+populateGuide();
+
+let items = [], debris = [], particles = [], rings = [];
+let score = 0, high = Number(localStorage.getItem('sustainableSortingHigh') || 0);
+let processed = 0, combo = 1, lastCorrect = 0, timeLeft = ROUND, playing = false;
+
+// Physics Boundaries & Static Shelf
+const wallL = Bodies.rectangle(-20, H/2, 40, H * 2, { isStatic: true });
+const wallR = Bodies.rectangle(W+20, H/2, 40, H * 2, { isStatic: true });
+const ground = Bodies.rectangle(W/2, H+20, W, 40, { isStatic: true });
+const shelfBody = Bodies.rectangle(W / 2, SHELF_Y + (SHELF_LINE_WIDTH / 2), W - 60, SHELF_LINE_WIDTH, { 
+  isStatic: true, 
+  friction: 0.8
+});
+Composite.add(engine.world, [wallL, wallR, ground, shelfBody]);
+
+// Fixed Drag-and-Drop with Precise Coordinate Mapping
+let draggedBody = null;
+let dragOffset = { x: 0, y: 0 };
+let lastPointerPos = { x: 0, y: 0 };
+let pointerVelocity = { x: 0, y: 0 };
+
+function getPointerPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  
+  return {
+    x: (clientX - rect.left) * (W / rect.width),
+    y: (clientY - rect.top) * (H / rect.height)
+  };
+}
+
+function handlePointerStart(e) {
+  if (!playing) return;
+  
+  const pos = getPointerPos(e);
+  lastPointerPos = pos;
+  pointerVelocity = { x: 0, y: 0 };
+  
+  for (let i = items.length - 1; i >= 0; i--) {
+    const body = items[i];
+    const dx = pos.x - body.position.x;
+    const dy = pos.y - body.position.y;
+    const distance = Math.hypot(dx, dy);
+    
+    if (distance <= body.data.radius + 10) {
+      draggedBody = body;
+      dragOffset = { x: dx, y: dy };
+      
+      Body.setStatic(draggedBody, true);
+      Body.setVelocity(draggedBody, { x: 0, y: 0 });
+      Body.setAngularVelocity(draggedBody, 0);
+      break;
+    }
+  }
+}
+
+function handlePointerMove(e) {
+  if (!draggedBody) return;
+  
+  const pos = getPointerPos(e);
+  
+  pointerVelocity = {
+    x: (pos.x - lastPointerPos.x) * 0.8,
+    y: (pos.y - lastPointerPos.y) * 0.8
+  };
+  lastPointerPos = pos;
+  
+  Body.setPosition(draggedBody, {
+    x: pos.x - dragOffset.x,
+    y: pos.y - dragOffset.y
+  });
+}
+
+function handlePointerEnd() {
+  if (!draggedBody) return;
+  
+  Body.setStatic(draggedBody, false);
+  Body.setVelocity(draggedBody, pointerVelocity);
+  
+  draggedBody = null;
+  pointerVelocity = { x: 0, y: 0 };
+  dragOffset = { x: 0, y: 0 };
+}
+
+canvas.addEventListener('mousedown', handlePointerStart);
+window.addEventListener('mousemove', handlePointerMove);
+window.addEventListener('mouseup', handlePointerEnd);
+
+canvas.addEventListener('touchstart', handlePointerStart, { passive: true });
+window.addEventListener('touchmove', handlePointerMove, { passive: true });
+window.addEventListener('touchend', handlePointerEnd);
+
+const recycleZone = { x: 50, y: H-150, w: 360, h: 140 };
+const otherZone = { x: 440, y: H-150, w: 360, h: 140 };
+
+function spawn() {
+  if (!playing || items.length >= MAX_ITEMS) return;
+  const t = types[Math.floor(Math.random() * types.length)];
+  
+  const usedX = items.map(i => i.position.x);
+  let x = 100 + Math.random() * (W - 200);
+  for (let attempt = 0; attempt < 10; attempt++) {
+    if (usedX.every(pos => Math.abs(pos - x) > 85)) break;
+    x = 100 + Math.random() * (W - 200);
+  }
+
+  const y = SHELF_Y - t.radius - (SHELF_LINE_WIDTH / 2) - 1;
+
+  const b = Bodies.circle(x, y, t.radius, {
+    isStatic: false,
+    restitution: 0.2,
+    friction: 0.5,
+    density: 0.005
+  });
+  
+  b.data = t;
+  items.push(b);
+  Composite.add(engine.world, b);
+}
+
+function banner(text, color) {
+  const e = document.getElementById('banner');
+  e.innerHTML = text;
+  e.style.color = color;
+  e.classList.remove('show');
+  void e.offsetWidth;
+  e.classList.add('show');
+}
+
+function hud() {
+  document.getElementById('score').textContent = score;
+  document.getElementById('high').textContent = high;
+  document.getElementById('count').textContent = processed;
+  document.getElementById('combo').textContent = 'x' + combo;
+  document.getElementById('time').textContent = Math.ceil(timeLeft);
+}
+
+function burst(x, y, color, n = 80) {
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, s = 200 + Math.random() * 600;
+    particles.push({ x, y, vx: Math.cos(a)*s, vy: Math.sin(a)*s - 200, life: .8 + Math.random()*.5, max: 1, color, size: 3 + Math.random()*6 });
+  }
+}
+
+function screenWideExplosion(x, y) {
+  const colors = ['#2bd39e', '#8af0bd', '#f6d365', '#c1fff0', '#ffffff', '#ff7651'];
+  
+  for (let i = 0; i < 80; i++) {
+    const s = 6 + Math.random() * 12;
+    const b = Bodies.rectangle(x + (Math.random()-.5)*50, y + (Math.random()-.5)*50, s, s, {
+      restitution: 0.6,
+      friction: 0.3,
+      density: 0.001
+    });
+    
+    const a = Math.random() * Math.PI * 2, v = 12 + Math.random() * 22;
+    Body.setVelocity(b, { x: Math.cos(a)*v, y: Math.sin(a)*v - 10 });
+    
+    b.customColor = colors[i % colors.length];
+    b.size = s;
+    debris.push(b);
+    Composite.add(engine.world, b);
+  }
+  
+  burst(x, y, '#f6d365', 150);
+  rings.push({ x, y, r: 10, life: 1.0 });
+}
+
+function correct(b) {
+  const now = performance.now();
+  combo = (now - lastCorrect < 2800) ? Math.min(combo + 1, 5) : 1;
+  lastCorrect = now;
+  const gain = b.data.points * combo;
+  score += gain;
+  processed++;
+  banner('+' + gain + (combo > 1 ? ' &nbsp; COMBO x' + combo + '!' : ''), '#8af0bd');
+  document.getElementById('tip').textContent = b.data.tip;
+  screenWideExplosion(b.position.x, b.position.y);
+  spawn();
+}
+
+function wrong(b) {
+  score = Math.max(0, score - 100);
+  combo = 1;
+  lastCorrect = 0;
+  banner('WRONG BIN! &nbsp; −100', '#ff8065');
+  document.getElementById('tip').textContent = b.data.tip;
+  burst(b.position.x, b.position.y, '#ff704f', 60);
+  rings.push({ x: b.position.x, y: b.position.y, r: 8, life: .4 });
+  spawn();
+}
+
+function processItem(b, stream) {
+  if (b.data.stream === stream) correct(b);
+  else wrong(b);
+  if (score > high) {
+    high = score;
+    localStorage.setItem('sustainableSortingHigh', high);
+  }
+  hud();
+}
+
+function clearDebris() {
+  debris.splice(0).forEach(b => Composite.remove(engine.world, b));
+  particles.length = 0;
+  rings.length = 0;
+}
+
+function toggleGuide() {
+  document.getElementById('scoreboard').style.display = 'none';
+  const g = document.getElementById('guide');
+  g.style.display = g.style.display === 'none' ? 'flex' : 'none';
+}
+
+function getScores() {
+  return JSON.parse(localStorage.getItem('sustainableSortingScores') || '[]');
+}
+
+function saveScore(finalScore, itemsProcessed) {
+  const scores = getScores();
+  const entry = {
+    date: new Date().toLocaleString(),
+    score: finalScore,
+    processed: itemsProcessed
+  };
+  scores.unshift(entry);
+  localStorage.setItem('sustainableSortingScores', JSON.stringify(scores));
+}
+
+function showScoreboard() {
+  document.getElementById('guide').style.display = 'none';
+  const sb = document.getElementById('scoreboard');
+  sb.style.display = 'flex';
+  
+  const tbody = document.getElementById('scoreTableBody');
+  tbody.innerHTML = '';
+  const scores = getScores();
+
+  if (scores.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No scores recorded yet!</td></tr>';
+  } else {
+    scores.forEach((s, idx) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${idx + 1}</td><td>${s.date}</td><td style="color:var(--yellow);font-weight:bold;">${s.score}</td><td>${s.processed}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+}
+
+function clearScores() {
+  localStorage.removeItem('sustainableSortingScores');
+  localStorage.removeItem('sustainableSortingHigh');
+  high = 0;
+  hud();
+  showScoreboard();
+}
+
+function start() {
+  clearDebris();
+  handlePointerEnd();
+  items.splice(0).forEach(b => Composite.remove(engine.world, b));
+  score = 0; processed = 0; combo = 1; lastCorrect = 0;
+  timeLeft = ROUND; playing = true;
+  document.getElementById('guide').style.display = 'none';
+  document.getElementById('scoreboard').style.display = 'none';
+  document.getElementById('start').disabled = true;
+  document.getElementById('spawn').disabled = false;
+  banner('DRAG & SORT!', '#f6d365');
+  spawn(); spawn(); spawn(); spawn();
+  hud();
+}
+
+function stop() {
+  playing = false;
+  handlePointerEnd();
+  document.getElementById('start').disabled = false;
+  document.getElementById('spawn').disabled = true;
+  banner('TIME UP! &nbsp; SCORE ' + score, '#f6d365');
+  saveScore(score, processed);
+  document.getElementById('finalScoreMsg').textContent = `Your Final Score: ${score} points (${processed} items sorted)`;
+  setTimeout(showScoreboard, 1200);
+}
+
+Events.on(engine, 'beforeUpdate', () => {
+  for (let i = items.length - 1; i >= 0; i--) {
+    const b = items[i], p = b.position;
+    
+    if (p.y > H - 140) {
+      let stream = null;
+      if (p.x > recycleZone.x && p.x < recycleZone.x + recycleZone.w) stream = 'recycle';
+      else if (p.x > otherZone.x && p.x < otherZone.x + otherZone.w) stream = 'other';
+      
+      if (stream) {
+        if (draggedBody === b) handlePointerEnd();
+        items.splice(i, 1);
+        Composite.remove(engine.world, b);
+        processItem(b, stream);
+        continue;
+      }
+    }
+    
+    if (p.y > H + 50) {
+      if (draggedBody === b) handlePointerEnd();
+      items.splice(i, 1);
+      Composite.remove(engine.world, b);
+      spawn();
+    }
+  }
+});
+
+const ctx = canvas.getContext('2d');
+let previous = performance.now();
+
+function draw(now) {
+  const dt = Math.min((now - previous) / 1000, .033);
+  previous = now;
+  
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#0a2920';
+  ctx.fillRect(0, 0, W, H);
+  
+  // Background Grid
+  ctx.strokeStyle = '#16493a';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 50) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 50) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  // Shelf Line
+  ctx.strokeStyle = '#289d78';
+  ctx.lineWidth = SHELF_LINE_WIDTH;
+  ctx.beginPath();
+  ctx.moveTo(30, SHELF_Y);
+  ctx.lineTo(W - 30, SHELF_Y);
+  ctx.stroke();
+
+  // Bins
+  ctx.fillStyle = '#0d4b35'; ctx.strokeStyle = '#45d590'; ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.moveTo(50, H-130); ctx.lineTo(410, H-130); ctx.lineTo(350, H-10); ctx.lineTo(110, H-10); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+  ctx.fillStyle = '#6e2b1a'; ctx.strokeStyle = '#ff9a60'; ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.moveTo(440, H-130); ctx.lineTo(800, H-130); ctx.lineTo(740, H-10); ctx.lineTo(500, H-10); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+  ctx.fillStyle = '#d9fff0'; ctx.font = 'bold 15px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('RECYCLABLE BIN', 230, H-70);
+  ctx.fillStyle = '#ffe0d0';
+  ctx.fillText('NON-RECYCLABLE BIN', 620, H-70);
+
+  // Items
+  items.forEach(b => {
+    const { x, y } = b.position;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(b.angle);
+    renderItemIcon(ctx, b.data.id, b.data.radius * 2);
+    ctx.restore();
+  });
+
+  // Debris
+  debris.forEach(b => {
+    const { x, y } = b.position;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(b.angle);
+    ctx.fillStyle = b.customColor;
+    ctx.fillRect(-b.size/2, -b.size/2, b.size, b.size);
+    ctx.restore();
+  });
+
+  // Particles
+  for (let i = particles.length - 1; i >= 0; i--) {
+    let p = particles[i];
+    p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 520 * dt; p.life -= dt;
+    ctx.globalAlpha = Math.max(0, p.life / p.max);
+    ctx.fillStyle = p.color;
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+    if (p.life <= 0) particles.splice(i, 1);
+  }
+
+  // Shockwaves
+  for (let i = rings.length - 1; i >= 0; i--) {
+    let r = rings[i];
+    r.r += 650 * dt; r.life -= dt;
+    ctx.globalAlpha = Math.max(0, r.life / 1.0);
+    ctx.strokeStyle = '#f6d365'; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, Math.PI*2); ctx.stroke();
+    if (r.life <= 0) rings.splice(i, 1);
+  }
+
+  ctx.globalAlpha = 1;
+
+  if (playing) {
+    timeLeft -= dt;
+    if (timeLeft <= 0) { timeLeft = 0; stop(); }
+  }
+
+  hud();
+  requestAnimationFrame(draw);
+}
+
+Runner.run(runner, engine);
+requestAnimationFrame(draw);
+hud();
 </script>
 </body>
 </html>
