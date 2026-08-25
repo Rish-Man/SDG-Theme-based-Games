@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Collect SDGs - Eco Odyssey</title>
+  <title>Collect SDGs - Eco Odyssey (Mega Final Edition)</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
    
@@ -17,117 +17,143 @@
     #gameCanvas {
       position: absolute; top: 0; left: 0;
       width: 100vw; height: 100vh; display: block;
-      background: #09170a;
+      background: #060d15;
     }
 
+    /* Left-Aligned HUD Status Bar */
     #hud {
       position: absolute;
-      top: 16px; left: 16px; right: 240px;
-      display: flex; justify-content: space-between; align-items: center;
+      top: 16px; left: 16px;
+      display: flex; flex-direction: column; gap: 10px;
       pointer-events: none; z-index: 5;
     }
 
     .hud-panel {
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(15, 23, 42, 0.92);
       border: 2px solid rgba(74, 222, 128, 0.5);
       backdrop-filter: blur(12px);
-      padding: 8px 16px; border-radius: 16px;
-      display: flex; gap: 14px; align-items: center;
+      padding: 10px 16px; border-radius: 16px;
+      display: flex; flex-direction: column; gap: 8px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-      pointer-events: auto;
+      pointer-events: auto; min-width: 260px;
     }
 
-    .title { font-size: 1.05rem; font-weight: 900; color: #4ade80; text-shadow: 0 0 10px rgba(74, 222, 128, 0.5); }
-    .stats { font-size: 0.88rem; font-weight: 800; display: flex; gap: 12px; }
+    .title { font-size: 1.1rem; font-weight: 900; color: #4ade80; text-shadow: 0 0 10px rgba(74, 222, 128, 0.5); }
+    .stats { font-size: 0.88rem; font-weight: 800; display: flex; flex-direction: column; gap: 6px; }
+    .stat-row { display: flex; justify-content: space-between; align-items: center; }
 
-    #sdg-bar { display: flex; gap: 5px; flex-wrap: wrap; }
-
-    .chip {
-      width: 30px; height: 30px; border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.8rem; font-weight: 900; opacity: 0.25;
-      border: 2px solid rgba(255,255,255,0.3); transition: all 0.3s ease; color: #fff;
+    .hud-controls {
+      display: flex; gap: 8px; align-items: center; margin-top: 4px; flex-wrap: wrap;
     }
-    .chip.active { opacity: 1; transform: scale(1.15); box-shadow: 0 0 12px currentColor; border-color: #fff; }
-    #c3 { background: #4c9f38; } #c4 { background: #c5192d; }
-    #c6 { background: #26bde2; } #c7 { background: #fcc30b; color: #000; }
-    #c13 { background: #3f7e44; } #c15 { background: #56c02b; }
 
     .audio-btn {
       background: #1e293b; border: 1.5px solid #4ade80; color: #4ade80;
       border-radius: 8px; padding: 4px 10px; font-size: 0.75rem; font-weight: 800; cursor: pointer;
     }
 
+    .playlist-select {
+      background: #0f172a; border: 1.5px solid #38bdf8; color: #38bdf8;
+      border-radius: 8px; padding: 4px 8px; font-size: 0.75rem; font-weight: 800;
+      cursor: pointer; outline: none;
+    }
+
     #toast {
-      position: absolute; top: 80px; left: 50%;
+      position: absolute; top: 20px; left: 50%;
       transform: translateX(-50%) translateY(-10px);
       background: rgba(15, 23, 42, 0.95); border: 2px solid #4ade80; color: #fff;
       padding: 10px 22px; border-radius: 20px; font-size: 0.9rem; font-weight: 700;
       text-align: center; pointer-events: none; opacity: 0; transition: all 0.3s ease;
-      z-index: 6; box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+      z-index: 8; box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
     }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* Modals & Overlays */
     .modal-overlay {
-      position: absolute; inset: 0; background: rgba(2, 6, 23, 0.95);
-      backdrop-filter: blur(16px); display: flex; flex-direction: column;
+      position: absolute; inset: 0; background: rgba(2, 6, 23, 0.82);
+      backdrop-filter: blur(14px); display: flex; flex-direction: column;
       align-items: center; justify-content: center; padding: 20px;
-      text-align: center; gap: 14px; z-index: 10; overflow-y: auto;
+      text-align: center; gap: 12px; z-index: 10; overflow-y: auto;
     }
-    .modal-overlay.hidden, .hidden { display: none !important; }
-    .modal-overlay h1 { color: #4ade80; font-size: 2.5rem; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 25px rgba(74, 222, 128, 0.5); }
-    .modal-overlay p { font-size: 0.95rem; color: #94a3b8; max-width: 520px; line-height: 1.4; }
+    .modal-overlay.hidden { display: none; }
+    .modal-overlay h1 { color: #4ade80; font-size: 2.5rem; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 25px rgba(74, 222, 128, 0.6); }
+    .modal-overlay p { font-size: 0.92rem; color: #94a3b8; max-width: 520px; line-height: 1.4; }
 
     .btn {
       background: linear-gradient(135deg, #4ade80, #16a34a); color: #020617;
       border: none; padding: 12px 34px; font-size: 1.05rem; font-weight: 900;
       border-radius: 30px; cursor: pointer; box-shadow: 0 0 25px rgba(74, 222, 128, 0.5);
-      transition: transform 0.15s, box-shadow 0.2s;
+      transition: transform 0.15s, box-shadow 0.2s; margin-top: 4px;
     }
     .btn:hover { transform: scale(1.05); box-shadow: 0 0 35px rgba(74, 222, 128, 0.7); }
 
-    /* Skin Selector */
-    .skin-selector { display: flex; gap: 12px; margin: 6px 0; }
+    .skin-selector { display: flex; gap: 10px; margin: 4px 0; }
     .skin-card {
-      width: 70px; height: 85px; border-radius: 14px; background: rgba(30, 41, 59, 0.8);
+      width: 65px; height: 80px; border-radius: 12px; background: rgba(30, 41, 59, 0.85);
       border: 2px solid rgba(255,255,255,0.2); cursor: pointer; display: flex;
-      flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+      flex-direction: column; align-items: center; justify-content: center; gap: 5px;
       transition: all 0.2s ease;
     }
-    .skin-card:hover, .skin-card.selected { transform: translateY(-4px); border-color: #4ade80; box-shadow: 0 0 15px rgba(74, 222, 128, 0.4); }
+    .skin-card:hover, .skin-card.selected { transform: translateY(-3px); border-color: #4ade80; box-shadow: 0 0 15px rgba(74, 222, 128, 0.4); }
     .skin-card.selected { background: rgba(74, 222, 128, 0.15); }
-    .skin-preview { width: 30px; height: 30px; border-radius: 50%; }
+    .skin-preview { width: 28px; height: 28px; border-radius: 50%; }
 
-    /* Scoreboard Table */
+    .season-selector { display: flex; gap: 8px; margin: 4px 0; }
+    .season-card {
+      padding: 8px 12px; border-radius: 10px; background: rgba(30, 41, 59, 0.85);
+      border: 2px solid rgba(255,255,255,0.2); cursor: pointer; display: flex;
+      align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 800; color: #fff;
+      transition: all 0.2s ease;
+    }
+    .season-card:hover, .season-card.selected { border-color: #38bdf8; box-shadow: 0 0 12px rgba(56, 189, 248, 0.4); }
+    .season-card.selected { background: rgba(56, 189, 248, 0.2); }
+
+    /* Eco Shop UI Styles */
+    .shop-container {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+      max-width: 580px; width: 100%; margin: 10px 0;
+    }
+    .shop-item {
+      background: rgba(15, 23, 42, 0.9); border: 2px solid rgba(56, 189, 248, 0.4);
+      border-radius: 14px; padding: 12px; display: flex; flex-direction: column;
+      gap: 6px; text-align: left; transition: border-color 0.2s;
+    }
+    .shop-item:hover { border-color: #38bdf8; }
+    .shop-item-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 0.9rem; color: #38bdf8; }
+    .shop-item-desc { font-size: 0.75rem; color: #94a3b8; min-height: 28px; }
+    .shop-item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+    .shop-buy-btn {
+      background: linear-gradient(135deg, #facc15, #ca8a04); color: #020617;
+      border: none; padding: 6px 14px; border-radius: 12px; font-weight: 900;
+      font-size: 0.78rem; cursor: pointer; transition: transform 0.1s;
+    }
+    .shop-buy-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .shop-buy-btn:not(:disabled):hover { transform: scale(1.05); }
+
     .score-breakdown {
       background: rgba(15, 23, 42, 0.85); border: 2px solid #38bdf8;
-      border-radius: 16px; padding: 14px; width: 100%; max-width: 480px; text-align: left;
+      border-radius: 16px; padding: 12px 16px; width: 100%; max-width: 480px; text-align: left;
     }
-    .score-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.88rem; }
-    .score-row.total { font-weight: 900; font-size: 1.1rem; color: #4ade80; border-bottom: none; padding-top: 10px; }
+    .score-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; }
+    .score-row.total { font-weight: 900; font-size: 1.05rem; color: #4ade80; border-bottom: none; padding-top: 8px; }
 
     .leaderboard-box {
       background: rgba(15, 23, 42, 0.85); border: 2px solid #facc15;
-      border-radius: 16px; padding: 14px; width: 100%; max-width: 480px; margin-top: 8px;
+      border-radius: 16px; padding: 12px 16px; width: 100%; max-width: 480px; margin-top: 6px;
     }
-    .lb-header { color: #facc15; font-weight: 900; font-size: 1rem; margin-bottom: 8px; text-align: center; }
+    .lb-header { color: #facc15; font-weight: 900; font-size: 0.95rem; margin-bottom: 6px; text-align: center; }
 
-    /* Climate Choice Grid */
-    .climate-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 10px 0; }
+    .climate-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 8px 0; }
     .climate-btn {
       background: rgba(30, 41, 59, 0.9); border: 2px solid #38bdf8;
-      border-radius: 14px; padding: 12px 14px; color: #fff; cursor: pointer;
+      border-radius: 14px; padding: 10px 12px; color: #fff; cursor: pointer;
       display: flex; flex-direction: column; align-items: center; gap: 4px;
     }
     .climate-btn:hover { transform: scale(1.04); box-shadow: 0 0 18px rgba(56, 189, 248, 0.5); }
 
-    /* Trash Cans Mini-Game */
-    .bins-container { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin: 16px 0; }
+    .bins-container { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 10px 0; }
     .trash-can {
-      width: 140px; padding: 12px; border-radius: 16px; border: 3px solid;
+      width: 140px; padding: 10px; border-radius: 14px; border: 3px solid;
       background: rgba(15, 23, 42, 0.85); display: flex; flex-direction: column;
-      align-items: center; gap: 6px; cursor: pointer; transition: transform 0.2s;
+      align-items: center; gap: 5px; cursor: pointer; transition: transform 0.2s;
     }
     .trash-can:hover { transform: translateY(-4px); }
 
@@ -138,7 +164,6 @@
     .current-sdg-card {
       background: rgba(30, 41, 59, 0.9); border: 2px solid #38bdf8;
       border-radius: 14px; padding: 12px 20px; display: flex; align-items: center; gap: 12px;
-      margin-top: 10px;
     }
     .sdg-badge { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 900; color: #fff; }
 
@@ -170,38 +195,37 @@
 
 <canvas id="gameCanvas"></canvas>
 
+<!-- Left-Aligned Status HUD -->
 <div id="hud">
   <div class="hud-panel">
     <div class="title" id="biome-title">COLLECT SDGs</div>
-  </div>
-
-  <div id="sdg-bar">
-    <div id="c3" class="chip">3</div>
-    <div id="c4" class="chip">4</div>
-    <div id="c6" class="chip">6</div>
-    <div id="c7" class="chip">7</div>
-    <div id="c13" class="chip">13</div>
-    <div id="c15" class="chip">15</div>
-  </div>
-
-  <div class="hud-panel">
     <div class="stats">
-      <div>TIME: <span id="timer-txt" style="color:#facc15;">100</span>s</div>
-      <div>HP: <span id="hp-txt" style="color:#4ade80;">100</span></div>
-      <div>SCORE: <span id="score-txt" style="color:#c084fc;">0</span></div>
+      <div class="stat-row"><span>TIME:</span> <span id="timer-txt" style="color:#facc15;">100</span>s</div>
+      <div class="stat-row"><span>HP:</span> <span id="hp-txt" style="color:#4ade80;">100</span></div>
+      <div class="stat-row"><span>SCORE:</span> <span id="score-txt" style="color:#c084fc;">0</span></div>
+      <div class="stat-row"><span>CREDITS:</span> <span id="credits-txt" style="color:#facc15;">mathbb{E} 0</span></div>
+      <div class="stat-row"><span>SDGs COLLECTED:</span> <span id="sdg-tracker-txt" style="color:#38bdf8;">0 / 6</span></div>
     </div>
-    <button class="audio-btn" onclick="toggleBGM()">🎵 BGM: ON</button>
+    <div class="hud-controls">
+      <button class="audio-btn" onclick="toggleBGM()">🎵 BGM: ON</button>
+      <select class="playlist-select" id="playlist-selector" onchange="switchTrack(this.value)">
+        <option value="0">🎶 Track 1: Eco Breeze</option>
+        <option value="1">⚡ Track 2: Cyber Pulse</option>
+        <option value="2">☀️ Track 3: Solar Arp</option>
+        <option value="3">🌲 Track 4: Deep Grove</option>
+      </select>
+    </div>
   </div>
 </div>
 
 <div id="toast"></div>
 
-<!-- Start Overlay -->
+<!-- Cover / Live Wallpaper Start Overlay -->
 <div id="startModal" class="modal-overlay">
   <h1>COLLECT SDGs</h1>
-  <p>Outsmart pursuing drones, collect SDG cores, sort eco-waste, and clear climate levels!</p>
+  <p>Outsmart pursuing AI drones, collect SDG cores, sort eco-waste, and upgrade your ball in the Eco Shop!</p>
  
-  <div style="font-weight:800; color:#4ade80; font-size:0.9rem;">CHOOSE BALL SKIN</div>
+  <div style="font-weight:800; color:#4ade80; font-size:0.85rem;">CHOOSE BALL SKIN</div>
   <div class="skin-selector">
     <div class="skin-card selected" onclick="selectSkin('eco', this)">
       <div class="skin-preview" style="background: radial-gradient(circle, #86efac, #22c55e);"></div>
@@ -225,6 +249,15 @@
     </div>
   </div>
 
+  <div style="font-weight:800; color:#38bdf8; font-size:0.85rem;">STARTING SEASON / WEATHER</div>
+  <div class="season-selector">
+    <div class="season-card selected" onclick="selectSeason('DAY', this)">☀️ DAY</div>
+    <div class="season-card" onclick="selectSeason('AUTUMN', this)">🍁 AUTUMN</div>
+    <div class="season-card" onclick="selectSeason('NIGHT', this)">🌙 NIGHT</div>
+    <div class="season-card" onclick="selectSeason('RAIN', this)">🌧️ RAIN</div>
+    <div class="season-card" onclick="selectSeason('FOG', this)">🌫️ FOG</div>
+  </div>
+
   <button class="btn" onclick="startGame()">START MISSION</button>
 
   <div class="leaderboard-box">
@@ -236,77 +269,116 @@
 <!-- Waste Segregation Modal -->
 <div id="sortModal" class="modal-overlay hidden">
   <h2 style="color:#facc15; font-size: 1.8rem;">ECO SEGREGATION CHALLENGE</h2>
+  <div id="sort-content-area" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:12px;"></div>
+</div>
 
-  <!-- Active Sorting View -->
-  <div id="sort-active-content">
-    <p>Categorize collected SDG Cores into correct bins (+10 pts each)!</p>
-    <div class="current-sdg-card">
-      <div class="sdg-badge" id="card-badge">3</div>
-      <div style="text-align: left;">
-        <div id="card-title" style="font-size:1rem; font-weight:800; color:#fff;">SDG 3: Good Health</div>
-        <div id="card-desc" style="font-size:0.78rem; color:#94a3b8;">Ensure healthy lives and promote well-being.</div>
+<!-- Eco Shop Modal (Opens strictly after each level) -->
+<div id="shopModal" class="modal-overlay hidden">
+  <h1 style="color:#facc15; font-size: 2rem;">🌱 ECO TECH SHOP</h1>
+  <p>Spend your Eco-Credits ($\mathbb{E}$) to upgrade gear before entering the next level!</p>
+
+  <div style="font-size: 1.1rem; font-weight: 900; color: #facc15; margin: 4px 0;">
+    AVAILABLE CREDITS: <span id="shop-credits-display">mathbb{E} 0</span>
+  </div>
+
+  <div class="shop-container">
+    <div class="shop-item">
+      <div class="shop-item-header">
+        <span>⚡ Thruster Engine</span>
+        <span id="shop-lvl-speed" style="color:#4ade80;">Lvl 0</span>
+      </div>
+      <div class="shop-item-desc">Increases acceleration and top movement speed.</div>
+      <div class="shop-item-footer">
+        <span style="font-size:0.85rem; font-weight:800; color:#facc15;" id="shop-cost-speed">mathbb{E} 80</span>
+        <button class="shop-buy-btn" id="btn-buy-speed" onclick="buyUpgrade('speed')">UPGRADE</button>
       </div>
     </div>
 
-    <div class="bins-container">
-      <div class="trash-can" id="bin-1" onclick="sortSDG('WATER_LAND')">
-        <div style="font-size:2rem;">🗑️💧</div>
-        <div style="font-size:0.85rem; font-weight:900;">WATER & LAND</div>
-        <div style="font-size:0.7rem; color:#94a3b8;">SDGs 6, 15</div>
+    <div class="shop-item">
+      <div class="shop-item-header">
+        <span>🛡️ Hull Armor</span>
+        <span id="shop-lvl-armor" style="color:#4ade80;">Lvl 0</span>
       </div>
-      <div class="trash-can" id="bin-2" onclick="sortSDG('ENERGY_CLIMATE')">
-        <div style="font-size:2rem;">🗑️⚡</div>
-        <div style="font-size:0.85rem; font-weight:900;">ENERGY & CLIMATE</div>
-        <div style="font-size:0.7rem; color:#94a3b8;">SDGs 7, 13</div>
+      <div class="shop-item-desc">Increases Max HP capacity and restores full health.</div>
+      <div class="shop-item-footer">
+        <span style="font-size:0.85rem; font-weight:800; color:#facc15;" id="shop-cost-armor">mathbb{E} 100</span>
+        <button class="shop-buy-btn" id="btn-buy-armor" onclick="buyUpgrade('armor')">UPGRADE</button>
       </div>
-      <div class="trash-can" id="bin-3" onclick="sortSDG('HEALTH_SOCIAL')">
-        <div style="font-size:2rem;">🗑️❤️</div>
-        <div style="font-size:0.85rem; font-weight:900;">HEALTH & EDU</div>
-        <div style="font-size:0.7rem; color:#94a3b8;">SDGs 3, 4</div>
+    </div>
+
+    <div class="shop-item">
+      <div class="shop-item-header">
+        <span>🔫 Plasma Blaster</span>
+        <span id="shop-lvl-fire" style="color:#4ade80;">Lvl 0</span>
+      </div>
+      <div class="shop-item-desc">Reduces attack cooldown for faster rapid firing.</div>
+      <div class="shop-item-footer">
+        <span style="font-size:0.85rem; font-weight:800; color:#facc15;" id="shop-cost-fire">mathbb{E} 120</span>
+        <button class="shop-buy-btn" id="btn-buy-fire" onclick="buyUpgrade('fire')">UPGRADE</button>
+      </div>
+    </div>
+
+    <div class="shop-item">
+      <div class="shop-item-header">
+        <span>💨 Turbo Dash</span>
+        <span id="shop-lvl-dash" style="color:#4ade80;">Lvl 0</span>
+      </div>
+      <div class="shop-item-desc">Shortens cooldown time for speed dashes.</div>
+      <div class="shop-item-footer">
+        <span style="font-size:0.85rem; font-weight:800; color:#facc15;" id="shop-cost-dash">mathbb{E} 90</span>
+        <button class="shop-buy-btn" id="btn-buy-dash" onclick="buyUpgrade('dash')">UPGRADE</button>
+      </div>
+    </div>
+
+    <div class="shop-item" style="grid-column: span 2;">
+      <div class="shop-item-header">
+        <span>🧲 Eco-Magnet Pulse</span>
+        <span id="shop-lvl-magnet" style="color:#4ade80;">Lvl 0</span>
+      </div>
+      <div class="shop-item-desc">Automatically pulls nearby floating SDG cores towards your ball.</div>
+      <div class="shop-item-footer">
+        <span style="font-size:0.85rem; font-weight:800; color:#facc15;" id="shop-cost-magnet">mathbb{E} 150</span>
+        <button class="shop-buy-btn" id="btn-buy-magnet" onclick="buyUpgrade('magnet')">UPGRADE</button>
       </div>
     </div>
   </div>
 
-  <!-- Empty Collected SDGs State -->
-  <div id="sort-empty-content" class="hidden">
-    <p style="font-size: 1.25rem; color: #38bdf8; font-weight: 800; margin: 15px 0;">Nothing to segregate now</p>
-    <button class="btn" onclick="finishSorting()">CONTINUE TO NEXT LEVEL</button>
-  </div>
+  <button class="btn" onclick="finishShopAndProceed()">PROCEED TO NEXT LEVEL</button>
 </div>
 
 <!-- Climate Selection Modal -->
 <div id="climateModal" class="modal-overlay hidden">
-  <h2 style="color:#38bdf8; font-size:2rem; font-weight:900;">SELECT LEVEL CLIMATE</h2>
-  <p>Choose weather condition for Stage <span id="next-lvl-num">2</span> (+200 pts level clear awarded!):</p>
+  <h2 style="color:#38bdf8; font-size:1.8rem; font-weight:900;">NEXT LEVEL SEASON</h2>
+  <p>Select climate for Stage <span id="next-lvl-num">2</span> (+200 pts awarded!):</p>
 
   <div class="climate-grid">
     <div class="climate-btn" onclick="chooseClimate('DAY')">
-      <div style="font-size:1.6rem;">☀️</div>
+      <div style="font-size:1.5rem;">☀️</div>
       <div style="font-size:0.85rem; font-weight:800;">DAY</div>
     </div>
+    <div class="climate-btn" onclick="chooseClimate('AUTUMN')">
+      <div style="font-size:1.5rem;">🍁</div>
+      <div style="font-size:0.85rem; font-weight:800;">AUTUMN</div>
+    </div>
     <div class="climate-btn" onclick="chooseClimate('NIGHT')">
-      <div style="font-size:1.6rem;">🌙</div>
+      <div style="font-size:1.5rem;">🌙</div>
       <div style="font-size:0.85rem; font-weight:800;">NIGHT</div>
     </div>
     <div class="climate-btn" onclick="chooseClimate('RAIN')">
-      <div style="font-size:1.6rem;">🌧️</div>
+      <div style="font-size:1.5rem;">🌧️</div>
       <div style="font-size:0.85rem; font-weight:800;">RAIN</div>
     </div>
-    <div class="climate-btn" onclick="chooseClimate('CLOUDY')">
-      <div style="font-size:1.6rem;">☁️</div>
-      <div style="font-size:0.85rem; font-weight:800;">CLOUDY</div>
-    </div>
     <div class="climate-btn" onclick="chooseClimate('FOG')">
-      <div style="font-size:1.6rem;">🌫️</div>
+      <div style="font-size:1.5rem;">🌫️</div>
       <div style="font-size:0.85rem; font-weight:800;">FOG</div>
     </div>
   </div>
 </div>
 
-<!-- Game Over & Scoreboard Modal -->
+<!-- Game Over Modal -->
 <div id="gameOverModal" class="modal-overlay hidden">
   <h1 id="go-title" style="color:#ef4444;">MISSION FAILED</h1>
-  <p id="go-desc">Your ball was destroyed by pursuers.</p>
+  <p id="go-desc">Your ball was caught by pursuers.</p>
 
   <div class="score-breakdown">
     <div class="score-row"><span>Enemies Destroyed (<span id="sb-enemies-count">0</span> × 50 pts):</span><span id="sb-enemies-pts">0</span></div>
@@ -346,16 +418,28 @@ const ctx = canvas.getContext('2d');
 
 const COLS = 31, ROWS = 31, TILE = 64;
 
-let maze = [], items = [], drones = [], particles = [], projectiles = [], grassBlades = [], trailParticles = [], weatherParticles = [], shockwaves = [];
+let maze = [], items = [], drones = [], particles = [], projectiles = [], grassBlades = [], trailParticles = [], weatherParticles = [];
 let bouncyWalls = {};
 
 let level = 1, timeLeft = 100, gameActive = false, timerInterval = null, globalTime = 0;
-let collectedSDGs = new Set(), shake = 0, levelCompleting = false;
+let collectedSDGsTotal = new Set();
+let currentLevelSDGs = [];
+let shake = 0, levelCompleting = false;
 let lastTime = performance.now(), audioCtx = null, bgmNode = null, bgmEnabled = true;
 let camX = 0, camY = 0;
 
 let currentClimate = 'DAY';
 let selectedSkin = 'eco';
+
+// Working Economy & Upgrade System
+let ecoCredits = 0;
+let upgrades = {
+  speed: 0,
+  armor: 0,
+  fire: 0,
+  dash: 0,
+  magnet: 0
+};
 
 let gameStats = {
   enemiesKilled: 0,
@@ -390,10 +474,23 @@ const SDG_DATA = {
 
 let player = {
   x: TILE * 1.5, y: TILE * 1.5,
-  vx: 0, vy: 0, radius: TILE * 0.28, hp: 100,
-  restitution: 0.65, friction: 0.93, accelPower: 1350, rotation: 0,
-  dashCooldown: 0, attackCooldown: 0, maxDashCooldown: 0.55
+  vx: 0, vy: 0, radius: TILE * 0.28, hp: 100, maxHp: 100,
+  restitution: 0.72, friction: 0.93, accelPower: 1350, rotation: 0,
+  dashCooldown: 0, attackCooldown: 0, baseAttackCooldown: 0.18, maxDashCooldown: 0.55
 };
+
+// Coverpage Live Wallpaper Animated Particles
+let coverNodes = [];
+for(let i = 0; i < 45; i++) {
+  coverNodes.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    vx: (Math.random() - 0.5) * 1.2,
+    vy: (Math.random() - 0.5) * 1.2,
+    radius: Math.random() * 4 + 2,
+    hue: Math.random() * 360
+  });
+}
 
 function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 window.addEventListener('resize', resizeCanvas);
@@ -428,6 +525,15 @@ function showToast(text) {
   setTimeout(() => t.classList.remove('show'), 2600);
 }
 
+// Multi-Track Synthesizer Audio System
+let currentTrackIdx = 0;
+const PLAYLIST = [
+  { name: "Eco Breeze", notes: [261.63, 293.66, 329.63, 392.00, 440.00, 523.25], tempo: 220, type: 'sine' },
+  { name: "Cyber Pulse", notes: [220.00, 261.63, 293.66, 329.63, 349.23, 440.00], tempo: 150, type: 'sawtooth' },
+  { name: "Solar Arp", notes: [329.63, 392.00, 493.88, 523.25, 587.33, 659.25], tempo: 180, type: 'triangle' },
+  { name: "Deep Grove", notes: [130.81, 146.83, 164.81, 196.00, 220.00, 261.63], tempo: 260, type: 'square' }
+];
+
 function initAudio() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -446,12 +552,18 @@ function playSound(freq, duration = 0.1, type = 'sine') {
   } catch(e){}
 }
 
+function switchTrack(trackIdx) {
+  currentTrackIdx = parseInt(trackIdx);
+  if (bgmNode) { clearInterval(bgmNode); bgmNode = null; }
+  if (bgmEnabled) startBGM();
+}
+
 function startBGM() {
   if (!bgmEnabled) return;
   initAudio();
-  if (bgmNode) return;
+  if (bgmNode) clearInterval(bgmNode);
 
-  const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+  let track = PLAYLIST[currentTrackIdx];
   let step = 0;
 
   bgmNode = setInterval(() => {
@@ -459,8 +571,8 @@ function startBGM() {
     try {
       let osc = audioCtx.createOscillator();
       let gain = audioCtx.createGain();
-      osc.type = step % 4 === 0 ? 'triangle' : 'sine';
-      let freq = notes[step % notes.length];
+      osc.type = track.type;
+      let freq = track.notes[step % track.notes.length];
       osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
       gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.22);
@@ -468,7 +580,7 @@ function startBGM() {
       osc.start(); osc.stop(audioCtx.currentTime + 0.22);
       step++;
     } catch(e){}
-  }, 220);
+  }, track.tempo);
 }
 
 function toggleBGM() {
@@ -481,6 +593,12 @@ function toggleBGM() {
 function selectSkin(skinKey, cardEl) {
   selectedSkin = skinKey;
   document.querySelectorAll('.skin-card').forEach(c => c.classList.remove('selected'));
+  cardEl.classList.add('selected');
+}
+
+function selectSeason(seasonKey, cardEl) {
+  currentClimate = seasonKey;
+  document.querySelectorAll('.season-card').forEach(c => c.classList.remove('selected'));
   cardEl.classList.add('selected');
 }
 
@@ -522,25 +640,28 @@ function generateMaze() {
   }
 
   weatherParticles = [];
-  let count = currentClimate === 'RAIN' ? 120 : (currentClimate === 'NIGHT' ? 40 : 25);
+  let count = currentClimate === 'RAIN' ? 120 : (currentClimate === 'AUTUMN' ? 70 : (currentClimate === 'NIGHT' ? 40 : 25));
   for (let i = 0; i < count; i++) {
     weatherParticles.push({
       x: Math.random() * COLS * TILE, y: Math.random() * ROWS * TILE,
-      speed: Math.random() * 200 + 300, length: Math.random() * 15 + 10,
-      phase: Math.random() * Math.PI * 2, size: Math.random() * 30 + 20
+      speed: Math.random() * 120 + 80, length: Math.random() * 15 + 10,
+      phase: Math.random() * Math.PI * 2, size: Math.random() * 12 + 8,
+      rotation: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 4,
+      color: ['#f97316', '#ef4444', '#eab308', '#d97706'][Math.floor(Math.random() * 4)]
     });
   }
 }
 
 function buildLevel() {
   generateMaze();
-  collectedSDGs.clear();
+  currentLevelSDGs = [];
   levelCompleting = false;
 
   document.getElementById('biome-title').innerText = `STAGE ${level} — ${currentClimate}`;
 
   player.x = TILE * 1.5; player.y = TILE * 1.5;
-  player.vx = 0; player.vy = 0; player.hp = 100; player.rotation = 0;
+  player.vx = 0; player.vy = 0; player.hp = player.maxHp; player.rotation = 0;
 
   let openSpots = [];
   for (let r = 1; r < ROWS - 1; r++) {
@@ -560,23 +681,29 @@ function buildLevel() {
 
   drones = [];
   let droneCount = 5 + level * 2;
+  let maxDroneHp = 2 + Math.floor(level / 2);
   for (let i = 0; i < droneCount; i++) {
     if (openSpots.length > 0) {
       let spot = openSpots.pop();
       drones.push({
         x: spot.c * TILE + TILE/2, y: spot.r * TILE + TILE/2,
-        vx: 0, vy: 0, speed: 120 + level * 14,
-        radius: TILE * 0.25, hp: 2, angle: Math.random() * Math.PI * 2
+        speed: 120 + level * 15,
+        radius: TILE * 0.28, hp: maxDroneHp, maxHp: maxDroneHp, angle: Math.random() * Math.PI * 2
       });
     }
   }
-  particles = []; projectiles = []; trailParticles = []; shockwaves = []; bouncyWalls = {};
+  particles = []; projectiles = []; trailParticles = []; bouncyWalls = {};
   updateUI();
 }
 
 function startGame() {
   document.getElementById('startModal').classList.add('hidden');
   gameStats = { enemiesKilled: 0, goalsCollected: 0, segregationsCorrect: 0, levelsCompleted: 0 };
+  collectedSDGsTotal.clear();
+  ecoCredits = 0;
+  upgrades = { speed: 0, armor: 0, fire: 0, dash: 0, magnet: 0 };
+  applyUpgradesToPlayer();
+
   level = 1;
   buildLevel();
   timeLeft = 100;
@@ -592,18 +719,56 @@ function startGame() {
   }, 1000);
 }
 
+// Auto-Aim Attack towards nearest enemy
 function triggerAttack() {
   if (!gameActive || player.attackCooldown > 0 || levelCompleting) return;
-  player.attackCooldown = 0.22;
- 
-  let speed = 880;
-  let len = Math.hypot(player.vx, player.vy);
-  let dirX = len > 20 ? player.vx / len : 1;
-  let dirY = len > 20 ? player.vy / len : 0;
- 
-  projectiles.push({ x: player.x, y: player.y, vx: dirX * speed, vy: dirY * speed, radius: 9, life: 1.0 });
-  playSound(720, 0.08, 'sawtooth');
-  shake = 4;
+  player.attackCooldown = player.baseAttackCooldown;
+
+  let targetX = 0, targetY = 0;
+  let nearestDist = Infinity;
+  let targetFound = false;
+
+  drones.forEach(d => {
+    let dist = Math.hypot(d.x - player.x, d.y - player.y);
+    if (dist < nearestDist) {
+      nearestDist = dist;
+      targetX = d.x; targetY = d.y;
+      targetFound = true;
+    }
+  });
+
+  let dirX = 1, dirY = 0;
+  if (targetFound) {
+    let dx = targetX - player.x;
+    let dy = targetY - player.y;
+    let len = Math.hypot(dx, dy) || 1;
+    dirX = dx / len; dirY = dy / len;
+  } else {
+    let speed = Math.hypot(player.vx, player.vy);
+    if (speed > 20) {
+      dirX = player.vx / speed; dirY = player.vy / speed;
+    }
+  }
+
+  let bulletSpeed = 1050;
+  projectiles.push({
+    x: player.x, y: player.y,
+    vx: dirX * bulletSpeed, vy: dirY * bulletSpeed,
+    radius: 7, life: 1.2
+  });
+
+  // Muzzle Spark Particle
+  for (let i = 0; i < 4; i++) {
+    particles.push({
+      x: player.x, y: player.y,
+      vx: dirX * 150 + (Math.random() - 0.5) * 80,
+      vy: dirY * 150 + (Math.random() - 0.5) * 80,
+      life: 0.18, color: '#38bdf8', size: Math.random() * 4 + 2
+    });
+  }
+
+  playSound(750, 0.08, 'sawtooth');
+  shake = 3;
 }
 
 function triggerDash() {
@@ -612,8 +777,20 @@ function triggerDash() {
   let speed = Math.hypot(player.vx, player.vy);
   let dirX = speed > 20 ? player.vx / speed : 1;
   let dirY = speed > 20 ? player.vy / speed : 0;
-  player.vx += dirX * 620; player.vy += dirY * 620;
-  shake = 7; playSound(490);
+
+  player.vx += dirX * 680; player.vy += dirY * 680;
+
+  // Thruster Dash Sparks
+  for (let i = 0; i < 8; i++) {
+    particles.push({
+      x: player.x, y: player.y,
+      vx: -dirX * 200 + (Math.random() - 0.5) * 100,
+      vy: -dirY * 200 + (Math.random() - 0.5) * 100,
+      life: 0.3, color: SKINS[selectedSkin].trail, size: Math.random() * 5 + 3
+    });
+  }
+
+  shake = 6; playSound(490);
 }
 
 function updateBallPhysics(dt) {
@@ -639,6 +816,7 @@ function updateBallPhysics(dt) {
     });
   }
 
+  // Pure Rigid Ball Wall Collision: Exact Circle Geometry (NO Deformation)
   let minCol = Math.max(0, Math.floor((player.x - player.radius) / TILE));
   let maxCol = Math.min(COLS - 1, Math.floor((player.x + player.radius) / TILE));
   let minRow = Math.max(0, Math.floor((player.y - player.radius) / TILE));
@@ -658,6 +836,7 @@ function updateBallPhysics(dt) {
           let overlap = player.radius - dist;
           let nx = distX / dist, ny = distY / dist;
 
+          // Reposition strictly outside wall without scaling ball shape
           player.x += nx * overlap; player.y += ny * overlap;
 
           let dot = player.vx * nx + player.vy * ny;
@@ -666,14 +845,30 @@ function updateBallPhysics(dt) {
             player.vy -= (1 + player.restitution) * dot * ny;
             if (Math.abs(dot) > 40) {
               playSound(190 + Math.abs(dot) * 0.1, 0.05);
-              shockwaves.push({ x: closestX, y: closestY, radius: 4, alpha: 0.8 });
+              shake = Math.min(8, Math.abs(dot) * 0.04);
               bouncyWalls[`${r}_${c}`] = 1.0;
+
+              // Directional Particle Dust Sparks on Bounce (NO shockwave circles)
+              for (let k = 0; k < 5; k++) {
+                particles.push({
+                  x: closestX, y: closestY,
+                  vx: nx * 120 + (Math.random() - 0.5) * 60,
+                  vy: ny * 120 + (Math.random() - 0.5) * 60,
+                  life: 0.25, color: '#facc15', size: Math.random() * 4 + 2
+                });
+              }
             }
           }
         }
       }
     }
   }
+}
+
+function isWallTile(x, y) {
+  let c = Math.floor(x / TILE), r = Math.floor(y / TILE);
+  if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return true;
+  return maze[r][c] === 1;
 }
 
 function update(dt) {
@@ -699,15 +894,14 @@ function update(dt) {
     if (tp.alpha <= 0) trailParticles.splice(i, 1);
   }
 
-  for (let i = shockwaves.length - 1; i >= 0; i--) {
-    let sw = shockwaves[i];
-    sw.radius += dt * 85; sw.alpha -= dt * 2.5;
-    if (sw.alpha <= 0) shockwaves.splice(i, 1);
-  }
-
   weatherParticles.forEach(p => {
     if (currentClimate === 'RAIN') {
-      p.y += p.speed * dt; p.x += p.speed * 0.15 * dt;
+      p.y += p.speed * dt * 3; p.x += p.speed * 0.3 * dt;
+      if (p.y > ROWS * TILE) { p.y = 0; p.x = Math.random() * COLS * TILE; }
+    } else if (currentClimate === 'AUTUMN') {
+      p.y += p.speed * dt * 0.7;
+      p.x += Math.sin(globalTime * 2 + p.phase) * 45 * dt;
+      p.rotation += p.rotSpeed * dt;
       if (p.y > ROWS * TILE) { p.y = 0; p.x = Math.random() * COLS * TILE; }
     } else {
       p.x += Math.cos(globalTime + p.phase) * 20 * dt;
@@ -720,8 +914,7 @@ function update(dt) {
     let p = projectiles[i];
     p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
 
-    let gx = Math.floor(p.x / TILE), gy = Math.floor(p.y / TILE);
-    if (gy < 0 || gy >= ROWS || gx < 0 || gx >= COLS || maze[gy][gx] === 1 || p.life <= 0) {
+    if (isWallTile(p.x, p.y) || p.life <= 0) {
       projectiles.splice(i, 1); continue;
     }
 
@@ -741,6 +934,7 @@ function update(dt) {
           }
           drones.splice(j, 1);
           gameStats.enemiesKilled++;
+          ecoCredits += 25; // Earn Eco-Credits on Drone Destruction
           updateUI();
         }
         break;
@@ -748,61 +942,57 @@ function update(dt) {
     }
   }
 
+  // Eco Magnet Pulse Upgrade Effect
+  if (upgrades.magnet > 0) {
+    let pullRadius = 120 + upgrades.magnet * 70;
+    items.forEach(item => {
+      let dist = Math.hypot(player.x - item.x, player.y - item.y);
+      if (dist < pullRadius && dist > 10) {
+        let pullSpeed = (pullRadius - dist) * 2.5;
+        item.x += ((player.x - item.x) / dist) * pullSpeed * dt;
+        item.y += ((player.y - item.y) / dist) * pullSpeed * dt;
+      }
+    });
+  }
+
   // SDG Goal Collections
   items.forEach((item, idx) => {
     if (Math.hypot(player.x - item.x, player.y - item.y) < TILE * 0.45) {
       playSound(650);
-      collectedSDGs.add(item.id);
+      collectedSDGsTotal.add(item.id);
+      currentLevelSDGs.push(item.id);
       gameStats.goalsCollected++;
-      showToast(`Goal Core SDG ${item.id} Collected! (+100 pts)`);
+      ecoCredits += 50; // Earn Eco-Credits on Collecting SDG Core
+      showToast(`Goal Core SDG ${item.id} Collected! (+50 Credits)`);
       items.splice(idx, 1);
       updateUI();
     }
   });
 
-  // Improved AI Drone Pursuit Behavior (Direct Steering & Wall Sliding, No Bouncing)
+  // Pursuing AI Drones
   drones.forEach(d => {
-    d.angle += dt * 4;
+    d.angle += dt * 3;
     let dx = player.x - d.x, dy = player.y - d.y;
     let dist = Math.hypot(dx, dy);
 
-    if (dist > 0.1) {
+    if (dist > 0) {
       let targetVx = (dx / dist) * d.speed;
       let targetVy = (dy / dist) * d.speed;
-      d.vx += (targetVx - d.vx) * 6.0 * dt;
-      d.vy += (targetVy - d.vy) * 6.0 * dt;
-    }
 
-    // Move Along X Axis with Sliding Collision
-    let nextX = d.x + d.vx * dt;
-    let checkGridX = Math.floor((nextX + Math.sign(d.vx) * (d.radius + 2)) / TILE);
-    let currentGridY = Math.floor(d.y / TILE);
+      let nextX = d.x + targetVx * dt;
+      let nextY = d.y + targetVy * dt;
 
-    if (checkGridX >= 0 && checkGridX < COLS && currentGridY >= 0 && currentGridY < ROWS) {
-      if (maze[currentGridY][checkGridX] === 1) {
-        nextX = d.x;
-        d.vx = 0;
+      if (!isWallTile(nextX, nextY)) {
+        d.x = nextX; d.y = nextY;
+      } else {
+        if (!isWallTile(nextX, d.y)) { d.x = nextX; }
+        else if (!isWallTile(d.x, nextY)) { d.y = nextY; }
       }
     }
-    d.x = nextX;
 
-    // Move Along Y Axis with Sliding Collision
-    let nextY = d.y + d.vy * dt;
-    let checkGridY = Math.floor((nextY + Math.sign(d.vy) * (d.radius + 2)) / TILE);
-    let currentGridX = Math.floor(d.x / TILE);
-
-    if (checkGridY >= 0 && checkGridY < ROWS && currentGridX >= 0 && currentGridX < COLS) {
-      if (maze[checkGridY][currentGridX] === 1) {
-        nextY = d.y;
-        d.vy = 0;
-      }
-    }
-    d.y = nextY;
-
-    // Attack Player on Contact
     if (!levelCompleting && Math.hypot(player.x - d.x, player.y - d.y) < player.radius + d.radius) {
       player.hp -= 45 * dt; shake = 6; playSound(120);
-      if (player.hp <= 0) gameOver('MISSION FAILED', 'Your Eco-Ball was destroyed by pursuing drones!');
+      if (player.hp <= 0) gameOver('MISSION FAILED', 'Your Eco-Ball was caught and destroyed by pursuing AI drones!');
     }
   });
 
@@ -812,12 +1002,12 @@ function update(dt) {
     if (p.life <= 0) particles.splice(i, 1);
   }
 
-  // Always Accessible Exit Portal
+  // Exit Portal
   let exitX = (COLS - 1.5) * TILE, exitY = (ROWS - 1.5) * TILE;
   if (Math.hypot(player.x - exitX, player.y - exitY) < TILE * 0.55 && !levelCompleting) {
     levelCompleting = true;
     playSound(950, 0.4);
-    setTimeout(() => startSortingMiniGame(), 400);
+    setTimeout(() => startSortingMiniGame(), 300);
   }
 }
 
@@ -825,29 +1015,25 @@ let sortQueue = [];
 let currentSortingSDG = null;
 
 function startSortingMiniGame() {
-  sortQueue = Array.from(collectedSDGs);
+  sortQueue = [...currentLevelSDGs];
   document.getElementById('sortModal').classList.remove('hidden');
 
   if (sortQueue.length === 0) {
-    document.getElementById('sort-active-content').classList.add('hidden');
-    document.getElementById('sort-empty-content').classList.remove('hidden');
+    document.getElementById('sort-content-area').innerHTML = `
+      <div style="font-size:1.2rem; font-weight:800; color:#ef4444; margin:15px 0;">Nothing to segregate now!</div>
+      <p style="color:#94a3b8; font-size:0.88rem; max-width:400px; text-align:center;">
+        You didn't collect any SDG cores during this stage. Proceed to the Eco Shop!
+      </p>
+      <button class="btn" onclick="finishSortingAndProceed()" style="margin-top:15px;">PROCEED TO ECO SHOP</button>
+    `;
   } else {
-    document.getElementById('sort-active-content').classList.remove('hidden');
-    document.getElementById('sort-empty-content').classList.add('hidden');
     nextSortingItem();
   }
 }
 
-function finishSorting() {
-  document.getElementById('sortModal').classList.add('hidden');
-  gameStats.levelsCompleted++;
-  document.getElementById('next-lvl-num').innerText = level + 1;
-  document.getElementById('climateModal').classList.remove('hidden');
-}
-
 function nextSortingItem() {
   if (sortQueue.length === 0) {
-    finishSorting();
+    finishSortingAndProceed();
     return;
   }
 
@@ -855,23 +1041,108 @@ function nextSortingItem() {
   currentSortingSDG = SDG_DATA[sdgId];
   currentSortingSDG.id = sdgId;
 
-  document.getElementById('card-badge').innerText = sdgId;
-  document.getElementById('card-badge').style.background = currentSortingSDG.color;
-  document.getElementById('card-title').innerText = `SDG ${sdgId}: ${currentSortingSDG.name}`;
-  document.getElementById('card-desc').innerText = currentSortingSDG.desc;
+  document.getElementById('sort-content-area').innerHTML = `
+    <p>Categorize this SDG Core collected in Stage ${level} (+15 Credits each)!</p>
+    <div class="current-sdg-card">
+      <div class="sdg-badge" style="background:${currentSortingSDG.color};">${sdgId}</div>
+      <div style="text-align: left;">
+        <div style="font-size:1rem; font-weight:800; color:#fff;">SDG ${sdgId}: ${currentSortingSDG.name}</div>
+        <div style="font-size:0.78rem; color:#94a3b8;">${currentSortingSDG.desc}</div>
+      </div>
+    </div>
+
+    <div class="bins-container">
+      <div class="trash-can" id="bin-1" onclick="sortSDG('WATER_LAND')">
+        <div style="font-size:2rem;">🗑️💧</div>
+        <div style="font-size:0.85rem; font-weight:900;">WATER & LAND</div>
+        <div style="font-size:0.7rem; color:#94a3b8;">SDGs 6, 15</div>
+      </div>
+      <div class="trash-can" id="bin-2" onclick="sortSDG('ENERGY_CLIMATE')">
+        <div style="font-size:2rem;">🗑️⚡</div>
+        <div style="font-size:0.85rem; font-weight:900;">ENERGY & CLIMATE</div>
+        <div style="font-size:0.7rem; color:#94a3b8;">SDGs 7, 13</div>
+      </div>
+      <div class="trash-can" id="bin-3" onclick="sortSDG('HEALTH_SOCIAL')">
+        <div style="font-size:2rem;">🗑️❤️</div>
+        <div style="font-size:0.85rem; font-weight:900;">HEALTH & EDU</div>
+        <div style="font-size:0.7rem; color:#94a3b8;">SDGs 3, 4</div>
+      </div>
+    </div>
+  `;
 }
 
 function sortSDG(chosenCategory) {
   if (currentSortingSDG.category === chosenCategory) {
     playSound(780, 0.15);
     gameStats.segregationsCorrect++;
-    showToast("Correct Waste Bin! (+10 pts)");
+    ecoCredits += 15; // Earn Eco-Credits on Correct Sorting
+    showToast("Correct Waste Bin! (+15 Credits)");
   } else {
     playSound(140, 0.25, 'sawtooth');
     showToast(`Incorrect Waste Bin!`);
   }
   updateUI();
   nextSortingItem();
+}
+
+// Flow: Waste Sorting -> Eco Tech Shop -> Climate Selection -> Next Level
+function finishSortingAndProceed() {
+  document.getElementById('sortModal').classList.add('hidden');
+  openEcoShop();
+}
+
+function openEcoShop() {
+  updateShopUI();
+  document.getElementById('shopModal').classList.remove('hidden');
+}
+
+function updateShopUI() {
+  document.getElementById('shop-credits-display').innerText = `\u2141 ${ecoCredits}`;
+
+  const setUpgradeRow = (key, baseCost) => {
+    let lvl = upgrades[key];
+    let cost = baseCost + lvl * 40;
+    document.getElementById(`shop-lvl-${key}`).innerText = `Lvl ${lvl}`;
+    document.getElementById(`shop-cost-${key}`).innerText = `\u2141 ${cost}`;
+    let btn = document.getElementById(`btn-buy-${key}`);
+    btn.disabled = ecoCredits < cost;
+  };
+
+  setUpgradeRow('speed', 80);
+  setUpgradeRow('armor', 100);
+  setUpgradeRow('fire', 120);
+  setUpgradeRow('dash', 90);
+  setUpgradeRow('magnet', 150);
+}
+
+function buyUpgrade(key) {
+  let costs = { speed: 80, armor: 100, fire: 120, dash: 90, magnet: 150 };
+  let currentCost = costs[key] + upgrades[key] * 40;
+
+  if (ecoCredits >= currentCost) {
+    ecoCredits -= currentCost;
+    upgrades[key]++;
+    applyUpgradesToPlayer();
+    playSound(880, 0.15);
+    updateShopUI();
+    updateUI();
+  }
+}
+
+function applyUpgradesToPlayer() {
+  player.accelPower = 1350 + upgrades.speed * 280;
+  player.maxHp = 100 + upgrades.armor * 30;
+  player.hp = player.maxHp; // Heal to full on armor upgrade
+  player.baseAttackCooldown = Math.max(0.06, 0.18 - upgrades.fire * 0.03);
+  player.maxDashCooldown = Math.max(0.2, 0.55 - upgrades.dash * 0.08);
+}
+
+function finishShopAndProceed() {
+  document.getElementById('shopModal').classList.add('hidden');
+  gameStats.levelsCompleted++;
+  ecoCredits += 100; // Level Completion Bonus
+  document.getElementById('next-lvl-num').innerText = level + 1;
+  document.getElementById('climateModal').classList.remove('hidden');
 }
 
 function chooseClimate(climate) {
@@ -883,20 +1154,20 @@ function chooseClimate(climate) {
 }
 
 function updateUI() {
-  document.getElementById('hp-txt').innerText = Math.max(0, Math.floor(player.hp));
+  document.getElementById('hp-txt').innerText = `${Math.max(0, Math.floor(player.hp))} / ${player.maxHp}`;
   document.getElementById('timer-txt').innerText = timeLeft;
   document.getElementById('score-txt').innerText = calculateTotalScore();
-
-  [3, 4, 6, 7, 13, 15].forEach(id => {
-    const chip = document.getElementById(`c${id}`);
-    if (collectedSDGs.has(id)) chip.classList.add('active');
-    else chip.classList.remove('active');
-  });
+  document.getElementById('credits-txt').innerText = `\u2141 ${ecoCredits}`;
+  document.getElementById('sdg-tracker-txt').innerText = `${collectedSDGsTotal.size} / 6`;
 }
 
 function gameOver(title, desc) {
   gameActive = false;
   clearInterval(timerInterval);
+
+  // Losing Bounce / Jitter Sound & Flash
+  playSound(100, 0.5, 'sawtooth');
+  shake = 15;
 
   document.getElementById('go-title').innerText = title;
   document.getElementById('go-desc').innerText = desc;
@@ -954,8 +1225,54 @@ function renderLeaderboard(elementId) {
   container.innerHTML = html;
 }
 
+// Coverpage Animated Lively Wallpaper Background Render
+function drawLiveCoverpageWallpaper() {
+  let time = performance.now() * 0.001;
+  ctx.fillStyle = '#020617';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Dynamic Animated Gradient Wave
+  let bgGrad = ctx.createRadialGradient(
+    canvas.width / 2 + Math.cos(time * 0.8) * 200,
+    canvas.height / 2 + Math.sin(time * 0.6) * 150,
+    50,
+    canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height)
+  );
+  bgGrad.addColorStop(0, '#062d1b');
+  bgGrad.addColorStop(0.5, '#071d2b');
+  bgGrad.addColorStop(1, '#020617');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Draw Dynamic Connecting Live Particle Web
+  for (let i = 0; i < coverNodes.length; i++) {
+    let n = coverNodes[i];
+    n.x += n.vx; n.y += n.vy;
+    if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+    if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+
+    ctx.fillStyle = `hsl(${(n.hue + time * 20) % 360}, 80%, 60%)`;
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    for (let j = i + 1; j < coverNodes.length; j++) {
+      let n2 = coverNodes[j];
+      let dist = Math.hypot(n.x - n2.x, n.y - n2.y);
+      if (dist < 150) {
+        ctx.strokeStyle = `rgba(74, 222, 128, ${1 - dist / 150})`;
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(n.x, n.y);
+        ctx.lineTo(n2.x, n2.y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
 function drawMinimap() {
-  const mapSize = 180;
+  const mapSize = 160;
   const scaleX = mapSize / (COLS * TILE);
   const scaleY = mapSize / (ROWS * TILE);
   const mx = canvas.width - mapSize - 16;
@@ -1005,6 +1322,11 @@ function drawMinimap() {
 }
 
 function draw() {
+  if (!gameActive) {
+    drawLiveCoverpageWallpaper();
+    return;
+  }
+
   ctx.save();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -1014,36 +1336,58 @@ function draw() {
 
   ctx.translate(-camX + currentShakeX, -camY + currentShakeY);
 
-  let wallTop = '#166534', wallBase = '#0f3d20', floorColor = '#153317';
-  if (currentClimate === 'NIGHT') { wallTop = '#1e1b4b'; wallBase = '#0f172a'; floorColor = '#020617'; }
-  else if (currentClimate === 'RAIN') { wallTop = '#1e293b'; wallBase = '#0f172a'; floorColor = '#091e3a'; }
-  else if (currentClimate === 'CLOUDY') { wallTop = '#334155'; wallBase = '#1e293b'; floorColor = '#1e293b'; }
-  else if (currentClimate === 'FOG') { wallTop = '#475569'; wallBase = '#334155'; floorColor = '#334155'; }
+  let wallTop = '#15803d', wallBase = '#052e16', wallBorder = '#4ade80', floorColor = '#06130b';
+  if (currentClimate === 'NIGHT') { wallTop = '#312e81'; wallBase = '#0f172a'; wallBorder = '#818cf8'; floorColor = '#020617'; }
+  else if (currentClimate === 'RAIN') { wallTop = '#1e293b'; wallBase = '#0f172a'; wallBorder = '#38bdf8'; floorColor = '#091e3a'; }
+  else if (currentClimate === 'AUTUMN') { wallTop = '#9a3412'; wallBase = '#451a03'; wallBorder = '#fb923c'; floorColor = '#1a0c02'; }
+  else if (currentClimate === 'FOG') { wallTop = '#475569'; wallBase = '#0f172a'; wallBorder = '#cbd5e1'; floorColor = '#15202b'; }
 
+  // 3D Beveled Walls with Color-Tilted Flash Wall Bounce Reactions
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       let x = c * TILE, y = r * TILE;
       if (maze[r] && maze[r][c] === 1) {
         ctx.save();
         let bounce = bouncyWalls[`${r}_${c}`] || 0;
-        let scale = 1 + bounce * 0.18;
        
-        ctx.translate(x + TILE/2, y + TILE/2);
-        ctx.scale(scale, scale);
-        ctx.translate(-(x + TILE/2), -(y + TILE/2));
+        // Base 3D Wall Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(x + 4, y + 4, TILE, TILE);
 
-        let wallGrad = ctx.createLinearGradient(x, y, x, y + TILE);
-        wallGrad.addColorStop(0, wallTop); wallGrad.addColorStop(1, wallBase);
+        // Core Wall Texture with Bounce Highlight Glow Shift
+        let wallGrad = ctx.createLinearGradient(x, y, x + TILE, y + TILE);
+        if (bounce > 0) {
+          wallGrad.addColorStop(0, wallBorder); // Bright flash matching wall color theme
+          wallGrad.addColorStop(1, wallTop);
+        } else {
+          wallGrad.addColorStop(0, wallTop);
+          wallGrad.addColorStop(1, wallBase);
+        }
         ctx.fillStyle = wallGrad;
         ctx.fillRect(x, y, TILE, TILE);
 
-        ctx.fillStyle = 'rgba(255,255,255,0.15)';
-        ctx.fillRect(x, y, TILE, 6);
+        // Panel lines & borders
+        ctx.strokeStyle = bounce > 0 ? '#ffffff' : 'rgba(0,0,0,0.35)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x + 4, y + 4, TILE - 8, TILE - 8);
+
+        // 3D Bevel Highlights
+        ctx.fillStyle = bounce > 0 ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.22)';
+        ctx.fillRect(x, y, TILE, 4); ctx.fillRect(x, y, 4, TILE);
+
+        ctx.fillStyle = 'rgba(0,0,0,0.45)';
+        ctx.fillRect(x, y + TILE - 4, TILE, 4); ctx.fillRect(x + TILE - 4, y, 4, TILE);
+
+        // Sci-Fi Tech Corner Nodes
+        ctx.fillStyle = wallBorder;
+        ctx.fillRect(x + 2, y + 2, 4, 4);
+        ctx.fillRect(x + TILE - 6, y + 2, 4, 4);
+
         ctx.restore();
       } else {
         ctx.fillStyle = floorColor;
         ctx.fillRect(x, y, TILE, TILE);
-        ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.025)';
         ctx.strokeRect(x, y, TILE, TILE);
       }
     }
@@ -1051,30 +1395,26 @@ function draw() {
 
   grassBlades.forEach(b => {
     let sway = Math.sin(globalTime * 3 + b.swayOffset) * 3;
-    ctx.strokeStyle = currentClimate === 'NIGHT' ? '#312e81' : '#2d5e2e';
+    ctx.strokeStyle = currentClimate === 'AUTUMN' ? '#b45309' : (currentClimate === 'NIGHT' ? '#312e81' : '#2d5e2e');
     ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(b.x + sway, b.y - b.height); ctx.stroke();
   });
 
+  // Weather Particles
   weatherParticles.forEach(p => {
     ctx.save();
     if (currentClimate === 'RAIN') {
       ctx.strokeStyle = 'rgba(148, 163, 184, 0.6)'; ctx.lineWidth = 1.8;
       ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + 3, p.y + p.length); ctx.stroke();
+    } else if (currentClimate === 'AUTUMN') {
+      ctx.translate(p.x, p.y); ctx.rotate(p.rotation);
+      ctx.fillStyle = p.color; ctx.beginPath();
+      ctx.ellipse(0, 0, p.size, p.size * 0.45, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#7c2d12'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-p.size, 0); ctx.lineTo(p.size, 0); ctx.stroke();
     } else if (currentClimate === 'NIGHT') {
       let glow = Math.sin(globalTime * 3 + p.phase) * 0.5 + 0.5;
       ctx.fillStyle = `rgba(250, 204, 21, ${glow})`;
       ctx.beginPath(); ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2); ctx.fill();
-    } else if (currentClimate === 'CLOUDY') {
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
     }
-    ctx.restore();
-  });
-
-  shockwaves.forEach(sw => {
-    ctx.save();
-    ctx.strokeStyle = `rgba(74, 222, 128, ${sw.alpha})`; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2); ctx.stroke();
     ctx.restore();
   });
 
@@ -1101,6 +1441,7 @@ function draw() {
     ctx.restore();
   });
 
+  // Exit Portal
   let exitX = (COLS - 1.5) * TILE, exitY = (ROWS - 1.5) * TILE;
   ctx.save(); ctx.shadowBlur = 20; ctx.shadowColor = '#facc15';
   for (let r = 3; r >= 1; r--) {
@@ -1110,8 +1451,11 @@ function draw() {
   }
   ctx.restore();
 
+  // Pursuing AI Drones + Overhead HP Bars
   drones.forEach(d => {
-    ctx.save(); ctx.shadowBlur = 12; ctx.shadowColor = '#ef4444';
+    ctx.save();
+    ctx.shadowBlur = 12; ctx.shadowColor = '#ef4444';
+
     let droneGrad = ctx.createRadialGradient(d.x - 4, d.y - 4, 2, d.x, d.y, d.radius);
     droneGrad.addColorStop(0, '#fca5a5'); droneGrad.addColorStop(0.5, '#ef4444'); droneGrad.addColorStop(1, '#7f1d1d');
     ctx.fillStyle = droneGrad; ctx.beginPath(); ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2); ctx.fill();
@@ -1119,14 +1463,40 @@ function draw() {
     ctx.fillStyle = '#ffffff'; ctx.beginPath();
     ctx.arc(d.x + Math.cos(d.angle)*6, d.y + Math.sin(d.angle)*6, 3, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
+
+    // Enemy Overhead HP Bar
+    ctx.save();
+    let barW = TILE * 0.65;
+    let barH = 6;
+    let barX = d.x - barW / 2;
+    let barY = d.y - d.radius - 12;
+
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    ctx.fillRect(barX, barY, barW, barH);
+
+    let hpRatio = Math.max(0, d.hp / d.maxHp);
+    ctx.fillStyle = hpRatio > 0.5 ? '#22c55e' : (hpRatio > 0.25 ? '#facc15' : '#ef4444');
+    ctx.fillRect(barX, barY, barW * hpRatio, barH);
+
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(barX, barY, barW, barH);
+    ctx.restore();
+  });
+
+  particles.forEach(p => {
+    ctx.save(); ctx.fillStyle = p.color;
+    ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
+    ctx.restore();
   });
 
   projectiles.forEach(p => {
-    ctx.save(); ctx.shadowBlur = 12; ctx.shadowColor = '#38bdf8'; ctx.fillStyle = '#38bdf8';
+    ctx.save(); ctx.shadowBlur = 14; ctx.shadowColor = '#38bdf8'; ctx.fillStyle = '#38bdf8';
     ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
   });
 
+  // Player Ball strictly retains perfect circular geometry (NO deformation shape changes on bounce)
   ctx.save();
   let skin = SKINS[selectedSkin];
   ctx.shadowBlur = 20; ctx.shadowColor = skin.main;
@@ -1138,7 +1508,10 @@ function draw() {
   ballGrad.addColorStop(0, '#ffffff'); ballGrad.addColorStop(0.3, skin.light);
   ballGrad.addColorStop(0.7, skin.main); ballGrad.addColorStop(1, skin.dark);
 
-  ctx.fillStyle = ballGrad; ctx.beginPath(); ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = ballGrad;
+  ctx.beginPath();
+  ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+  ctx.fill();
 
   ctx.save();
   ctx.translate(player.x, player.y); ctx.rotate(player.rotation);
@@ -1154,6 +1527,7 @@ function draw() {
   }
   ctx.restore();
 
+  // Climate Overlay
   let fogRadius = currentClimate === 'FOG' ? TILE * 4.5 : TILE * 8.5;
   let grad = ctx.createRadialGradient(player.x, player.y, TILE * 1.5, player.x, player.y, fogRadius);
   grad.addColorStop(0, 'rgba(0,0,0,0)');
