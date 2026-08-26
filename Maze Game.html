@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Collect SDGs - Eco Odyssey (Mega Final Edition)</title>
+  <title>Collect SDGs - Eco Odyssey (Mega Edition)</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
    
@@ -20,74 +20,89 @@
       background: #060d15;
     }
 
-    /* Left-Aligned HUD Status Bar */
-    #hud {
+    /* LEFT-ALIGNED HORIZONTAL/COLUMN STATUS BAR */
+    #left-status-bar {
       position: absolute;
       top: 16px; left: 16px;
-      display: flex; flex-direction: column; gap: 10px;
-      pointer-events: none; z-index: 5;
-    }
-
-    .hud-panel {
-      background: rgba(15, 23, 42, 0.92);
-      border: 2px solid rgba(74, 222, 128, 0.5);
-      backdrop-filter: blur(12px);
-      padding: 10px 16px; border-radius: 16px;
       display: flex; flex-direction: column; gap: 8px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-      pointer-events: auto; min-width: 260px;
+      z-index: 5; pointer-events: none;
     }
 
-    .title { font-size: 1.1rem; font-weight: 900; color: #4ade80; text-shadow: 0 0 10px rgba(74, 222, 128, 0.5); }
-    .stats { font-size: 0.88rem; font-weight: 800; display: flex; flex-direction: column; gap: 6px; }
-    .stat-row { display: flex; justify-content: space-between; align-items: center; }
+    .status-panel {
+      background: rgba(15, 23, 42, 0.92);
+      border: 2px solid rgba(74, 222, 128, 0.4);
+      backdrop-filter: blur(12px);
+      padding: 10px 16px; border-radius: 14px;
+      display: flex; flex-direction: column; gap: 6px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      min-width: 190px;
+    }
 
-    .hud-controls {
-      display: flex; gap: 8px; align-items: center; margin-top: 4px; flex-wrap: wrap;
+    .status-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.85rem; font-weight: 800; color: #cbd5e1;
+    }
+    .status-val { font-size: 0.95rem; font-weight: 900; }
+
+    /* TOP RIGHT CONTROLS (AUDIO & PLAYLIST) */
+    #top-right-bar {
+      position: absolute;
+      top: 16px; right: 200px;
+      display: flex; gap: 10px; align-items: center;
+      z-index: 5;
+    }
+
+    .top-control-panel {
+      background: rgba(15, 23, 42, 0.92);
+      border: 1.5px solid rgba(74, 222, 128, 0.4);
+      backdrop-filter: blur(12px);
+      padding: 6px 12px; border-radius: 12px;
+      display: flex; gap: 8px; align-items: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    }
+
+    .playlist-select {
+      background: #1e293b; border: 1.5px solid #4ade80; color: #4ade80;
+      border-radius: 8px; padding: 4px 8px; font-size: 0.78rem; font-weight: 800;
+      outline: none; cursor: pointer;
     }
 
     .audio-btn {
       background: #1e293b; border: 1.5px solid #4ade80; color: #4ade80;
-      border-radius: 8px; padding: 4px 10px; font-size: 0.75rem; font-weight: 800; cursor: pointer;
-    }
-
-    .playlist-select {
-      background: #0f172a; border: 1.5px solid #38bdf8; color: #38bdf8;
-      border-radius: 8px; padding: 4px 8px; font-size: 0.75rem; font-weight: 800;
-      cursor: pointer; outline: none;
+      border-radius: 8px; padding: 4px 10px; font-size: 0.78rem; font-weight: 800; cursor: pointer;
     }
 
     #toast {
-      position: absolute; top: 20px; left: 50%;
+      position: absolute; top: 80px; left: 50%;
       transform: translateX(-50%) translateY(-10px);
       background: rgba(15, 23, 42, 0.95); border: 2px solid #4ade80; color: #fff;
       padding: 10px 22px; border-radius: 20px; font-size: 0.9rem; font-weight: 700;
       text-align: center; pointer-events: none; opacity: 0; transition: all 0.3s ease;
-      z-index: 8; box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+      z-index: 6; box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
     }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     .modal-overlay {
-      position: absolute; inset: 0; background: rgba(2, 6, 23, 0.82);
+      position: absolute; inset: 0; background: rgba(2, 6, 23, 0.88);
       backdrop-filter: blur(14px); display: flex; flex-direction: column;
       align-items: center; justify-content: center; padding: 20px;
       text-align: center; gap: 12px; z-index: 10; overflow-y: auto;
     }
     .modal-overlay.hidden { display: none; }
-    .modal-overlay h1 { color: #4ade80; font-size: 2.5rem; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 25px rgba(74, 222, 128, 0.6); }
-    .modal-overlay p { font-size: 0.92rem; color: #94a3b8; max-width: 520px; line-height: 1.4; }
+    .modal-overlay h1 { color: #4ade80; font-size: 2.4rem; font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 25px rgba(74, 222, 128, 0.5); }
+    .modal-overlay p { font-size: 0.9rem; color: #94a3b8; max-width: 520px; line-height: 1.4; }
 
     .btn {
       background: linear-gradient(135deg, #4ade80, #16a34a); color: #020617;
       border: none; padding: 12px 34px; font-size: 1.05rem; font-weight: 900;
-      border-radius: 30px; cursor: pointer; box-shadow: 0 0 25px rgba(74, 222, 128, 0.5);
+      border-radius: 30px; cursor: pointer; box-shadow: 0 0 25px rgba(74, 222, 128, 0.4);
       transition: transform 0.15s, box-shadow 0.2s; margin-top: 4px;
     }
-    .btn:hover { transform: scale(1.05); box-shadow: 0 0 35px rgba(74, 222, 128, 0.7); }
+    .btn:hover { transform: scale(1.05); box-shadow: 0 0 35px rgba(74, 222, 128, 0.6); }
 
     .skin-selector { display: flex; gap: 10px; margin: 4px 0; }
     .skin-card {
-      width: 65px; height: 80px; border-radius: 12px; background: rgba(30, 41, 59, 0.85);
+      width: 65px; height: 80px; border-radius: 12px; background: rgba(30, 41, 59, 0.8);
       border: 2px solid rgba(255,255,255,0.2); cursor: pointer; display: flex;
       flex-direction: column; align-items: center; justify-content: center; gap: 5px;
       transition: all 0.2s ease;
@@ -98,7 +113,7 @@
 
     .season-selector { display: flex; gap: 8px; margin: 4px 0; }
     .season-card {
-      padding: 8px 12px; border-radius: 10px; background: rgba(30, 41, 59, 0.85);
+      padding: 8px 12px; border-radius: 10px; background: rgba(30, 41, 59, 0.8);
       border: 2px solid rgba(255,255,255,0.2); cursor: pointer; display: flex;
       align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 800; color: #fff;
       transition: all 0.2s ease;
@@ -106,27 +121,29 @@
     .season-card:hover, .season-card.selected { border-color: #38bdf8; box-shadow: 0 0 12px rgba(56, 189, 248, 0.4); }
     .season-card.selected { background: rgba(56, 189, 248, 0.2); }
 
-    /* Eco Shop UI Styles */
+    /* REALISTIC ECO SHOP STYLES */
     .shop-container {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
-      max-width: 580px; width: 100%; margin: 10px 0;
+      background: rgba(15, 23, 42, 0.95); border: 2px solid #4ade80;
+      border-radius: 20px; padding: 18px; width: 100%; max-width: 580px;
+      display: flex; flex-direction: column; gap: 12px; box-shadow: 0 0 30px rgba(74, 222, 128, 0.2);
     }
+    .shop-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
+    .shop-title { font-size: 1.3rem; font-weight: 900; color: #4ade80; }
+    .shop-funds { font-size: 1.1rem; font-weight: 900; color: #facc15; }
+
+    .shop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; text-align: left; }
     .shop-item {
-      background: rgba(15, 23, 42, 0.9); border: 2px solid rgba(56, 189, 248, 0.4);
-      border-radius: 14px; padding: 12px; display: flex; flex-direction: column;
-      gap: 6px; text-align: left; transition: border-color 0.2s;
+      background: rgba(30, 41, 59, 0.9); border: 1.5px solid rgba(255,255,255,0.15);
+      border-radius: 12px; padding: 10px; display: flex; justify-content: space-between; align-items: center;
     }
-    .shop-item:hover { border-color: #38bdf8; }
-    .shop-item-header { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 0.9rem; color: #38bdf8; }
-    .shop-item-desc { font-size: 0.75rem; color: #94a3b8; min-height: 28px; }
-    .shop-item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
-    .shop-buy-btn {
-      background: linear-gradient(135deg, #facc15, #ca8a04); color: #020617;
-      border: none; padding: 6px 14px; border-radius: 12px; font-weight: 900;
-      font-size: 0.78rem; cursor: pointer; transition: transform 0.1s;
+    .shop-item-info { display: flex; flex-direction: column; gap: 2px; }
+    .shop-item-name { font-size: 0.85rem; font-weight: 800; color: #fff; }
+    .shop-item-lvl { font-size: 0.72rem; color: #94a3b8; }
+    .buy-btn {
+      background: #22c55e; border: none; color: #020617; font-weight: 900;
+      padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer;
     }
-    .shop-buy-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .shop-buy-btn:not(:disabled):hover { transform: scale(1.05); }
+    .buy-btn:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; }
 
     .score-breakdown {
       background: rgba(15, 23, 42, 0.85); border: 2px solid #38bdf8;
@@ -195,35 +212,38 @@
 
 <canvas id="gameCanvas"></canvas>
 
-<!-- Left-Aligned Status HUD -->
-<div id="hud">
-  <div class="hud-panel">
-    <div class="title" id="biome-title">COLLECT SDGs</div>
-    <div class="stats">
-      <div class="stat-row"><span>TIME:</span> <span id="timer-txt" style="color:#facc15;">100</span>s</div>
-      <div class="stat-row"><span>HP:</span> <span id="hp-txt" style="color:#4ade80;">100</span></div>
-      <div class="stat-row"><span>SCORE:</span> <span id="score-txt" style="color:#c084fc;">0</span></div>
-      <div class="stat-row"><span>CREDITS:</span> <span id="credits-txt" style="color:#facc15;">mathbb{E} 0</span></div>
-      <div class="stat-row"><span>SDGs COLLECTED:</span> <span id="sdg-tracker-txt" style="color:#38bdf8;">0 / 6</span></div>
-    </div>
-    <div class="hud-controls">
-      <button class="audio-btn" onclick="toggleBGM()">🎵 BGM: ON</button>
-      <select class="playlist-select" id="playlist-selector" onchange="switchTrack(this.value)">
-        <option value="0">🎶 Track 1: Eco Breeze</option>
-        <option value="1">⚡ Track 2: Cyber Pulse</option>
-        <option value="2">☀️ Track 3: Solar Arp</option>
-        <option value="3">🌲 Track 4: Deep Grove</option>
-      </select>
-    </div>
+<!-- LEFT-ALIGNED HORIZONTAL/COLUMN STATUS BAR (NO SDG CHIP BAR) -->
+<div id="left-status-bar">
+  <div class="status-panel">
+    <div style="color:#4ade80; font-weight:900; font-size:0.95rem; text-shadow:0 0 8px rgba(74,222,128,0.4);" id="biome-title">STAGE 1 — DAY</div>
+    <div class="status-row"><span>TIME:</span><span id="timer-txt" class="status-val" style="color:#facc15;">100s</span></div>
+    <div class="status-row"><span>HP:</span><span id="hp-txt" class="status-val" style="color:#4ade80;">100</span></div>
+    <div class="status-row"><span>ECO CREDITS:</span><span id="money-txt" class="status-val" style="color:#38bdf8;">$0</span></div>
+    <div class="status-row"><span>SCORE:</span><span id="score-txt" class="status-val" style="color:#c084fc;">0</span></div>
+    <div class="status-row"><span>SDG CORES:</span><span id="sdg-count-txt" class="status-val" style="color:#f472b6;">0 / 6</span></div>
+  </div>
+</div>
+
+<!-- TOP RIGHT CONTROLS: PLAYLIST & AUDIO -->
+<div id="top-right-bar">
+  <div class="top-control-panel">
+    <span style="font-size:0.75rem; font-weight:800; color:#94a3b8;">📻 TRACK:</span>
+    <select id="playlist-select" class="playlist-select" onchange="changeTrack(this.value)">
+      <option value="pulse">Eco Pulse</option>
+      <option value="groove">Solar Groove</option>
+      <option value="cyber">Cyber Drift</option>
+      <option value="forest">Deep Forest</option>
+    </select>
+    <button class="audio-btn" onclick="toggleBGM()">🎵 ON</button>
   </div>
 </div>
 
 <div id="toast"></div>
 
-<!-- Cover / Live Wallpaper Start Overlay -->
+<!-- Lively Animated Cover Page Start Modal -->
 <div id="startModal" class="modal-overlay">
   <h1>COLLECT SDGs</h1>
-  <p>Outsmart pursuing AI drones, collect SDG cores, sort eco-waste, and upgrade your ball in the Eco Shop!</p>
+  <p>Outsmart pursuing AI drones, collect SDG cores, sort eco-waste, and master environmental seasons!</p>
  
   <div style="font-weight:800; color:#4ade80; font-size:0.85rem;">CHOOSE BALL SKIN</div>
   <div class="skin-selector">
@@ -269,81 +289,72 @@
 <!-- Waste Segregation Modal -->
 <div id="sortModal" class="modal-overlay hidden">
   <h2 style="color:#facc15; font-size: 1.8rem;">ECO SEGREGATION CHALLENGE</h2>
-  <div id="sort-content-area" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:12px;"></div>
+  <div id="sort-content-area" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:12px;">
+    <!-- Populated Dynamically -->
+  </div>
 </div>
 
-<!-- Eco Shop Modal (Opens strictly after each level) -->
+<!-- REALISTIC ECO SHOP MODAL (Opened after each level) -->
 <div id="shopModal" class="modal-overlay hidden">
-  <h1 style="color:#facc15; font-size: 2rem;">🌱 ECO TECH SHOP</h1>
-  <p>Spend your Eco-Credits ($\mathbb{E}$) to upgrade gear before entering the next level!</p>
-
-  <div style="font-size: 1.1rem; font-weight: 900; color: #facc15; margin: 4px 0;">
-    AVAILABLE CREDITS: <span id="shop-credits-display">mathbb{E} 0</span>
-  </div>
-
   <div class="shop-container">
-    <div class="shop-item">
-      <div class="shop-item-header">
-        <span>⚡ Thruster Engine</span>
-        <span id="shop-lvl-speed" style="color:#4ade80;">Lvl 0</span>
+    <div class="shop-header">
+      <div class="shop-title">🛠️ ECO TECH SHOP</div>
+      <div class="shop-funds">FUNDS: <span id="shop-credits-display">$0</span></div>
+    </div>
+    <p style="font-size:0.8rem; color:#94a3b8; text-align:left;">Upgrade your Eco-Ball systems before advancing to the next climate zone.</p>
+   
+    <div class="shop-grid">
+      <div class="shop-item">
+        <div class="shop-item-info">
+          <span class="shop-item-name">Engine Acceleration</span>
+          <span class="shop-item-lvl" id="lvl-accel">Lvl 1/5 (+Speed)</span>
+        </div>
+        <button class="buy-btn" id="btn-buy-accel" onclick="buyUpgrade('accel')">$150</button>
       </div>
-      <div class="shop-item-desc">Increases acceleration and top movement speed.</div>
-      <div class="shop-item-footer">
-        <span style="font-size:0.85rem; font-weight:800; color:#facc15;" id="shop-cost-speed">mathbb{E} 80</span>
-        <button class="shop-buy-btn" id="btn-buy-speed" onclick="buyUpgrade('speed')">UPGRADE</button>
+
+      <div class="shop-item">
+        <div class="shop-item-info">
+          <span class="shop-item-name">Rapid Blaster</span>
+          <span class="shop-item-lvl" id="lvl-fire">Lvl 1/5 (-Shot Cooldown)</span>
+        </div>
+        <button class="buy-btn" id="btn-buy-fire" onclick="buyUpgrade('fire')">$200</button>
+      </div>
+
+      <div class="shop-item">
+        <div class="shop-item-info">
+          <span class="shop-item-name">Hull Integrity</span>
+          <span class="shop-item-lvl" id="lvl-hp">Lvl 1/5 (+Max HP & Heal)</span>
+        </div>
+        <button class="buy-btn" id="btn-buy-hp" onclick="buyUpgrade('hp')">$180</button>
+      </div>
+
+      <div class="shop-item">
+        <div class="shop-item-info">
+          <span class="shop-item-name">Dash Thrusters</span>
+          <span class="shop-item-lvl" id="lvl-dash">Lvl 1/5 (-Dash Cooldown)</span>
+        </div>
+        <button class="buy-btn" id="btn-buy-dash" onclick="buyUpgrade('dash')">$160</button>
+      </div>
+
+      <div class="shop-item">
+        <div class="shop-item-info">
+          <span class="shop-item-name">SDG Core Magnet</span>
+          <span class="shop-item-lvl" id="lvl-magnet">Lvl 1/5 (+Pull Range)</span>
+        </div>
+        <button class="buy-btn" id="btn-buy-magnet" onclick="buyUpgrade('magnet')">$220</button>
+      </div>
+
+      <div class="shop-item">
+        <div class="shop-item-info">
+          <span class="shop-item-name">Eco Recycler</span>
+          <span class="shop-item-lvl" id="lvl-multiplier">Lvl 1/5 (+20% Money)</span>
+        </div>
+        <button class="buy-btn" id="btn-buy-multiplier" onclick="buyUpgrade('multiplier')">$250</button>
       </div>
     </div>
 
-    <div class="shop-item">
-      <div class="shop-item-header">
-        <span>🛡️ Hull Armor</span>
-        <span id="shop-lvl-armor" style="color:#4ade80;">Lvl 0</span>
-      </div>
-      <div class="shop-item-desc">Increases Max HP capacity and restores full health.</div>
-      <div class="shop-item-footer">
-        <span style="font-size:0.85rem; font-weight:800; color:#facc15;" id="shop-cost-armor">mathbb{E} 100</span>
-        <button class="shop-buy-btn" id="btn-buy-armor" onclick="buyUpgrade('armor')">UPGRADE</button>
-      </div>
-    </div>
-
-    <div class="shop-item">
-      <div class="shop-item-header">
-        <span>🔫 Plasma Blaster</span>
-        <span id="shop-lvl-fire" style="color:#4ade80;">Lvl 0</span>
-      </div>
-      <div class="shop-item-desc">Reduces attack cooldown for faster rapid firing.</div>
-      <div class="shop-item-footer">
-        <span style="font-size:0.85rem; font-weight:800; color:#facc15;" id="shop-cost-fire">mathbb{E} 120</span>
-        <button class="shop-buy-btn" id="btn-buy-fire" onclick="buyUpgrade('fire')">UPGRADE</button>
-      </div>
-    </div>
-
-    <div class="shop-item">
-      <div class="shop-item-header">
-        <span>💨 Turbo Dash</span>
-        <span id="shop-lvl-dash" style="color:#4ade80;">Lvl 0</span>
-      </div>
-      <div class="shop-item-desc">Shortens cooldown time for speed dashes.</div>
-      <div class="shop-item-footer">
-        <span style="font-size:0.85rem; font-weight:800; color:#facc15;" id="shop-cost-dash">mathbb{E} 90</span>
-        <button class="shop-buy-btn" id="btn-buy-dash" onclick="buyUpgrade('dash')">UPGRADE</button>
-      </div>
-    </div>
-
-    <div class="shop-item" style="grid-column: span 2;">
-      <div class="shop-item-header">
-        <span>🧲 Eco-Magnet Pulse</span>
-        <span id="shop-lvl-magnet" style="color:#4ade80;">Lvl 0</span>
-      </div>
-      <div class="shop-item-desc">Automatically pulls nearby floating SDG cores towards your ball.</div>
-      <div class="shop-item-footer">
-        <span style="font-size:0.85rem; font-weight:800; color:#facc15;" id="shop-cost-magnet">mathbb{E} 150</span>
-        <button class="shop-buy-btn" id="btn-buy-magnet" onclick="buyUpgrade('magnet')">UPGRADE</button>
-      </div>
-    </div>
+    <button class="btn" onclick="closeShopAndOpenClimate()" style="align-self:center; margin-top:8px;">CONTINUE MISSION</button>
   </div>
-
-  <button class="btn" onclick="finishShopAndProceed()">PROCEED TO NEXT LEVEL</button>
 </div>
 
 <!-- Climate Selection Modal -->
@@ -375,7 +386,7 @@
   </div>
 </div>
 
-<!-- Game Over Modal -->
+<!-- Game Over & Scoreboard Modal -->
 <div id="gameOverModal" class="modal-overlay hidden">
   <h1 id="go-title" style="color:#ef4444;">MISSION FAILED</h1>
   <p id="go-desc">Your ball was caught by pursuers.</p>
@@ -383,7 +394,7 @@
   <div class="score-breakdown">
     <div class="score-row"><span>Enemies Destroyed (<span id="sb-enemies-count">0</span> × 50 pts):</span><span id="sb-enemies-pts">0</span></div>
     <div class="score-row"><span>SDG Goals Collected (<span id="sb-goals-count">0</span> × 100 pts):</span><span id="sb-goals-pts">0</span></div>
-    <div class="score-row"><span>Correct Waste Segregations (<span id="sb-sort-count">0</span> × 10 pts):</span><span id="sb-sort-pts">0</span></div>
+    <div class="score-row"><span>Correct Waste Segregations (<span id="sb-sort-count">0</span> × 25 pts):</span><span id="sb-sort-pts">0</span></div>
     <div class="score-row"><span>Levels Completed (<span id="sb-lvl-count">0</span> × 200 pts):</span><span id="sb-lvl-pts">0</span></div>
     <div class="score-row total"><span>FINAL SCORE:</span><span id="sb-total-pts">0</span></div>
   </div>
@@ -419,26 +430,37 @@ const ctx = canvas.getContext('2d');
 const COLS = 31, ROWS = 31, TILE = 64;
 
 let maze = [], items = [], drones = [], particles = [], projectiles = [], grassBlades = [], trailParticles = [], weatherParticles = [];
-let bouncyWalls = {};
+let bouncyWalls = {}; // Stores hit bounce intensity and hit vector for matte wall texture shifts
 
 let level = 1, timeLeft = 100, gameActive = false, timerInterval = null, globalTime = 0;
 let collectedSDGsTotal = new Set();
 let currentLevelSDGs = [];
 let shake = 0, levelCompleting = false;
 let lastTime = performance.now(), audioCtx = null, bgmNode = null, bgmEnabled = true;
+let currentPlaylistTrack = 'pulse';
 let camX = 0, camY = 0;
 
 let currentClimate = 'DAY';
 let selectedSkin = 'eco';
 
-// Working Economy & Upgrade System
+// PROPER WORKING MONEY SYSTEM & SHOP UPGRADES
 let ecoCredits = 0;
 let upgrades = {
-  speed: 0,
-  armor: 0,
-  fire: 0,
-  dash: 0,
-  magnet: 0
+  accel: 1,
+  fire: 1,
+  hp: 1,
+  dash: 1,
+  magnet: 1,
+  multiplier: 1
+};
+
+const UPGRADE_COSTS = {
+  accel: [150, 300, 500, 800, 1200],
+  fire: [200, 400, 700, 1100, 1600],
+  hp: [180, 350, 600, 950, 1400],
+  dash: [160, 320, 550, 850, 1300],
+  magnet: [220, 450, 750, 1150, 1700],
+  multiplier: [250, 500, 850, 1300, 1900]
 };
 
 let gameStats = {
@@ -451,7 +473,7 @@ let gameStats = {
 function calculateTotalScore() {
   return (gameStats.enemiesKilled * 50) +
          (gameStats.goalsCollected * 100) +
-         (gameStats.segregationsCorrect * 10) +
+         (gameStats.segregationsCorrect * 25) +
          (gameStats.levelsCompleted * 200);
 }
 
@@ -475,22 +497,9 @@ const SDG_DATA = {
 let player = {
   x: TILE * 1.5, y: TILE * 1.5,
   vx: 0, vy: 0, radius: TILE * 0.28, hp: 100, maxHp: 100,
-  restitution: 0.72, friction: 0.93, accelPower: 1350, rotation: 0,
-  dashCooldown: 0, attackCooldown: 0, baseAttackCooldown: 0.18, maxDashCooldown: 0.55
+  restitution: 0.65, friction: 0.93, accelPower: 1350, rotation: 0,
+  dashCooldown: 0, attackCooldown: 0, maxDashCooldown: 0.55
 };
-
-// Coverpage Live Wallpaper Animated Particles
-let coverNodes = [];
-for(let i = 0; i < 45; i++) {
-  coverNodes.push({
-    x: Math.random() * window.innerWidth,
-    y: Math.random() * window.innerHeight,
-    vx: (Math.random() - 0.5) * 1.2,
-    vy: (Math.random() - 0.5) * 1.2,
-    radius: Math.random() * 4 + 2,
-    hue: Math.random() * 360
-  });
-}
 
 function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 window.addEventListener('resize', resizeCanvas);
@@ -519,20 +528,19 @@ bindTouch('btn-u', 'w'); bindTouch('btn-d', 's'); bindTouch('btn-l', 'a'); bindT
 document.getElementById('atk-btn').addEventListener('click', () => triggerAttack());
 document.getElementById('dash-btn').addEventListener('click', () => triggerDash());
 
+function addMoney(amount) {
+  let mult = 1 + (upgrades.multiplier - 1) * 0.2;
+  let earned = Math.round(amount * mult);
+  ecoCredits += earned;
+  updateUI();
+  return earned;
+}
+
 function showToast(text) {
   const t = document.getElementById('toast');
   t.innerText = text; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2600);
 }
-
-// Multi-Track Synthesizer Audio System
-let currentTrackIdx = 0;
-const PLAYLIST = [
-  { name: "Eco Breeze", notes: [261.63, 293.66, 329.63, 392.00, 440.00, 523.25], tempo: 220, type: 'sine' },
-  { name: "Cyber Pulse", notes: [220.00, 261.63, 293.66, 329.63, 349.23, 440.00], tempo: 150, type: 'sawtooth' },
-  { name: "Solar Arp", notes: [329.63, 392.00, 493.88, 523.25, 587.33, 659.25], tempo: 180, type: 'triangle' },
-  { name: "Deep Grove", notes: [130.81, 146.83, 164.81, 196.00, 220.00, 261.63], tempo: 260, type: 'square' }
-];
 
 function initAudio() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -552,18 +560,25 @@ function playSound(freq, duration = 0.1, type = 'sine') {
   } catch(e){}
 }
 
-function switchTrack(trackIdx) {
-  currentTrackIdx = parseInt(trackIdx);
-  if (bgmNode) { clearInterval(bgmNode); bgmNode = null; }
-  if (bgmEnabled) startBGM();
+function changeTrack(trackKey) {
+  currentPlaylistTrack = trackKey;
+  if (bgmEnabled) startBGM(true);
 }
 
-function startBGM() {
+function startBGM(forceRestart = false) {
   if (!bgmEnabled) return;
   initAudio();
+  if (bgmNode && !forceRestart) return;
   if (bgmNode) clearInterval(bgmNode);
 
-  let track = PLAYLIST[currentTrackIdx];
+  let playlists = {
+    pulse: [261.63, 293.66, 329.63, 392.00, 440.00, 523.25],
+    groove: [196.00, 220.00, 261.63, 293.66, 349.23, 392.00],
+    cyber: [329.63, 349.23, 392.00, 440.00, 493.88, 523.25],
+    forest: [164.81, 196.00, 220.00, 246.94, 293.66, 329.63]
+  };
+
+  let notes = playlists[currentPlaylistTrack] || playlists.pulse;
   let step = 0;
 
   bgmNode = setInterval(() => {
@@ -571,8 +586,8 @@ function startBGM() {
     try {
       let osc = audioCtx.createOscillator();
       let gain = audioCtx.createGain();
-      osc.type = track.type;
-      let freq = track.notes[step % track.notes.length];
+      osc.type = step % 4 === 0 ? 'triangle' : 'sine';
+      let freq = notes[step % notes.length];
       osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
       gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.22);
@@ -580,13 +595,13 @@ function startBGM() {
       osc.start(); osc.stop(audioCtx.currentTime + 0.22);
       step++;
     } catch(e){}
-  }, track.tempo);
+  }, 220);
 }
 
 function toggleBGM() {
   bgmEnabled = !bgmEnabled;
   const btn = document.querySelector('.audio-btn');
-  btn.innerText = bgmEnabled ? "🎵 BGM: ON" : "🔇 BGM: OFF";
+  btn.innerText = bgmEnabled ? "🎵 ON" : "🔇 OFF";
   if (bgmEnabled) startBGM();
 }
 
@@ -653,6 +668,12 @@ function generateMaze() {
   }
 }
 
+function applyUpgradesToPlayer() {
+  player.accelPower = 1350 + (upgrades.accel - 1) * 320;
+  player.maxHp = 100 + (upgrades.hp - 1) * 25;
+  player.maxDashCooldown = Math.max(0.2, 0.55 - (upgrades.dash - 1) * 0.08);
+}
+
 function buildLevel() {
   generateMaze();
   currentLevelSDGs = [];
@@ -660,6 +681,7 @@ function buildLevel() {
 
   document.getElementById('biome-title').innerText = `STAGE ${level} — ${currentClimate}`;
 
+  applyUpgradesToPlayer();
   player.x = TILE * 1.5; player.y = TILE * 1.5;
   player.vx = 0; player.vy = 0; player.hp = player.maxHp; player.rotation = 0;
 
@@ -701,9 +723,7 @@ function startGame() {
   gameStats = { enemiesKilled: 0, goalsCollected: 0, segregationsCorrect: 0, levelsCompleted: 0 };
   collectedSDGsTotal.clear();
   ecoCredits = 0;
-  upgrades = { speed: 0, armor: 0, fire: 0, dash: 0, magnet: 0 };
-  applyUpgradesToPlayer();
-
+  upgrades = { accel: 1, fire: 1, hp: 1, dash: 1, magnet: 1, multiplier: 1 };
   level = 1;
   buildLevel();
   timeLeft = 100;
@@ -719,10 +739,11 @@ function startGame() {
   }, 1000);
 }
 
-// Auto-Aim Attack towards nearest enemy
+// SMART AUTO-AIM ATTACK: Shoots directly at nearest enemy (NO circles on shoot, pure spark recoil)
 function triggerAttack() {
+  let attackCooldownRate = Math.max(0.08, 0.18 - (upgrades.fire - 1) * 0.02);
   if (!gameActive || player.attackCooldown > 0 || levelCompleting) return;
-  player.attackCooldown = player.baseAttackCooldown;
+  player.attackCooldown = attackCooldownRate;
 
   let targetX = 0, targetY = 0;
   let nearestDist = Infinity;
@@ -732,38 +753,35 @@ function triggerAttack() {
     let dist = Math.hypot(d.x - player.x, d.y - player.y);
     if (dist < nearestDist) {
       nearestDist = dist;
-      targetX = d.x; targetY = d.y;
-      targetFound = true;
+      targetX = d.x; targetY = d.y; targetFound = true;
     }
   });
 
   let dirX = 1, dirY = 0;
   if (targetFound) {
-    let dx = targetX - player.x;
-    let dy = targetY - player.y;
+    let dx = targetX - player.x, dy = targetY - player.y;
     let len = Math.hypot(dx, dy) || 1;
     dirX = dx / len; dirY = dy / len;
   } else {
     let speed = Math.hypot(player.vx, player.vy);
-    if (speed > 20) {
-      dirX = player.vx / speed; dirY = player.vy / speed;
-    }
+    if (speed > 20) { dirX = player.vx / speed; dirY = player.vy / speed; }
   }
 
-  let bulletSpeed = 1050;
+  let bulletSpeed = 980;
   projectiles.push({
     x: player.x, y: player.y,
     vx: dirX * bulletSpeed, vy: dirY * bulletSpeed,
-    radius: 7, life: 1.2
+    radius: 6, life: 1.2
   });
 
-  // Muzzle Spark Particle
-  for (let i = 0; i < 4; i++) {
+  // Muzzle spark bounce effect (NO CIRCLE)
+  for (let k = 0; k < 6; k++) {
     particles.push({
-      x: player.x, y: player.y,
-      vx: dirX * 150 + (Math.random() - 0.5) * 80,
-      vy: dirY * 150 + (Math.random() - 0.5) * 80,
-      life: 0.18, color: '#38bdf8', size: Math.random() * 4 + 2
+      x: player.x + dirX * player.radius,
+      y: player.y + dirY * player.radius,
+      vx: dirX * 120 + (Math.random() - 0.5) * 80,
+      vy: dirY * 120 + (Math.random() - 0.5) * 80,
+      life: 0.25, color: '#38bdf8', size: Math.random() * 4 + 2
     });
   }
 
@@ -777,20 +795,18 @@ function triggerDash() {
   let speed = Math.hypot(player.vx, player.vy);
   let dirX = speed > 20 ? player.vx / speed : 1;
   let dirY = speed > 20 ? player.vy / speed : 0;
-
-  player.vx += dirX * 680; player.vy += dirY * 680;
-
-  // Thruster Dash Sparks
-  for (let i = 0; i < 8; i++) {
+  player.vx += dirX * 640; player.vy += dirY * 640;
+ 
+  // Dash particle recoil burst (NO CIRCLE)
+  for (let k = 0; k < 10; k++) {
     particles.push({
       x: player.x, y: player.y,
-      vx: -dirX * 200 + (Math.random() - 0.5) * 100,
-      vy: -dirY * 200 + (Math.random() - 0.5) * 100,
-      life: 0.3, color: SKINS[selectedSkin].trail, size: Math.random() * 5 + 3
+      vx: -dirX * (Math.random() * 200 + 100),
+      vy: -dirY * (Math.random() * 200 + 100),
+      life: 0.35, color: SKINS[selectedSkin].trail, size: Math.random() * 5 + 2
     });
   }
-
-  shake = 6; playSound(490);
+  shake = 7; playSound(490);
 }
 
 function updateBallPhysics(dt) {
@@ -816,7 +832,6 @@ function updateBallPhysics(dt) {
     });
   }
 
-  // Pure Rigid Ball Wall Collision: Exact Circle Geometry (NO Deformation)
   let minCol = Math.max(0, Math.floor((player.x - player.radius) / TILE));
   let maxCol = Math.min(COLS - 1, Math.floor((player.x + player.radius) / TILE));
   let minRow = Math.max(0, Math.floor((player.y - player.radius) / TILE));
@@ -836,7 +851,6 @@ function updateBallPhysics(dt) {
           let overlap = player.radius - dist;
           let nx = distX / dist, ny = distY / dist;
 
-          // Reposition strictly outside wall without scaling ball shape
           player.x += nx * overlap; player.y += ny * overlap;
 
           let dot = player.vx * nx + player.vy * ny;
@@ -845,16 +859,18 @@ function updateBallPhysics(dt) {
             player.vy -= (1 + player.restitution) * dot * ny;
             if (Math.abs(dot) > 40) {
               playSound(190 + Math.abs(dot) * 0.1, 0.05);
-              shake = Math.min(8, Math.abs(dot) * 0.04);
-              bouncyWalls[`${r}_${c}`] = 1.0;
+              shake = Math.min(8, Math.abs(dot) * 0.015);
 
-              // Directional Particle Dust Sparks on Bounce (NO shockwave circles)
-              for (let k = 0; k < 5; k++) {
+              // WALL TEXTURE BOUNCE SHIFT BASED ON WALL COLOR (NO CIRCLE SHOCKWAVES)
+              bouncyWalls[`${r}_${c}`] = { intensity: 1.0, nx, ny };
+
+              // Direct spark burst on impact point
+              for (let k = 0; k < 6; k++) {
                 particles.push({
                   x: closestX, y: closestY,
-                  vx: nx * 120 + (Math.random() - 0.5) * 60,
-                  vy: ny * 120 + (Math.random() - 0.5) * 60,
-                  life: 0.25, color: '#facc15', size: Math.random() * 4 + 2
+                  vx: nx * (Math.random() * 180 + 60) + (Math.random() - 0.5) * 60,
+                  vy: ny * (Math.random() * 180 + 60) + (Math.random() - 0.5) * 60,
+                  life: 0.3, color: SKINS[selectedSkin].light, size: Math.random() * 4 + 2
                 });
               }
             }
@@ -884,8 +900,8 @@ function update(dt) {
   camY += (player.y - canvas.height / 2 - camY) * 0.1;
 
   for (let key in bouncyWalls) {
-    bouncyWalls[key] -= dt * 4;
-    if (bouncyWalls[key] <= 0) delete bouncyWalls[key];
+    bouncyWalls[key].intensity -= dt * 4;
+    if (bouncyWalls[key].intensity <= 0) delete bouncyWalls[key];
   }
 
   for (let i = trailParticles.length - 1; i >= 0; i--) {
@@ -909,12 +925,20 @@ function update(dt) {
     }
   });
 
-  // Projectiles
+  // Projectiles (NO CIRCLE EFFECT ON IMPACT)
   for (let i = projectiles.length - 1; i >= 0; i--) {
     let p = projectiles[i];
     p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
 
     if (isWallTile(p.x, p.y) || p.life <= 0) {
+      // Wall bullet impact spark
+      for (let k = 0; k < 4; k++) {
+        particles.push({
+          x: p.x, y: p.y,
+          vx: (Math.random() - 0.5) * 120, vy: (Math.random() - 0.5) * 120,
+          life: 0.2, color: '#38bdf8', size: Math.random() * 3 + 2
+        });
+      }
       projectiles.splice(i, 1); continue;
     }
 
@@ -934,7 +958,8 @@ function update(dt) {
           }
           drones.splice(j, 1);
           gameStats.enemiesKilled++;
-          ecoCredits += 25; // Earn Eco-Credits on Drone Destruction
+          let earned = addMoney(50);
+          showToast(`Drone Destroyed! (+$${earned})`);
           updateUI();
         }
         break;
@@ -942,28 +967,23 @@ function update(dt) {
     }
   }
 
-  // Eco Magnet Pulse Upgrade Effect
-  if (upgrades.magnet > 0) {
-    let pullRadius = 120 + upgrades.magnet * 70;
-    items.forEach(item => {
-      let dist = Math.hypot(player.x - item.x, player.y - item.y);
-      if (dist < pullRadius && dist > 10) {
-        let pullSpeed = (pullRadius - dist) * 2.5;
-        item.x += ((player.x - item.x) / dist) * pullSpeed * dt;
-        item.y += ((player.y - item.y) / dist) * pullSpeed * dt;
-      }
-    });
-  }
+  // Magnet core pull logic
+  let magnetRadius = TILE * (0.45 + (upgrades.magnet - 1) * 0.25);
 
-  // SDG Goal Collections
   items.forEach((item, idx) => {
-    if (Math.hypot(player.x - item.x, player.y - item.y) < TILE * 0.45) {
+    let dist = Math.hypot(player.x - item.x, player.y - item.y);
+    if (dist < magnetRadius && dist > 0) {
+      item.x += ((player.x - item.x) / dist) * 220 * dt;
+      item.y += ((player.y - item.y) / dist) * 220 * dt;
+    }
+
+    if (dist < TILE * 0.45) {
       playSound(650);
       collectedSDGsTotal.add(item.id);
       currentLevelSDGs.push(item.id);
       gameStats.goalsCollected++;
-      ecoCredits += 50; // Earn Eco-Credits on Collecting SDG Core
-      showToast(`Goal Core SDG ${item.id} Collected! (+50 Credits)`);
+      let earned = addMoney(100);
+      showToast(`Goal Core SDG ${item.id} Collected! (+$${earned})`);
       items.splice(idx, 1);
       updateUI();
     }
@@ -1022,9 +1042,9 @@ function startSortingMiniGame() {
     document.getElementById('sort-content-area').innerHTML = `
       <div style="font-size:1.2rem; font-weight:800; color:#ef4444; margin:15px 0;">Nothing to segregate now!</div>
       <p style="color:#94a3b8; font-size:0.88rem; max-width:400px; text-align:center;">
-        You didn't collect any SDG cores during this stage. Proceed to the Eco Shop!
+        You didn't collect any SDG cores during this stage.
       </p>
-      <button class="btn" onclick="finishSortingAndProceed()" style="margin-top:15px;">PROCEED TO ECO SHOP</button>
+      <button class="btn" onclick="finishSortingAndOpenShop()" style="margin-top:15px;">OPEN ECO TECH SHOP</button>
     `;
   } else {
     nextSortingItem();
@@ -1033,7 +1053,7 @@ function startSortingMiniGame() {
 
 function nextSortingItem() {
   if (sortQueue.length === 0) {
-    finishSortingAndProceed();
+    finishSortingAndOpenShop();
     return;
   }
 
@@ -1042,7 +1062,7 @@ function nextSortingItem() {
   currentSortingSDG.id = sdgId;
 
   document.getElementById('sort-content-area').innerHTML = `
-    <p>Categorize this SDG Core collected in Stage ${level} (+15 Credits each)!</p>
+    <p>Categorize this SDG Core collected in Stage ${level} (+25 pts & Eco Credits)!</p>
     <div class="current-sdg-card">
       <div class="sdg-badge" style="background:${currentSortingSDG.color};">${sdgId}</div>
       <div style="text-align: left;">
@@ -1075,8 +1095,8 @@ function sortSDG(chosenCategory) {
   if (currentSortingSDG.category === chosenCategory) {
     playSound(780, 0.15);
     gameStats.segregationsCorrect++;
-    ecoCredits += 15; // Earn Eco-Credits on Correct Sorting
-    showToast("Correct Waste Bin! (+15 Credits)");
+    let earned = addMoney(25);
+    showToast(`Correct Bin! (+$${earned})`);
   } else {
     playSound(140, 0.25, 'sawtooth');
     showToast(`Incorrect Waste Bin!`);
@@ -1085,62 +1105,63 @@ function sortSDG(chosenCategory) {
   nextSortingItem();
 }
 
-// Flow: Waste Sorting -> Eco Tech Shop -> Climate Selection -> Next Level
-function finishSortingAndProceed() {
+function finishSortingAndOpenShop() {
   document.getElementById('sortModal').classList.add('hidden');
-  openEcoShop();
+  openShopModal();
 }
 
-function openEcoShop() {
-  updateShopUI();
+function openShopModal() {
+  renderShopUI();
   document.getElementById('shopModal').classList.remove('hidden');
 }
 
-function updateShopUI() {
-  document.getElementById('shop-credits-display').innerText = `\u2141 ${ecoCredits}`;
+function renderShopUI() {
+  document.getElementById('shop-credits-display').innerText = `$${ecoCredits}`;
 
-  const setUpgradeRow = (key, baseCost) => {
+  const setBtnState = (key, labelId, btnId) => {
     let lvl = upgrades[key];
-    let cost = baseCost + lvl * 40;
-    document.getElementById(`shop-lvl-${key}`).innerText = `Lvl ${lvl}`;
-    document.getElementById(`shop-cost-${key}`).innerText = `\u2141 ${cost}`;
-    let btn = document.getElementById(`btn-buy-${key}`);
-    btn.disabled = ecoCredits < cost;
+    let max = 5;
+    let label = document.getElementById(labelId);
+    let btn = document.getElementById(btnId);
+
+    if (lvl >= max) {
+      label.innerText = `Lvl MAX (${lvl}/${max})`;
+      btn.innerText = 'MAX'; btn.disabled = true;
+    } else {
+      let cost = UPGRADE_COSTS[key][lvl - 1];
+      label.innerText = `Lvl ${lvl}/${max}`;
+      btn.innerText = `$${cost}`;
+      btn.disabled = ecoCredits < cost;
+    }
   };
 
-  setUpgradeRow('speed', 80);
-  setUpgradeRow('armor', 100);
-  setUpgradeRow('fire', 120);
-  setUpgradeRow('dash', 90);
-  setUpgradeRow('magnet', 150);
+  setBtnState('accel', 'lvl-accel', 'btn-buy-accel');
+  setBtnState('fire', 'lvl-fire', 'btn-buy-fire');
+  setBtnState('hp', 'lvl-hp', 'btn-buy-hp');
+  setBtnState('dash', 'lvl-dash', 'btn-buy-dash');
+  setBtnState('magnet', 'lvl-magnet', 'btn-buy-magnet');
+  setBtnState('multiplier', 'lvl-multiplier', 'btn-buy-multiplier');
 }
 
 function buyUpgrade(key) {
-  let costs = { speed: 80, armor: 100, fire: 120, dash: 90, magnet: 150 };
-  let currentCost = costs[key] + upgrades[key] * 40;
-
-  if (ecoCredits >= currentCost) {
-    ecoCredits -= currentCost;
+  let lvl = upgrades[key];
+  if (lvl >= 5) return;
+  let cost = UPGRADE_COSTS[key][lvl - 1];
+  if (ecoCredits >= cost) {
+    ecoCredits -= cost;
     upgrades[key]++;
-    applyUpgradesToPlayer();
     playSound(880, 0.15);
-    updateShopUI();
+    if (key === 'hp') { player.maxHp += 25; player.hp = player.maxHp; }
+    applyUpgradesToPlayer();
     updateUI();
+    renderShopUI();
   }
 }
 
-function applyUpgradesToPlayer() {
-  player.accelPower = 1350 + upgrades.speed * 280;
-  player.maxHp = 100 + upgrades.armor * 30;
-  player.hp = player.maxHp; // Heal to full on armor upgrade
-  player.baseAttackCooldown = Math.max(0.06, 0.18 - upgrades.fire * 0.03);
-  player.maxDashCooldown = Math.max(0.2, 0.55 - upgrades.dash * 0.08);
-}
-
-function finishShopAndProceed() {
+function closeShopAndOpenClimate() {
   document.getElementById('shopModal').classList.add('hidden');
   gameStats.levelsCompleted++;
-  ecoCredits += 100; // Level Completion Bonus
+  addMoney(200);
   document.getElementById('next-lvl-num').innerText = level + 1;
   document.getElementById('climateModal').classList.remove('hidden');
 }
@@ -1155,19 +1176,16 @@ function chooseClimate(climate) {
 
 function updateUI() {
   document.getElementById('hp-txt').innerText = `${Math.max(0, Math.floor(player.hp))} / ${player.maxHp}`;
-  document.getElementById('timer-txt').innerText = timeLeft;
+  document.getElementById('timer-txt').innerText = `${timeLeft}s`;
+  document.getElementById('money-txt').innerText = `$${ecoCredits}`;
   document.getElementById('score-txt').innerText = calculateTotalScore();
-  document.getElementById('credits-txt').innerText = `\u2141 ${ecoCredits}`;
-  document.getElementById('sdg-tracker-txt').innerText = `${collectedSDGsTotal.size} / 6`;
+  document.getElementById('sdg-count-txt').innerText = `${collectedSDGsTotal.size} / 6`;
 }
 
 function gameOver(title, desc) {
   gameActive = false;
   clearInterval(timerInterval);
-
-  // Losing Bounce / Jitter Sound & Flash
-  playSound(100, 0.5, 'sawtooth');
-  shake = 15;
+  shake = 12; // Death hit bounce shake
 
   document.getElementById('go-title').innerText = title;
   document.getElementById('go-desc').innerText = desc;
@@ -1179,7 +1197,7 @@ function gameOver(title, desc) {
   document.getElementById('sb-goals-pts').innerText = gameStats.goalsCollected * 100;
 
   document.getElementById('sb-sort-count').innerText = gameStats.segregationsCorrect;
-  document.getElementById('sb-sort-pts').innerText = gameStats.segregationsCorrect * 10;
+  document.getElementById('sb-sort-pts').innerText = gameStats.segregationsCorrect * 25;
 
   document.getElementById('sb-lvl-count').innerText = gameStats.levelsCompleted;
   document.getElementById('sb-lvl-pts').innerText = gameStats.levelsCompleted * 200;
@@ -1225,54 +1243,8 @@ function renderLeaderboard(elementId) {
   container.innerHTML = html;
 }
 
-// Coverpage Animated Lively Wallpaper Background Render
-function drawLiveCoverpageWallpaper() {
-  let time = performance.now() * 0.001;
-  ctx.fillStyle = '#020617';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Dynamic Animated Gradient Wave
-  let bgGrad = ctx.createRadialGradient(
-    canvas.width / 2 + Math.cos(time * 0.8) * 200,
-    canvas.height / 2 + Math.sin(time * 0.6) * 150,
-    50,
-    canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height)
-  );
-  bgGrad.addColorStop(0, '#062d1b');
-  bgGrad.addColorStop(0.5, '#071d2b');
-  bgGrad.addColorStop(1, '#020617');
-  ctx.fillStyle = bgGrad;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Draw Dynamic Connecting Live Particle Web
-  for (let i = 0; i < coverNodes.length; i++) {
-    let n = coverNodes[i];
-    n.x += n.vx; n.y += n.vy;
-    if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
-    if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
-
-    ctx.fillStyle = `hsl(${(n.hue + time * 20) % 360}, 80%, 60%)`;
-    ctx.beginPath();
-    ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
-    ctx.fill();
-
-    for (let j = i + 1; j < coverNodes.length; j++) {
-      let n2 = coverNodes[j];
-      let dist = Math.hypot(n.x - n2.x, n.y - n2.y);
-      if (dist < 150) {
-        ctx.strokeStyle = `rgba(74, 222, 128, ${1 - dist / 150})`;
-        ctx.lineWidth = 0.8;
-        ctx.beginPath();
-        ctx.moveTo(n.x, n.y);
-        ctx.lineTo(n2.x, n2.y);
-        ctx.stroke();
-      }
-    }
-  }
-}
-
 function drawMinimap() {
-  const mapSize = 160;
+  const mapSize = 170;
   const scaleX = mapSize / (COLS * TILE);
   const scaleY = mapSize / (ROWS * TILE);
   const mx = canvas.width - mapSize - 16;
@@ -1321,9 +1293,50 @@ function drawMinimap() {
   ctx.restore();
 }
 
+// ANIMATED LIVELY WALLPAPER BACKGROUND FOR COVERPAGE MENU
+function drawAnimatedMenuWallpaper() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+ 
+  // Ambient Flowing Gradient Waves
+  let time = globalTime * 0.4;
+  let g1 = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  g1.addColorStop(0, '#061512');
+  g1.addColorStop(0.5, '#0a231c');
+  g1.addColorStop(1, '#020617');
+  ctx.fillStyle = g1;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Animated Floating Organic Mesh Nodes
+  ctx.save();
+  let nodeCount = 35;
+  for (let i = 0; i < nodeCount; i++) {
+    let nx = (Math.sin(time + i * 1.3) * 0.45 + 0.5) * canvas.width;
+    let ny = (Math.cos(time * 0.8 + i * 1.7) * 0.45 + 0.5) * canvas.height;
+   
+    ctx.fillStyle = i % 2 === 0 ? 'rgba(74, 222, 128, 0.25)' : 'rgba(56, 189, 248, 0.25)';
+    ctx.beginPath();
+    ctx.arc(nx, ny, (Math.sin(time * 2 + i) + 2) * 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Subtle connecting grid lines
+    for (let j = i + 1; j < nodeCount; j++) {
+      let nx2 = (Math.sin(time + j * 1.3) * 0.45 + 0.5) * canvas.width;
+      let ny2 = (Math.cos(time * 0.8 + j * 1.7) * 0.45 + 0.5) * canvas.height;
+      let dist = Math.hypot(nx2 - nx, ny2 - ny);
+      if (dist < 180) {
+        ctx.strokeStyle = `rgba(74, 222, 128, ${0.12 * (1 - dist / 180)})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(nx, ny); ctx.lineTo(nx2, ny2); ctx.stroke();
+      }
+    }
+  }
+  ctx.restore();
+}
+
 function draw() {
-  if (!gameActive) {
-    drawLiveCoverpageWallpaper();
+  // If game is not active (e.g. on cover page menu), render live animated wallpaper background
+  if (!gameActive && document.getElementById('startModal').className.indexOf('hidden') === -1) {
+    drawAnimatedMenuWallpaper();
     return;
   }
 
@@ -1336,58 +1349,57 @@ function draw() {
 
   ctx.translate(-camX + currentShakeX, -camY + currentShakeY);
 
-  let wallTop = '#15803d', wallBase = '#052e16', wallBorder = '#4ade80', floorColor = '#06130b';
-  if (currentClimate === 'NIGHT') { wallTop = '#312e81'; wallBase = '#0f172a'; wallBorder = '#818cf8'; floorColor = '#020617'; }
-  else if (currentClimate === 'RAIN') { wallTop = '#1e293b'; wallBase = '#0f172a'; wallBorder = '#38bdf8'; floorColor = '#091e3a'; }
-  else if (currentClimate === 'AUTUMN') { wallTop = '#9a3412'; wallBase = '#451a03'; wallBorder = '#fb923c'; floorColor = '#1a0c02'; }
-  else if (currentClimate === 'FOG') { wallTop = '#475569'; wallBase = '#0f172a'; wallBorder = '#cbd5e1'; floorColor = '#15202b'; }
+  // Theme Colors for Realistic Matte Walls
+  let wallTop = '#1e3a29', wallBase = '#0b1d13', wallHighlight = '#2d5e41', floorColor = '#06130b';
+  if (currentClimate === 'NIGHT') { wallTop = '#1e293b'; wallBase = '#0f172a'; wallHighlight = '#334155'; floorColor = '#020617'; }
+  else if (currentClimate === 'RAIN') { wallTop = '#1e293b'; wallBase = '#0b1320'; wallHighlight = '#334155'; floorColor = '#091e3a'; }
+  else if (currentClimate === 'AUTUMN') { wallTop = '#451a03'; wallBase = '#270e02'; wallHighlight = '#78350f'; floorColor = '#1a0c02'; }
+  else if (currentClimate === 'FOG') { wallTop = '#334155'; wallBase = '#1e293b'; wallHighlight = '#475569'; floorColor = '#15202b'; }
 
-  // 3D Beveled Walls with Color-Tilted Flash Wall Bounce Reactions
+  // REALISTIC MATTE WALLS (NO LIGHTING UP, BOUNCE MODIFIES TILE TEXTURE TINT DIRECTLY)
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       let x = c * TILE, y = r * TILE;
       if (maze[r] && maze[r][c] === 1) {
         ctx.save();
-        let bounce = bouncyWalls[`${r}_${c}`] || 0;
+        let bounceData = bouncyWalls[`${r}_${c}`];
+        let bVal = bounceData ? bounceData.intensity : 0;
        
-        // Base 3D Wall Shadow
-        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        // Base Wall Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
         ctx.fillRect(x + 4, y + 4, TILE, TILE);
 
-        // Core Wall Texture with Bounce Highlight Glow Shift
+        // Solid Matte Wall Base
+        ctx.fillStyle = wallBase;
+        ctx.fillRect(x, y, TILE, TILE);
+
+        // Realistic Textured Top Panel
         let wallGrad = ctx.createLinearGradient(x, y, x + TILE, y + TILE);
-        if (bounce > 0) {
-          wallGrad.addColorStop(0, wallBorder); // Bright flash matching wall color theme
+        if (bVal > 0) {
+          // Texture shifts color dynamically on bounce based on wall color without neon glowing!
+          wallGrad.addColorStop(0, wallHighlight);
           wallGrad.addColorStop(1, wallTop);
         } else {
           wallGrad.addColorStop(0, wallTop);
           wallGrad.addColorStop(1, wallBase);
         }
         ctx.fillStyle = wallGrad;
-        ctx.fillRect(x, y, TILE, TILE);
+        ctx.fillRect(x + 2, y + 2, TILE - 4, TILE - 4);
 
-        // Panel lines & borders
-        ctx.strokeStyle = bounce > 0 ? '#ffffff' : 'rgba(0,0,0,0.35)';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(x + 4, y + 4, TILE - 8, TILE - 8);
+        // Beveled Interior Edges (Realistic Depth)
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        ctx.fillRect(x + 2, y + 2, TILE - 4, 3); // Top bevel
+        ctx.fillRect(x + 2, y + 2, 3, TILE - 4); // Left bevel
 
-        // 3D Bevel Highlights
-        ctx.fillStyle = bounce > 0 ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.22)';
-        ctx.fillRect(x, y, TILE, 4); ctx.fillRect(x, y, 4, TILE);
-
-        ctx.fillStyle = 'rgba(0,0,0,0.45)';
-        ctx.fillRect(x, y + TILE - 4, TILE, 4); ctx.fillRect(x + TILE - 4, y, 4, TILE);
-
-        // Sci-Fi Tech Corner Nodes
-        ctx.fillStyle = wallBorder;
-        ctx.fillRect(x + 2, y + 2, 4, 4);
-        ctx.fillRect(x + TILE - 6, y + 2, 4, 4);
+        ctx.fillStyle = 'rgba(0,0,0,0.4)';
+        ctx.fillRect(x + 2, y + TILE - 5, TILE - 4, 3); // Bottom shadow bevel
+        ctx.fillRect(x + TILE - 5, y + 2, 3, TILE - 4); // Right shadow bevel
 
         ctx.restore();
       } else {
         ctx.fillStyle = floorColor;
         ctx.fillRect(x, y, TILE, TILE);
-        ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.02)';
         ctx.strokeRect(x, y, TILE, TILE);
       }
     }
@@ -1411,24 +1423,26 @@ function draw() {
       ctx.ellipse(0, 0, p.size, p.size * 0.45, 0, 0, Math.PI * 2); ctx.fill();
       ctx.strokeStyle = '#7c2d12'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-p.size, 0); ctx.lineTo(p.size, 0); ctx.stroke();
     } else if (currentClimate === 'NIGHT') {
-      let glow = Math.sin(globalTime * 3 + p.phase) * 0.5 + 0.5;
-      ctx.fillStyle = `rgba(250, 204, 21, ${glow})`;
+      let opacity = Math.sin(globalTime * 3 + p.phase) * 0.35 + 0.45;
+      ctx.fillStyle = `rgba(250, 204, 21, ${opacity})`;
       ctx.beginPath(); ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2); ctx.fill();
     }
     ctx.restore();
   });
 
+  // Trail Particles (No circles on hit/shoot)
   trailParticles.forEach(tp => {
     ctx.save(); ctx.globalAlpha = tp.alpha; ctx.fillStyle = tp.color;
     ctx.beginPath(); ctx.arc(tp.x, tp.y, tp.radius, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
   });
 
+  // Goal Cores
   items.forEach(item => {
     ctx.save();
     let hoverY = item.y + Math.sin(globalTime * 4 + item.id) * 6;
     ctx.strokeStyle = item.color; ctx.lineWidth = 3;
-    ctx.shadowBlur = 15; ctx.shadowColor = item.color;
+    ctx.shadowBlur = 10; ctx.shadowColor = item.color;
     ctx.beginPath(); ctx.arc(item.x, hoverY, TILE * 0.35, 0, Math.PI * 2); ctx.stroke();
 
     let orbGrad = ctx.createRadialGradient(item.x - 5, hoverY - 5, 2, item.x, hoverY, TILE * 0.28);
@@ -1443,7 +1457,7 @@ function draw() {
 
   // Exit Portal
   let exitX = (COLS - 1.5) * TILE, exitY = (ROWS - 1.5) * TILE;
-  ctx.save(); ctx.shadowBlur = 20; ctx.shadowColor = '#facc15';
+  ctx.save(); ctx.shadowBlur = 15; ctx.shadowColor = '#facc15';
   for (let r = 3; r >= 1; r--) {
     ctx.strokeStyle = r % 2 === 0 ? '#facc15' : '#eab308'; ctx.lineWidth = 3; ctx.beginPath();
     ctx.arc(exitX, exitY, TILE * (0.12 * r + 0.1), globalTime * (r % 2 === 0 ? 3 : -3), globalTime * (r % 2 === 0 ? 3 : -3) + Math.PI * 1.5);
@@ -1451,10 +1465,10 @@ function draw() {
   }
   ctx.restore();
 
-  // Pursuing AI Drones + Overhead HP Bars
+  // Pursuing AI Drones + Dynamic Overhead HP Bars
   drones.forEach(d => {
     ctx.save();
-    ctx.shadowBlur = 12; ctx.shadowColor = '#ef4444';
+    ctx.shadowBlur = 10; ctx.shadowColor = '#ef4444';
 
     let droneGrad = ctx.createRadialGradient(d.x - 4, d.y - 4, 2, d.x, d.y, d.radius);
     droneGrad.addColorStop(0, '#fca5a5'); droneGrad.addColorStop(0.5, '#ef4444'); droneGrad.addColorStop(1, '#7f1d1d');
@@ -1464,7 +1478,7 @@ function draw() {
     ctx.arc(d.x + Math.cos(d.angle)*6, d.y + Math.sin(d.angle)*6, 3, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
 
-    // Enemy Overhead HP Bar
+    // Overhead HP Bar
     ctx.save();
     let barW = TILE * 0.65;
     let barH = 6;
@@ -1484,22 +1498,24 @@ function draw() {
     ctx.restore();
   });
 
+  // Projectiles
+  projectiles.forEach(p => {
+    ctx.save(); ctx.shadowBlur = 10; ctx.shadowColor = '#38bdf8'; ctx.fillStyle = '#38bdf8';
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  });
+
+  // Linear Spark/Impact Particles
   particles.forEach(p => {
     ctx.save(); ctx.fillStyle = p.color;
     ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
     ctx.restore();
   });
 
-  projectiles.forEach(p => {
-    ctx.save(); ctx.shadowBlur = 14; ctx.shadowColor = '#38bdf8'; ctx.fillStyle = '#38bdf8';
-    ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
-  });
-
-  // Player Ball strictly retains perfect circular geometry (NO deformation shape changes on bounce)
+  // PLAYER BALL: Shape remains strictly circular (DO NOT CHANGE SHAPE ON BOUNCE)
   ctx.save();
   let skin = SKINS[selectedSkin];
-  ctx.shadowBlur = 20; ctx.shadowColor = skin.main;
+  ctx.shadowBlur = 16; ctx.shadowColor = skin.main;
 
   let ballGrad = ctx.createRadialGradient(
     player.x - player.radius * 0.35, player.y - player.radius * 0.35, player.radius * 0.1,
@@ -1510,6 +1526,7 @@ function draw() {
 
   ctx.fillStyle = ballGrad;
   ctx.beginPath();
+  // Perfect circle kept permanently
   ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
   ctx.fill();
 
@@ -1527,7 +1544,7 @@ function draw() {
   }
   ctx.restore();
 
-  // Climate Overlay
+  // Climate Ambient Dark Overlay
   let fogRadius = currentClimate === 'FOG' ? TILE * 4.5 : TILE * 8.5;
   let grad = ctx.createRadialGradient(player.x, player.y, TILE * 1.5, player.x, player.y, fogRadius);
   grad.addColorStop(0, 'rgba(0,0,0,0)');
@@ -1543,7 +1560,11 @@ function loop(now) {
   let dt = (now - lastTime) / 1000;
   if (dt > 0.1) dt = 0.1;
   lastTime = now;
-  update(dt);
+  globalTime += dt;
+
+  if (gameActive) {
+    update(dt);
+  }
   draw();
   requestAnimationFrame(loop);
 }
