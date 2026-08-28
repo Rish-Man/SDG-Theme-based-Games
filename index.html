@@ -42,64 +42,37 @@
       position: relative;
     }
 
-    /* Sticker Base Class */
-    .stk {
+    /* Fixed Sticker Container Layers */
+    #sticker-container-left,
+    #sticker-container-right {
       position: fixed;
-      width: 120px;
-      height: 120px;
-      background-image: url('stickers.png');
-      background-size: 600px 360px; /* Maps to grid dimensions */
-      background-repeat: no-repeat;
+      top: 0;
+      bottom: 0;
+      width: 180px;
       pointer-events: none;
       z-index: 99;
-      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+      overflow: hidden;
     }
 
-    /* Individual Sticker Crops (3 rows x 5 columns) */
-    .s-globe    { background-position: 0% 0%; }
-    .s-recycle  { background-position: 25% 0%; }
-    .s-tree     { background-position: 50% 0%; }
-    .s-leaf     { background-position: 75% 0%; }
-    .s-local    { background-position: 100% 0%; }
+    #sticker-container-left {
+      left: 0;
+    }
 
-    .s-bulb     { background-position: 0% 50%; }
-    .s-books    { background-position: 25% 50%; }
-    .s-save     { background-position: 50% 50%; }
-    .s-flower   { background-position: 75% 50%; }
+    #sticker-container-right {
+      right: 0;
+    }
 
-    .s-less     { background-position: 0% 100%; }
-    .s-foot     { background-position: 25% 100%; }
-    .s-apple    { background-position: 50% 100%; }
-    .s-icecream { background-position: 75% 100%; }
-    .s-umbrella { background-position: 100% 100%; }
-
-    /* LEFT SIDE STACKED (Irregular Overlapping Border) */
-    .L1  { top: -20px;  left: -20px; transform: rotate(-15deg); }
-    .L2  { top: 55px;   left: 20px;  transform: rotate(12deg); scale: 1.1; }
-    .L3  { top: 130px;  left: -30px; transform: rotate(-8deg); }
-    .L4  { top: 210px;  left: 15px;  transform: rotate(20deg); scale: 1.05; }
-    .L5  { top: 300px;  left: -15px; transform: rotate(-18deg); }
-    .L6  { top: 380px;  left: 30px;  transform: rotate(15deg); }
-    .L7  { top: 460px;  left: -25px; transform: rotate(-5deg); scale: 1.1; }
-    .L8  { top: 540px;  left: 10px;  transform: rotate(25deg); }
-    .L9  { top: 620px;  left: -35px; transform: rotate(-12deg); }
-    .L10 { top: 700px;  left: 25px;  transform: rotate(8deg); }
-    .L11 { top: 780px;  left: -10px; transform: rotate(-22deg); scale: 1.05; }
-    .L12 { top: 860px;  left: 20px;  transform: rotate(14deg); }
-
-    /* RIGHT SIDE STACKED (Irregular Overlapping Border) */
-    .R1  { top: -10px;  right: -25px; transform: rotate(18deg); }
-    .R2  { top: 65px;   right: 15px;  transform: rotate(-14deg); scale: 1.08; }
-    .R3  { top: 140px;  right: -35px; transform: rotate(10deg); }
-    .R4  { top: 225px;  right: 20px;  transform: rotate(-22deg); }
-    .R5  { top: 310px;  right: -10px; transform: rotate(16deg); scale: 1.15; }
-    .R6  { top: 395px;  right: 25px;  transform: rotate(-10deg); }
-    .R7  { top: 475px;  right: -20px; transform: rotate(22deg); }
-    .R8  { top: 555px;  right: 15px;  transform: rotate(-16deg); scale: 1.05; }
-    .R9  { top: 635px;  right: -30px; transform: rotate(12deg); }
-    .R10 { top: 715px;  right: 30px;  transform: rotate(-8deg); }
-    .R11 { top: 795px;  right: -15px; transform: rotate(24deg); scale: 1.1; }
-    .R12 { top: 875px;  right: 10px;  transform: rotate(-19deg); }
+    /* Individual Dynamic Sticker Base */
+    .dynamic-sticker {
+      position: absolute;
+      width: 110px;
+      height: 110px;
+      background-image: url('stickers.png');
+      background-size: 550px 330px; /* 5 columns x 3 rows grid scale */
+      background-repeat: no-repeat;
+      pointer-events: none;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.45));
+    }
 
     header {
       text-align: center;
@@ -244,8 +217,9 @@
       font-weight: bold;
     }
 
-    @media (max-width: 1000px) {
-      .stk {
+    @media (max-width: 1050px) {
+      #sticker-container-left,
+      #sticker-container-right {
         display: none;
       }
     }
@@ -253,33 +227,9 @@
 </head>
 <body>
 
-  <!-- LEFT SIDE IRREGULAR STICKER BORDER -->
-  <div class="stk s-globe L1"></div>
-  <div class="stk s-save L2"></div>
-  <div class="stk s-recycle L3"></div>
-  <div class="stk s-icecream L4"></div>
-  <div class="stk s-flower L5"></div>
-  <div class="stk s-foot L6"></div>
-  <div class="stk s-apple L7"></div>
-  <div class="stk s-tree L8"></div>
-  <div class="stk s-less L9"></div>
-  <div class="stk s-bulb L10"></div>
-  <div class="stk s-local L11"></div>
-  <div class="stk s-umbrella L12"></div>
-
-  <!-- RIGHT SIDE IRREGULAR STICKER BORDER -->
-  <div class="stk s-flower R1"></div>
-  <div class="stk s-local R2"></div>
-  <div class="stk s-apple R3"></div>
-  <div class="stk s-tree R4"></div>
-  <div class="stk s-bulb R5"></div>
-  <div class="stk s-foot R6"></div>
-  <div class="stk s-umbrella R7"></div>
-  <div class="stk s-save R8"></div>
-  <div class="stk s-less R9"></div>
-  <div class="stk s-globe R10"></div>
-  <div class="stk s-recycle R11"></div>
-  <div class="stk s-icecream R12"></div>
+  <!-- Left & Right Fixed Sticker Containers -->
+  <div id="sticker-container-left"></div>
+  <div id="sticker-container-right"></div>
 
   <header>
     <img src="logo.png" alt="Eco-Games Sustainability Logo" class="site-logo">
@@ -351,6 +301,49 @@
     Thought and Created by <span>Rishabh Manuj & Collaborators</span> | 
     <a href="privacy.html" style="color: #ffd166; text-decoration: none; margin-left: 10px;">Privacy Policy</a>
   </footer>
+
+  <!-- Script to dynamically generate 100 overlapping stickers -->
+  <script>
+    const colPositions = [0, 25, 50, 75, 100];
+    const rowPositions = [0, 50, 100];
+    const totalStickersPerSide = 50;
+
+    function buildStickers(containerId, isLeft) {
+      const container = document.getElementById(containerId);
+      
+      for (let i = 0; i < totalStickersPerSide; i++) {
+        const div = document.createElement('div');
+        div.className = 'dynamic-sticker';
+
+        // Pick random sticker crop from 5x3 grid
+        const col = colPositions[Math.floor(Math.random() * colPositions.length)];
+        const row = rowPositions[Math.floor(Math.random() * rowPositions.length)];
+        div.style.backgroundPosition = `${col}% ${row}%`;
+
+        // Calculate staggered vertical position down screen (0% to 100%)
+        const topPos = (i / totalStickersPerSide) * 105 - 5; 
+        div.style.top = `${topPos}%`;
+
+        // Random horizontal offset to make an irregular jagged edge
+        const sideOffset = Math.floor(Math.random() * 60) - 30; // -30px to +30px
+        if (isLeft) {
+          div.style.left = `${sideOffset}px`;
+        } else {
+          div.style.right = `${sideOffset}px`;
+        }
+
+        // Random rotation and scale for natural overlapping sticker look
+        const rotation = Math.floor(Math.random() * 60) - 30; // -30deg to +30deg
+        const scale = (Math.random() * 0.4 + 0.85).toFixed(2); // 0.85x to 1.25x
+        div.style.transform = `rotate(${rotation}deg) scale(${scale})`;
+
+        container.appendChild(div);
+      }
+    }
+
+    buildStickers('sticker-container-left', true);
+    buildStickers('sticker-container-right', false);
+  </script>
 
 </body>
 </html>
