@@ -42,29 +42,64 @@
       position: relative;
     }
 
-    /* Fixed Continuous Side Collage Bars */
-    .sticker-sidebar {
+    /* Sticker Base Class */
+    .stk {
       position: fixed;
-      top: 0;
-      bottom: 0;
-      width: 180px;
+      width: 120px;
+      height: 120px;
       background-image: url('stickers.png');
-      background-size: 180px auto;
-      background-repeat: repeat-y;
+      background-size: 600px 360px; /* Maps to grid dimensions */
+      background-repeat: no-repeat;
       pointer-events: none;
       z-index: 99;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
     }
 
-    .sticker-sidebar.left {
-      left: 0;
-      border-right: 2px solid rgba(255, 255, 255, 0.2);
-    }
+    /* Individual Sticker Crops (3 rows x 5 columns) */
+    .s-globe    { background-position: 0% 0%; }
+    .s-recycle  { background-position: 25% 0%; }
+    .s-tree     { background-position: 50% 0%; }
+    .s-leaf     { background-position: 75% 0%; }
+    .s-local    { background-position: 100% 0%; }
 
-    .sticker-sidebar.right {
-      right: 0;
-      border-left: 2px solid rgba(255, 255, 255, 0.2);
-    }
+    .s-bulb     { background-position: 0% 50%; }
+    .s-books    { background-position: 25% 50%; }
+    .s-save     { background-position: 50% 50%; }
+    .s-flower   { background-position: 75% 50%; }
+
+    .s-less     { background-position: 0% 100%; }
+    .s-foot     { background-position: 25% 100%; }
+    .s-apple    { background-position: 50% 100%; }
+    .s-icecream { background-position: 75% 100%; }
+    .s-umbrella { background-position: 100% 100%; }
+
+    /* LEFT SIDE STACKED (Irregular Overlapping Border) */
+    .L1  { top: -20px;  left: -20px; transform: rotate(-15deg); }
+    .L2  { top: 55px;   left: 20px;  transform: rotate(12deg); scale: 1.1; }
+    .L3  { top: 130px;  left: -30px; transform: rotate(-8deg); }
+    .L4  { top: 210px;  left: 15px;  transform: rotate(20deg); scale: 1.05; }
+    .L5  { top: 300px;  left: -15px; transform: rotate(-18deg); }
+    .L6  { top: 380px;  left: 30px;  transform: rotate(15deg); }
+    .L7  { top: 460px;  left: -25px; transform: rotate(-5deg); scale: 1.1; }
+    .L8  { top: 540px;  left: 10px;  transform: rotate(25deg); }
+    .L9  { top: 620px;  left: -35px; transform: rotate(-12deg); }
+    .L10 { top: 700px;  left: 25px;  transform: rotate(8deg); }
+    .L11 { top: 780px;  left: -10px; transform: rotate(-22deg); scale: 1.05; }
+    .L12 { top: 860px;  left: 20px;  transform: rotate(14deg); }
+
+    /* RIGHT SIDE STACKED (Irregular Overlapping Border) */
+    .R1  { top: -10px;  right: -25px; transform: rotate(18deg); }
+    .R2  { top: 65px;   right: 15px;  transform: rotate(-14deg); scale: 1.08; }
+    .R3  { top: 140px;  right: -35px; transform: rotate(10deg); }
+    .R4  { top: 225px;  right: 20px;  transform: rotate(-22deg); }
+    .R5  { top: 310px;  right: -10px; transform: rotate(16deg); scale: 1.15; }
+    .R6  { top: 395px;  right: 25px;  transform: rotate(-10deg); }
+    .R7  { top: 475px;  right: -20px; transform: rotate(22deg); }
+    .R8  { top: 555px;  right: 15px;  transform: rotate(-16deg); scale: 1.05; }
+    .R9  { top: 635px;  right: -30px; transform: rotate(12deg); }
+    .R10 { top: 715px;  right: 30px;  transform: rotate(-8deg); }
+    .R11 { top: 795px;  right: -15px; transform: rotate(24deg); scale: 1.1; }
+    .R12 { top: 875px;  right: 10px;  transform: rotate(-19deg); }
 
     header {
       text-align: center;
@@ -209,8 +244,8 @@
       font-weight: bold;
     }
 
-    @media (max-width: 900px) {
-      .sticker-sidebar {
+    @media (max-width: 1000px) {
+      .stk {
         display: none;
       }
     }
@@ -218,9 +253,33 @@
 </head>
 <body>
 
-  <!-- Fixed Side Collages -->
-  <div class="sticker-sidebar left"></div>
-  <div class="sticker-sidebar right"></div>
+  <!-- LEFT SIDE IRREGULAR STICKER BORDER -->
+  <div class="stk s-globe L1"></div>
+  <div class="stk s-save L2"></div>
+  <div class="stk s-recycle L3"></div>
+  <div class="stk s-icecream L4"></div>
+  <div class="stk s-flower L5"></div>
+  <div class="stk s-foot L6"></div>
+  <div class="stk s-apple L7"></div>
+  <div class="stk s-tree L8"></div>
+  <div class="stk s-less L9"></div>
+  <div class="stk s-bulb L10"></div>
+  <div class="stk s-local L11"></div>
+  <div class="stk s-umbrella L12"></div>
+
+  <!-- RIGHT SIDE IRREGULAR STICKER BORDER -->
+  <div class="stk s-flower R1"></div>
+  <div class="stk s-local R2"></div>
+  <div class="stk s-apple R3"></div>
+  <div class="stk s-tree R4"></div>
+  <div class="stk s-bulb R5"></div>
+  <div class="stk s-foot R6"></div>
+  <div class="stk s-umbrella R7"></div>
+  <div class="stk s-save R8"></div>
+  <div class="stk s-less R9"></div>
+  <div class="stk s-globe R10"></div>
+  <div class="stk s-recycle R11"></div>
+  <div class="stk s-icecream R12"></div>
 
   <header>
     <img src="logo.png" alt="Eco-Games Sustainability Logo" class="site-logo">
