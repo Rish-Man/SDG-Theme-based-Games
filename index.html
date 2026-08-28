@@ -42,45 +42,6 @@
       position: relative;
     }
 
-    /* Fixed Full-Height Sidebar Columns */
-    .sticker-sidebar {
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      width: 220px;
-      pointer-events: none;
-      z-index: 99;
-    }
-
-    .sticker-sidebar.left {
-      left: 0;
-    }
-
-    .sticker-sidebar.right {
-      right: 0;
-    }
-
-    /* High-Resolution Crisp Rendered Sticker Base */
-    .dynamic-sticker {
-      position: absolute;
-      width: 150px;
-      height: 150px;
-      background-image: url('stickers.png');
-      background-size: 750px 450px; /* Exact Crisp Grid Ratio */
-      background-repeat: no-repeat;
-      pointer-events: none;
-      
-      /* High-quality rendering properties */
-      image-rendering: -webkit-optimize-contrast;
-      image-rendering: crisp-edges;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-      transform-style: preserve-3d;
-      
-      /* Sharp multi-layered shadow for authentic 3D sticker depth */
-      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
-    }
-
     header {
       text-align: center;
       max-width: 800px;
@@ -223,19 +184,9 @@
       color: var(--yellow);
       font-weight: bold;
     }
-
-    @media (max-width: 1150px) {
-      .sticker-sidebar {
-        display: none;
-      }
-    }
   </style>
 </head>
 <body>
-
-  <!-- Left & Right Fixed Sticker Sidebar Containers -->
-  <div class="sticker-sidebar left" id="sidebar-left"></div>
-  <div class="sticker-sidebar right" id="sidebar-right"></div>
 
   <header>
     <img src="logo.png" alt="Eco-Games Sustainability Logo" class="site-logo">
@@ -307,53 +258,6 @@
     Thought and Created by <span>Rishabh Manuj & Collaborators</span> | 
     <a href="privacy.html" style="color: #ffd166; text-decoration: none; margin-left: 10px;">Privacy Policy</a>
   </footer>
-
-  <!-- Script to render crisp high-density overlapping sticker collage -->
-  <script>
-    const columns = [0, 25, 50, 75, 100];
-    const rows = [0, 50, 100];
-    const countPerSide = 50; // Total 100 stickers
-
-    function generateStickerCollage(elementId, isLeft) {
-      const container = document.getElementById(elementId);
-      
-      for (let i = 0; i < countPerSide; i++) {
-        const sticker = document.createElement('div');
-        sticker.className = 'dynamic-sticker';
-
-        // Precise Grid Background Offset
-        const col = columns[Math.floor(Math.random() * columns.length)];
-        const row = rows[Math.floor(Math.random() * rows.length)];
-        sticker.style.backgroundPosition = `${col}% ${row}%`;
-
-        // Vertical Stagger with Random Overlap Variance
-        const baseTop = (i / countPerSide) * 105 - 5; 
-        const topJitter = (Math.random() * 3 - 1.5); // +/- 1.5% jitter
-        sticker.style.top = `${baseTop + topJitter}%`;
-
-        // Jagged Border Offset (Creates authentic irregular outer silhouette)
-        const offset = Math.floor(Math.random() * 70) - 35; // -35px to +35px
-        if (isLeft) {
-          sticker.style.left = `${offset}px`;
-        } else {
-          sticker.style.right = `${offset}px`;
-        }
-
-        // Random Rotation (-35deg to +35deg) & Scale (0.85x to 1.3x)
-        const rot = Math.floor(Math.random() * 70) - 35;
-        const scale = (Math.random() * 0.45 + 0.85).toFixed(2);
-        
-        // GPU Hardware Accelerated Transform for ultra-sharp rendering
-        sticker.style.transform = `translateZ(0) rotate(${rot}deg) scale(${scale})`;
-        sticker.style.zIndex = Math.floor(Math.random() * 100);
-
-        container.appendChild(sticker);
-      }
-    }
-
-    generateStickerCollage('sidebar-left', true);
-    generateStickerCollage('sidebar-right', false);
-  </script>
 
 </body>
 </html>
