@@ -6,6 +6,7 @@
   
   <title>Sustainability Based Games & SDG Educational Arcade | Eco-Games</title>
   
+  <!-- Explicit Multi-Size Favicon Declarations for Search Engines -->
   <link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
   <link rel="icon" type="image/png" sizes="96x96" href="favicon.png">
   <link rel="icon" type="image/png" sizes="48x48" href="favicon.png">
@@ -73,7 +74,7 @@
       max-height: 85vh;
       overflow-y: auto;
       padding: 40px;
-      border-radius: 4px;
+      border-radius: 6px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
       position: relative;
       line-height: 1.6;
@@ -104,30 +105,31 @@
       color: #222222;
     }
 
-    .privacy-document ul {
-      margin-left: 25px;
-      margin-bottom: 15px;
-    }
-
     /* Section with SDG Wheel Background Image at the end */
     .sdg-footer-section {
       margin-top: 40px;
-      padding: 40px 20px;
+      padding: 45px 25px;
       border-radius: 8px;
       position: relative;
       text-align: center;
-      background: url('yes.png') no-repeat center center;
+      overflow: hidden;
+      /* Dual background layer: dark overlay on top, image below */
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)),
+        url('yes.png') no-repeat center center;
       background-size: cover;
       color: #ffffff;
-      box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.65); /* Overlay to make text legible */
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
 
     .sdg-footer-section p {
       color: #ffffff;
       font-size: 1.1rem;
       font-weight: 600;
-      margin-bottom: 20px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      margin-bottom: 25px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+      position: relative;
+      z-index: 2;
     }
 
     .agree-btn {
@@ -140,13 +142,15 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
       transition: background-color 0.2s ease, transform 0.1s ease;
+      position: relative;
+      z-index: 2;
     }
 
     .agree-btn:hover {
       background-color: #1b5e20;
-      transform: scale(1.02);
+      transform: scale(1.03);
     }
 
     header {
@@ -306,6 +310,7 @@
 </head>
 <body>
 
+  <!-- Initial Privacy Policy Popup Overlay -->
   <div id="privacy-modal-overlay">
     <div class="privacy-document">
       <h1>Privacy Policy</h1>
@@ -326,6 +331,7 @@
       <h2>4. Cookies and Web Analytics</h2>
       <p>We use essential functional cookies strictly to maintain core website operational features and verify search indexing parameters.</p>
 
+      <!-- Section with the SDG Wheel Background Image at the end -->
       <div class="sdg-footer-section">
         <p>By clicking "I Agree", you acknowledge that you have read and understood our Privacy Policy and agree to support our mission towards advancing the United Nations Sustainable Development Goals through interactive education.</p>
         <button class="agree-btn" onclick="closePrivacyModal()">I Agree</button>
