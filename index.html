@@ -42,87 +42,28 @@
       position: relative;
     }
 
-    /* Fixed Edge Layers for Meme Cat Stickers */
-    .edge-sticker {
+    /* Fixed Continuous Side Collage Bars */
+    .sticker-sidebar {
       position: fixed;
-      width: 150px;
-      height: 150px;
+      top: 0;
+      bottom: 0;
+      width: 180px;
       background-image: url('stickers.png');
-      background-size: 500px auto;
-      background-repeat: no-repeat;
+      background-size: 180px auto;
+      background-repeat: repeat-y;
       pointer-events: none;
       z-index: 99;
-      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
     }
 
-    /* Left Side Meme Cats (Positions mapped to image grid) */
-    .left-1 {
-      top: 4%;
-      left: -45px;
-      background-position: 0% 0%; /* Standing Kitten top left */
-      animation: floatLeft1 3.5s ease-in-out infinite alternate;
-    }
-    .left-2 {
-      top: 27%;
-      left: -35px;
-      background-position: 0% 40%; /* Polite Cat / Beluga */
-      animation: floatLeft2 4s ease-in-out infinite alternate 0.5s;
-    }
-    .left-3 {
-      top: 50%;
-      left: -50px;
-      background-position: 0% 63%; /* Paws up cat */
-      animation: floatLeft1 4.5s ease-in-out infinite alternate 1s;
-    }
-    .left-4 {
-      top: 73%;
-      left: -40px;
-      background-position: 0% 98%; /* Grumpy Cat */
-      animation: floatLeft2 3.8s ease-in-out infinite alternate 1.5s;
+    .sticker-sidebar.left {
+      left: 0;
+      border-right: 2px solid rgba(255, 255, 255, 0.2);
     }
 
-    /* Right Side Meme Cats (Positions mapped to image grid) */
-    .right-1 {
-      top: 6%;
-      right: -45px;
-      background-position: 100% 0%; /* Blep / tongue cat top right */
-      animation: floatRight1 3.6s ease-in-out infinite alternate;
-    }
-    .right-2 {
-      top: 30%;
-      right: -40px;
-      background-position: 100% 22%; /* Shocked cat */
-      animation: floatRight2 4.2s ease-in-out infinite alternate 0.7s;
-    }
-    .right-3 {
-      top: 53%;
-      right: -35px;
-      background-position: 100% 68%; /* Crying cat with tears */
-      animation: floatRight1 3.9s ease-in-out infinite alternate 1.2s;
-    }
-    .right-4 {
-      top: 76%;
-      right: -45px;
-      background-position: 100% 100%; /* Black cat with yellow tie */
-      animation: floatRight2 4.5s ease-in-out infinite alternate 0.3s;
-    }
-
-    /* Floating Peek Animations */
-    @keyframes floatLeft1 {
-      0% { transform: translateX(0) translateY(0) rotate(-10deg); }
-      100% { transform: translateX(28px) translateY(-10px) rotate(-4deg); }
-    }
-    @keyframes floatLeft2 {
-      0% { transform: translateX(0) translateY(0) rotate(8deg); }
-      100% { transform: translateX(22px) translateY(12px) rotate(14deg); }
-    }
-    @keyframes floatRight1 {
-      0% { transform: translateX(0) translateY(0) rotate(12deg); }
-      100% { transform: translateX(-28px) translateY(-8px) rotate(5deg); }
-    }
-    @keyframes floatRight2 {
-      0% { transform: translateX(0) translateY(0) rotate(-8deg); }
-      100% { transform: translateX(-22px) translateY(10px) rotate(-14deg); }
+    .sticker-sidebar.right {
+      right: 0;
+      border-left: 2px solid rgba(255, 255, 255, 0.2);
     }
 
     header {
@@ -269,7 +210,7 @@
     }
 
     @media (max-width: 900px) {
-      .edge-sticker {
+      .sticker-sidebar {
         display: none;
       }
     }
@@ -277,17 +218,9 @@
 </head>
 <body>
 
-  <!-- Left Edge Animated Meme Cats -->
-  <div class="edge-sticker left-1"></div>
-  <div class="edge-sticker left-2"></div>
-  <div class="edge-sticker left-3"></div>
-  <div class="edge-sticker left-4"></div>
-
-  <!-- Right Edge Animated Meme Cats -->
-  <div class="edge-sticker right-1"></div>
-  <div class="edge-sticker right-2"></div>
-  <div class="edge-sticker right-3"></div>
-  <div class="edge-sticker right-4"></div>
+  <!-- Fixed Side Collages -->
+  <div class="sticker-sidebar left"></div>
+  <div class="sticker-sidebar right"></div>
 
   <header>
     <img src="logo.png" alt="Eco-Games Sustainability Logo" class="site-logo">
