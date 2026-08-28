@@ -44,6 +44,66 @@
       flex-direction: column;
       align-items: center;
       padding: 40px 15px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Edge Sticker Container */
+    .sticker-sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: 140px;
+      pointer-events: none;
+      z-index: 99;
+    }
+
+    .sticker-sidebar.left {
+      left: 0;
+    }
+
+    .sticker-sidebar.right {
+      right: 0;
+    }
+
+    /* Individual Sticker Animations */
+    .sticker {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      background-image: url('stickers.png');
+      background-size: 300px auto;
+      filter: drop-shadow(2px 4px 10px rgba(0, 0, 0, 0.5));
+      animation: floatIn 4s ease-in-out infinite alternate;
+    }
+
+    /* Crop positions from sticker sheet */
+    .st-1 { background-position: 0 0; }
+    .st-2 { background-position: -120px 0; }
+    .st-3 { background-position: -60px -120px; }
+    .st-4 { background-position: 0 -240px; }
+    .st-5 { background-position: -140px -240px; }
+
+    /* Left Side Placement & Offsets */
+    .left .st-1 { top: 10%; left: -40px; transform: rotate(-12deg); animation-delay: 0s; }
+    .left .st-2 { top: 35%; left: -30px; transform: rotate(8deg); animation-delay: 1s; }
+    .left .st-3 { top: 60%; left: -50px; transform: rotate(-15deg); animation-delay: 2s; }
+    .left .st-4 { top: 80%; left: -35px; transform: rotate(5deg); animation-delay: 1.5s; }
+
+    /* Right Side Placement & Offsets */
+    .right .st-2 { top: 15%; right: -35px; transform: rotate(15deg); animation-delay: 0.5s; }
+    .right .st-5 { top: 40%; right: -45px; transform: rotate(-10deg); animation-delay: 1.8s; }
+    .right .st-1 { top: 65%; right: -30px; transform: rotate(12deg); animation-delay: 2.2s; }
+    .right .st-3 { top: 85%; right: -40px; transform: rotate(-8deg); animation-delay: 0.8s; }
+
+    /* Keyframes for Peek-In & Micro Floating */
+    @keyframes floatIn {
+      0% {
+        transform: translateX(0) translateY(0) rotate(var(--rot, 0deg));
+      }
+      100% {
+        transform: translateX(18px) translateY(-8px) rotate(calc(var(--rot, 0deg) + 4deg));
+      }
     }
 
     header {
@@ -60,6 +120,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
+      z-index: 10;
     }
 
     .site-logo {
@@ -84,7 +146,6 @@
       line-height: 1.5;
     }
 
-    /* SEO Keyword Paragraph to boost Google ranking */
     .seo-text {
       margin-top: 15px;
       font-size: 0.95rem;
@@ -101,6 +162,8 @@
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 24px;
       width: min(1050px, 100%);
+      position: relative;
+      z-index: 10;
     }
 
     .card {
@@ -177,30 +240,51 @@
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
       border: 1px solid var(--card-border);
+      position: relative;
+      z-index: 10;
     }
 
     footer span {
       color: var(--yellow);
       font-weight: bold;
     }
+
+    @media (max-width: 768px) {
+      .sticker-sidebar {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
 
+  <!-- Animated Edge Stickers - Left -->
+  <div class="sticker-sidebar left">
+    <div class="sticker st-1" style="--rot: -12deg;"></div>
+    <div class="sticker st-2" style="--rot: 8deg;"></div>
+    <div class="sticker st-3" style="--rot: -15deg;"></div>
+    <div class="sticker st-4" style="--rot: 5deg;"></div>
+  </div>
+
+  <!-- Animated Edge Stickers - Right -->
+  <div class="sticker-sidebar right">
+    <div class="sticker st-2" style="--rot: 15deg;"></div>
+    <div class="sticker st-5" style="--rot: -10deg;"></div>
+    <div class="sticker st-1" style="--rot: 12deg;"></div>
+    <div class="sticker st-3" style="--rot: -8deg;"></div>
+  </div>
+
   <header>
-    <!-- Homescreen Pixel Logo -->
     <img src="logo.png" alt="Eco-Games Sustainability Logo" class="site-logo">
     <h1>Sustainability Based Games & SDG Arcade</h1>
     <p class="subtitle">Explore interactive simulations and puzzle games created to support Sustainable Development Goals!</p>
     
-    <!-- Keyword Paragraph for Google Search Ranking -->
     <p class="seo-text">
       Welcome to the premier hub for <strong>sustainability based games</strong>. Play educational eco-simulations covering climate action, waste reduction, and eco-friendly decision making.
     </p>
   </header>
 
   <main class="grid">
-    <!-- Game 1 -->
     <article class="card">
       <div>
         <div class="card-tag">SDG 12: Responsible Consumption</div>
@@ -210,7 +294,6 @@
       <a href="Garbage%20Truck%20Game.html" class="play-btn">Play Game</a>
     </article>
 
-    <!-- Game 2 -->
     <article class="card">
       <div>
         <div class="card-tag">SDG Dilemma Simulator</div>
@@ -220,7 +303,6 @@
       <a href="Save%20Our%20World.html" class="play-btn">Play Game</a>
     </article>
 
-    <!-- Game 3 -->
     <article class="card">
       <div>
         <div class="card-tag">SDG Word Search</div>
@@ -230,7 +312,6 @@
       <a href="Word%20Search%20Game.html" class="play-btn">Play Game</a>
     </article>
 
-    <!-- Game 4 -->
     <article class="card">
       <div>
         <div class="card-tag">SDG 13: Climate Action</div>
@@ -240,7 +321,6 @@
       <a href="Timer%20Game.html" class="play-btn">Play Game</a>
     </article>
 
-    <!-- Game 5 -->
     <article class="card">
       <div>
         <div class="card-tag">SDG 12: Waste Reduction</div>
@@ -250,7 +330,6 @@
       <a href="Shredder%20Game.html" class="play-btn">Play Game</a>
     </article>
 
-    <!-- Game 6 -->
     <article class="card">
       <div>
         <div class="card-tag">SDG 11: Sustainable Cities</div>
@@ -262,7 +341,8 @@
   </main>
 
   <footer>
-    Thought and Created by <span>Rishabh Manuj & Collaborators</span>
+    Thought and Created by <span>Rishabh Manuj & Collaborators</span> | 
+    <a href="privacy.html" style="color: #ffd166; text-decoration: none; margin-left: 10px;">Privacy Policy</a>
   </footer>
 
 </body>
