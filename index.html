@@ -4,16 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <!-- SEO Title with High-Volume Search Keywords -->
   <title>Sustainability Based Games & SDG Educational Arcade | Eco-Games</title>
-  
-  <!-- Website Favicon Logo for Browser Tab / URL -->
   <link rel="icon" type="image/png" href="favicon.png">
-
-  <!-- Google Search Verification -->
   <meta name="google-site-verification" content="5302350b0bf2391b" />
   
-  <!-- Comprehensive SEO Meta Tags -->
   <meta name="description" content="Play the best sustainability based games online. Interactive SDG educational games including Trash Dash, Eco-Detective, and climate simulations created by Rishabh Manuj.">
   <meta name="keywords" content="sustainability based games, SDG games, eco games, sustainable development goals games, educational climate games, Rishabh Manuj">
   <meta name="author" content="Rishabh Manuj">
@@ -48,62 +42,87 @@
       position: relative;
     }
 
-    /* Edge Sticker Container */
-    .sticker-sidebar {
+    /* Fixed Edge Layers for Stickers */
+    .edge-sticker {
       position: fixed;
-      top: 0;
-      bottom: 0;
       width: 140px;
+      height: 140px;
+      background-image: url('stickers.png');
+      background-size: 380px auto;
+      background-repeat: no-repeat;
       pointer-events: none;
       z-index: 99;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));
     }
 
-    .sticker-sidebar.left {
-      left: 0;
+    /* Left Side Stickers (Overlapping & Off-screen positioning) */
+    .left-1 {
+      top: 5%;
+      left: -45px;
+      background-position: 0% 0%; /* Hamster with bow */
+      animation: floatLeft1 3.5s ease-in-out infinite alternate;
+    }
+    .left-2 {
+      top: 28%;
+      left: -35px;
+      background-position: 0% 38%; /* Screaming duck */
+      animation: floatLeft2 4s ease-in-out infinite alternate 0.5s;
+    }
+    .left-3 {
+      top: 50%;
+      left: -50px;
+      background-position: 0% 58%; /* Pink Flower */
+      animation: floatLeft1 4.5s ease-in-out infinite alternate 1s;
+    }
+    .left-4 {
+      top: 72%;
+      left: -40px;
+      background-position: 0% 100%; /* Standing duck */
+      animation: floatLeft2 3.8s ease-in-out infinite alternate 1.5s;
     }
 
-    .sticker-sidebar.right {
-      right: 0;
+    /* Right Side Stickers (Overlapping & Off-screen positioning) */
+    .right-1 {
+      top: 8%;
+      right: -45px;
+      background-position: 100% 0%; /* Pink Ribbon */
+      animation: floatRight1 3.6s ease-in-out infinite alternate;
+    }
+    .right-2 {
+      top: 32%;
+      right: -40px;
+      background-position: 95% 25%; /* Cat with money */
+      animation: floatRight2 4.2s ease-in-out infinite alternate 0.7s;
+    }
+    .right-3 {
+      top: 55%;
+      right: -35px;
+      background-position: 95% 65%; /* Standing kitten */
+      animation: floatRight1 3.9s ease-in-out infinite alternate 1.2s;
+    }
+    .right-4 {
+      top: 78%;
+      right: -45px;
+      background-position: 100% 85%; /* Wide eye cat peeking */
+      animation: floatRight2 4.5s ease-in-out infinite alternate 0.3s;
     }
 
-    /* Individual Sticker Animations */
-    .sticker {
-      position: absolute;
-      width: 120px;
-      height: 120px;
-      background-image: url('stickers.png');
-      background-size: 300px auto;
-      filter: drop-shadow(2px 4px 10px rgba(0, 0, 0, 0.5));
-      animation: floatIn 4s ease-in-out infinite alternate;
+    /* Edge Peek & Micro-Movement Animations */
+    @keyframes floatLeft1 {
+      0% { transform: translateX(0) translateY(0) rotate(-10deg); }
+      100% { transform: translateX(25px) translateY(-10px) rotate(-4deg); }
     }
-
-    /* Crop positions from sticker sheet */
-    .st-1 { background-position: 0 0; }
-    .st-2 { background-position: -120px 0; }
-    .st-3 { background-position: -60px -120px; }
-    .st-4 { background-position: 0 -240px; }
-    .st-5 { background-position: -140px -240px; }
-
-    /* Left Side Placement & Offsets */
-    .left .st-1 { top: 10%; left: -40px; transform: rotate(-12deg); animation-delay: 0s; }
-    .left .st-2 { top: 35%; left: -30px; transform: rotate(8deg); animation-delay: 1s; }
-    .left .st-3 { top: 60%; left: -50px; transform: rotate(-15deg); animation-delay: 2s; }
-    .left .st-4 { top: 80%; left: -35px; transform: rotate(5deg); animation-delay: 1.5s; }
-
-    /* Right Side Placement & Offsets */
-    .right .st-2 { top: 15%; right: -35px; transform: rotate(15deg); animation-delay: 0.5s; }
-    .right .st-5 { top: 40%; right: -45px; transform: rotate(-10deg); animation-delay: 1.8s; }
-    .right .st-1 { top: 65%; right: -30px; transform: rotate(12deg); animation-delay: 2.2s; }
-    .right .st-3 { top: 85%; right: -40px; transform: rotate(-8deg); animation-delay: 0.8s; }
-
-    /* Keyframes for Peek-In & Micro Floating */
-    @keyframes floatIn {
-      0% {
-        transform: translateX(0) translateY(0) rotate(var(--rot, 0deg));
-      }
-      100% {
-        transform: translateX(18px) translateY(-8px) rotate(calc(var(--rot, 0deg) + 4deg));
-      }
+    @keyframes floatLeft2 {
+      0% { transform: translateX(0) translateY(0) rotate(8deg); }
+      100% { transform: translateX(20px) translateY(12px) rotate(14deg); }
+    }
+    @keyframes floatRight1 {
+      0% { transform: translateX(0) translateY(0) rotate(12deg); }
+      100% { transform: translateX(-25px) translateY(-8px) rotate(5deg); }
+    }
+    @keyframes floatRight2 {
+      0% { transform: translateX(0) translateY(0) rotate(-8deg); }
+      100% { transform: translateX(-20px) translateY(10px) rotate(-14deg); }
     }
 
     header {
@@ -249,8 +268,8 @@
       font-weight: bold;
     }
 
-    @media (max-width: 768px) {
-      .sticker-sidebar {
+    @media (max-width: 900px) {
+      .edge-sticker {
         display: none;
       }
     }
@@ -258,21 +277,17 @@
 </head>
 <body>
 
-  <!-- Animated Edge Stickers - Left -->
-  <div class="sticker-sidebar left">
-    <div class="sticker st-1" style="--rot: -12deg;"></div>
-    <div class="sticker st-2" style="--rot: 8deg;"></div>
-    <div class="sticker st-3" style="--rot: -15deg;"></div>
-    <div class="sticker st-4" style="--rot: 5deg;"></div>
-  </div>
+  <!-- Left Edge Animated Stickers -->
+  <div class="edge-sticker left-1"></div>
+  <div class="edge-sticker left-2"></div>
+  <div class="edge-sticker left-3"></div>
+  <div class="edge-sticker left-4"></div>
 
-  <!-- Animated Edge Stickers - Right -->
-  <div class="sticker-sidebar right">
-    <div class="sticker st-2" style="--rot: 15deg;"></div>
-    <div class="sticker st-5" style="--rot: -10deg;"></div>
-    <div class="sticker st-1" style="--rot: 12deg;"></div>
-    <div class="sticker st-3" style="--rot: -8deg;"></div>
-  </div>
+  <!-- Right Edge Animated Stickers -->
+  <div class="edge-sticker right-1"></div>
+  <div class="edge-sticker right-2"></div>
+  <div class="edge-sticker right-3"></div>
+  <div class="edge-sticker right-4"></div>
 
   <header>
     <img src="logo.png" alt="Eco-Games Sustainability Logo" class="site-logo">
