@@ -6,7 +6,6 @@
   
   <title>Sustainability Based Games & SDG Educational Arcade | Eco-Games</title>
   
-  <!-- Explicit Multi-Size Favicon Declarations for Search Engines -->
   <link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
   <link rel="icon" type="image/png" sizes="96x96" href="favicon.png">
   <link rel="icon" type="image/png" sizes="48x48" href="favicon.png">
@@ -113,7 +112,6 @@
       position: relative;
       text-align: center;
       overflow: hidden;
-      /* Dual background layer: dark overlay on top, image below */
       background: 
         linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)),
         url('yes.png') no-repeat center center;
@@ -151,6 +149,156 @@
     .agree-btn:hover {
       background-color: #1b5e20;
       transform: scale(1.03);
+    }
+
+    /* Floating Draggable Feedback Button (~2cm size) */
+    #draggable-feedback-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      width: 2cm;
+      height: 2cm;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffd166, #f39c12);
+      color: #0d1b2a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+      cursor: grab;
+      z-index: 9999;
+      user-select: none;
+      touch-action: none;
+      transition: transform 0.15s ease;
+    }
+
+    #draggable-feedback-btn:active {
+      cursor: grabbing;
+      transform: scale(0.95);
+    }
+
+    #draggable-feedback-btn svg {
+      width: 50%;
+      height: 50%;
+      fill: #0d1b2a;
+      pointer-events: none;
+    }
+
+    /* Feedback Modal Overlay */
+    #feedback-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(5px);
+      z-index: 10001;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .feedback-card {
+      background: #ffffff;
+      color: #111111;
+      width: 100%;
+      max-width: 440px;
+      padding: 30px 25px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      position: relative;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    .close-feedback-btn {
+      position: absolute;
+      top: 15px;
+      right: 18px;
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #888;
+      cursor: pointer;
+    }
+
+    .close-feedback-btn:hover {
+      color: #000;
+    }
+
+    .feedback-img {
+      max-width: 280px;
+      width: 80%;
+      height: auto;
+      margin: 10px auto 20px auto;
+      display: block;
+      border-radius: 8px;
+    }
+
+    .feedback-card label {
+      display: block;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #1a252c;
+      margin-bottom: 12px;
+    }
+
+    .feedback-card textarea {
+      width: 100%;
+      height: 90px;
+      padding: 12px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .feedback-card textarea:focus {
+      border-color: #25c58f;
+    }
+
+    .submit-feedback-btn {
+      margin-top: 15px;
+      width: 100%;
+      padding: 12px;
+      background: #0d1b2a;
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .submit-feedback-btn:hover {
+      background: #15956e;
+    }
+
+    /* Thank You View inside Feedback Modal */
+    #thankyou-section {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .thankyou-img {
+      max-width: 260px;
+      width: 85%;
+      height: auto;
+      margin: 10px auto 20px auto;
+      display: block;
+      border-radius: 12px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     header {
@@ -310,7 +458,6 @@
 </head>
 <body>
 
-  <!-- Initial Privacy Policy Popup Overlay -->
   <div id="privacy-modal-overlay">
     <div class="privacy-document">
       <h1>Privacy Policy</h1>
@@ -331,10 +478,33 @@
       <h2>4. Cookies and Web Analytics</h2>
       <p>We use essential functional cookies strictly to maintain core website operational features and verify search indexing parameters.</p>
 
-      <!-- Section with the SDG Wheel Background Image at the end -->
       <div class="sdg-footer-section">
         <p>By clicking "I Agree", you acknowledge that you have read and understood our Privacy Policy and agree to support our mission towards advancing the United Nations Sustainable Development Goals through interactive education.</p>
         <button class="agree-btn" onclick="closePrivacyModal()">I Agree</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="draggable-feedback-btn" title="Parent & User Feedback">
+    <svg viewBox="0 0 24 24">
+      <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"/>
+    </svg>
+  </div>
+
+  <div id="feedback-modal-overlay">
+    <div class="feedback-card">
+      <button class="close-feedback-btn" onclick="closeFeedbackModal()">&times;</button>
+      
+      <div id="feedback-form-section">
+        <img src="image_97cf5b.png" alt="Feedback Emotions" class="feedback-img">
+        <label for="feedback-text">How can we improve?</label>
+        <textarea id="feedback-text" placeholder="Type your suggestions or comments here..." onkeydown="handleFeedbackKey(event)"></textarea>
+        <button class="submit-feedback-btn" onclick="submitFeedback()">Submit Feedback</button>
+      </div>
+
+      <div id="thankyou-section">
+        <img src="image_97d39a.png" alt="Thank You Sticker" class="thankyou-img">
+        <button class="submit-feedback-btn" onclick="closeFeedbackModal()">Back to Arcade</button>
       </div>
     </div>
   </div>
@@ -411,6 +581,7 @@
   </footer>
 
   <script>
+    /* Privacy Modal Functions */
     function closePrivacyModal() {
       document.getElementById('privacy-modal-overlay').style.display = 'none';
     }
@@ -418,6 +589,93 @@
     function openPrivacyModal() {
       document.getElementById('privacy-modal-overlay').style.display = 'flex';
     }
+
+    /* Feedback Modal Functions */
+    function openFeedbackModal() {
+      document.getElementById('feedback-form-section').style.display = 'block';
+      document.getElementById('thankyou-section').style.display = 'none';
+      document.getElementById('feedback-text').value = '';
+      document.getElementById('feedback-modal-overlay').style.display = 'flex';
+    }
+
+    function closeFeedbackModal() {
+      document.getElementById('feedback-modal-overlay').style.display = 'none';
+    }
+
+    function submitFeedback() {
+      const text = document.getElementById('feedback-text').value.trim();
+      if (!text) return;
+      document.getElementById('feedback-form-section').style.display = 'none';
+      document.getElementById('thankyou-section').style.display = 'block';
+    }
+
+    function handleFeedbackKey(event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        submitFeedback();
+      }
+    }
+
+    /* Draggable Floating Button Script */
+    const dragBtn = document.getElementById('draggable-feedback-btn');
+    let isDragging = false;
+    let hasMoved = false;
+    let startX, startY, initialLeft, initialTop;
+
+    function onPointerDown(e) {
+      isDragging = true;
+      hasMoved = false;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      
+      startX = clientX;
+      startY = clientY;
+      
+      const rect = dragBtn.getBoundingClientRect();
+      initialLeft = rect.left;
+      initialTop = rect.top;
+
+      dragBtn.style.bottom = 'auto';
+      dragBtn.style.right = 'auto';
+      dragBtn.style.left = initialLeft + 'px';
+      dragBtn.style.top = initialTop + 'px';
+
+      document.addEventListener('mousemove', onPointerMove);
+      document.addEventListener('mouseup', onPointerUp);
+      document.addEventListener('touchmove', onPointerMove, { passive: false });
+      document.addEventListener('touchend', onPointerUp);
+    }
+
+    function onPointerMove(e) {
+      if (!isDragging) return;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      
+      const dx = clientX - startX;
+      const dy = clientY - startY;
+
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+        hasMoved = true;
+      }
+
+      dragBtn.style.left = (initialLeft + dx) + 'px';
+      dragBtn.style.top = (initialTop + dy) + 'px';
+    }
+
+    function onPointerUp(e) {
+      isDragging = false;
+      document.removeEventListener('mousemove', onPointerMove);
+      document.removeEventListener('mouseup', onPointerUp);
+      document.removeEventListener('touchmove', onPointerMove);
+      document.removeEventListener('touchend', onPointerUp);
+
+      if (!hasMoved) {
+        openFeedbackModal();
+      }
+    }
+
+    dragBtn.addEventListener('mousedown', onPointerDown);
+    dragBtn.addEventListener('touchstart', onPointerDown, { passive: false });
   </script>
 
 </body>
