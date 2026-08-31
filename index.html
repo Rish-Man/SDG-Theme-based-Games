@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Sustainability Based Games & SDG Educational Arcade | Eco-Games</title>
+  <title>Eco-Games | Interactive Planet Experiments</title>
   
-  <!-- Explicit Multi-Size Favicon Declarations for Search Engines -->
+  <!-- Favicon Declarations -->
   <link rel="icon" type="image/png" sizes="192x192" href="favicon.png">
   <link rel="icon" type="image/png" sizes="96x96" href="favicon.png">
   <link rel="icon" type="image/png" sizes="48x48" href="favicon.png">
@@ -16,18 +16,25 @@
   <link rel="shortcut icon" href="favicon.png">
 
   <meta name="google-site-verification" content="5302350b0bf2391b" />
-  <meta name="description" content="Play the best sustainability based games online. Interactive SDG educational games including Trash Dash, Eco-Detective, and climate simulations created by Rishabh Manuj.">
-  <meta name="keywords" content="sustainability based games, SDG games, eco games, sustainable development goals games, educational climate games, Rishabh Manuj">
+  <meta name="description" content="Interactive digital experiments on planet Earth, climate action, and human choices created by Rishabh Manuj.">
   <meta name="author" content="Rishabh Manuj">
+
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --card-bg: rgba(10, 25, 47, 0.45);
-      --card-border: rgba(255, 255, 255, 0.18);
-      --green: #40f0a8;
-      --yellow: #ffd166;
-      --text: #ffffff;
-      --muted: #d0e1fd;
+      --bg-dark: #080c14;
+      --card-bg: rgba(18, 26, 43, 0.6);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover-border: rgba(64, 240, 168, 0.4);
+      --accent-green: #40f0a8;
+      --accent-cyan: #00f2fe;
+      --accent-yellow: #ffd166;
+      --text-main: #f0f4f8;
+      --text-muted: #94a3b8;
     }
 
     * {
@@ -37,20 +44,30 @@
     }
 
     body {
-      background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyrSWAFEPlTX_IEZkxDZpoOORFhVicvVETbR4_AEZQg__7JJUAfFiibeEn&s=10') no-repeat center center fixed;
-      background-size: cover;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      color: var(--text);
+      background-color: var(--bg-dark);
+      font-family: 'Outfit', sans-serif;
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 15px;
+      padding: 40px 20px;
       overflow-x: hidden;
       position: relative;
     }
 
-    /* Privacy Policy Overlay Modal */
+    /* Ambient Background Mesh Canvas */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Privacy Overlay Modal */
     #privacy-modal-overlay {
       position: fixed;
       top: 0;
@@ -68,138 +85,117 @@
     .privacy-document {
       background: #ffffff;
       color: #111111;
-      font-family: 'Times New Roman', Times, serif;
       width: 100%;
       max-width: 800px;
       max-height: 85vh;
       overflow-y: auto;
       padding: 40px;
-      border-radius: 6px;
+      border-radius: 12px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
       position: relative;
       line-height: 1.6;
-      font-size: 1.05rem;
     }
 
     .privacy-document h1 {
       font-size: 2rem;
-      color: #000000;
+      color: #000;
       text-align: center;
       margin-bottom: 20px;
-      font-weight: bold;
-      text-shadow: none;
     }
 
     .privacy-document h2 {
       font-size: 1.25rem;
-      color: #111111;
+      color: #111;
       margin-top: 20px;
       margin-bottom: 8px;
-      font-weight: bold;
       border-bottom: 1px solid #ccc;
       padding-bottom: 4px;
     }
 
     .privacy-document p {
       margin-bottom: 15px;
-      color: #222222;
+      color: #333;
     }
 
-    /* Section with SDG Wheel Background Image at the end */
     .sdg-footer-section {
       margin-top: 40px;
-      padding: 45px 25px;
+      padding: 35px 20px;
       border-radius: 8px;
       position: relative;
       text-align: center;
       overflow: hidden;
-      background: 
-        linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)),
-        url('yes.png') no-repeat center center;
+      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('yes.png') no-repeat center center;
       background-size: cover;
       color: #ffffff;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
 
     .sdg-footer-section p {
-      color: #ffffff;
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 25px;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
-      position: relative;
-      z-index: 2;
+      color: #fff;
+      font-size: 1rem;
+      margin-bottom: 20px;
     }
 
     .agree-btn {
-      background-color: #2e7d32;
-      color: #ffffff;
-      font-family: Arial, sans-serif;
-      font-size: 1.1rem;
-      font-weight: bold;
-      padding: 14px 36px;
+      background: #2e7d32;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 12px 30px;
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-      transition: background-color 0.2s ease, transform 0.1s ease;
-      position: relative;
-      z-index: 2;
+      transition: all 0.2s ease;
     }
 
     .agree-btn:hover {
-      background-color: #1b5e20;
-      transform: scale(1.03);
+      background: #1b5e20;
     }
 
-    /* Cooler Floating Draggable Feedback Widget (~2cm diameter) */
+    /* Draggable Floating Feedback Widget */
     #draggable-feedback-btn {
       position: fixed;
-      bottom: 25px;
-      right: 25px;
-      width: 2.2cm;
-      height: 2.2cm;
+      bottom: 30px;
+      right: 30px;
+      width: 70px;
+      height: 70px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #00f2fe, #4facfe);
-      color: #ffffff;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-green));
+      color: #040d1a;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      box-shadow: 0 0 20px rgba(79, 172, 254, 0.6), 0 8px 25px rgba(0, 0, 0, 0.4);
-      border: 2px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 25px rgba(0, 242, 254, 0.4), 0 8px 25px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.5);
       cursor: grab;
       z-index: 9999;
       user-select: none;
       touch-action: none;
-      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     #draggable-feedback-btn:hover {
-      box-shadow: 0 0 30px rgba(0, 242, 254, 0.8), 0 10px 30px rgba(0, 0, 0, 0.5);
+      transform: scale(1.08);
+      box-shadow: 0 0 35px rgba(0, 242, 254, 0.7);
     }
 
     #draggable-feedback-btn:active {
       cursor: grabbing;
-      transform: scale(0.92);
+      transform: scale(0.95);
     }
 
     #draggable-feedback-btn svg {
-      width: 38%;
-      height: 38%;
-      fill: #ffffff;
-      pointer-events: none;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+      width: 26px;
+      height: 26px;
+      fill: #040d1a;
     }
 
     #draggable-feedback-btn span {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       font-weight: 800;
       letter-spacing: 0.5px;
       text-transform: uppercase;
       margin-top: 2px;
-      pointer-events: none;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.4);
     }
 
     /* Feedback Modal Overlay */
@@ -209,8 +205,8 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(5px);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
       z-index: 10001;
       display: none;
       justify-content: center;
@@ -222,13 +218,12 @@
       background: #ffffff;
       color: #111111;
       width: 100%;
-      max-width: 440px;
+      max-width: 420px;
       padding: 30px 25px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
       text-align: center;
       position: relative;
-      font-family: 'Segoe UI', Arial, sans-serif;
     }
 
     .close-feedback-btn {
@@ -243,12 +238,8 @@
       cursor: pointer;
     }
 
-    .close-feedback-btn:hover {
-      color: #000;
-    }
-
     .feedback-img {
-      max-width: 280px;
+      max-width: 260px;
       width: 80%;
       height: auto;
       margin: 5px auto 15px auto;
@@ -256,7 +247,6 @@
       border-radius: 8px;
     }
 
-    /* 3 Emotion Select Buttons */
     .emotion-buttons {
       display: flex;
       justify-content: space-between;
@@ -275,30 +265,20 @@
       cursor: pointer;
       transition: all 0.2s ease;
       color: #444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
-    .emotion-btn.excellent:hover, .emotion-btn.excellent.active {
-      background: #40f0a8;
-      border-color: #15956e;
-      color: #04251a;
-    }
-
-    .emotion-btn.normal:hover, .emotion-btn.normal.active {
-      background: #ffd166;
-      border-color: #f39c12;
-      color: #4a3300;
-    }
-
-    .emotion-btn.poorly:hover, .emotion-btn.poorly.active {
-      background: #4facfe;
-      border-color: #0072ff;
-      color: #002554;
-    }
+    .emotion-btn.excellent.active { background: #40f0a8; border-color: #15956e; color: #04251a; }
+    .emotion-btn.normal.active { background: #ffd166; border-color: #f39c12; color: #4a3300; }
+    .emotion-btn.poorly.active { background: #4facfe; border-color: #0072ff; color: #002554; }
 
     .feedback-card label {
       display: block;
       font-weight: 700;
-      font-size: 1.05rem;
+      font-size: 1rem;
       color: #1a252c;
       margin-bottom: 10px;
     }
@@ -307,45 +287,38 @@
       width: 100%;
       height: 85px;
       padding: 12px;
-      border: 2px solid #ccc;
-      border-radius: 8px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
       font-size: 0.95rem;
       font-family: inherit;
       resize: none;
       outline: none;
-      transition: border-color 0.2s ease;
     }
 
-    .feedback-card textarea:focus {
-      border-color: #4facfe;
-    }
+    .feedback-card textarea:focus { border-color: #00f2fe; }
 
     .submit-feedback-btn {
       margin-top: 15px;
       width: 100%;
       padding: 12px;
-      background: #0d1b2a;
+      background: #080c14;
       color: #ffffff;
-      font-weight: bold;
+      font-weight: 700;
       font-size: 1rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       transition: background 0.2s ease;
     }
 
-    .submit-feedback-btn:hover {
-      background: #15956e;
-    }
+    .submit-feedback-btn:hover { background: #15956e; }
 
-    /* Thank You View inside Feedback Modal */
     #thankyou-section {
       display: none;
-      animation: fadeIn 0.3s ease-in-out;
     }
 
     .thankyou-img {
-      max-width: 260px;
+      max-width: 240px;
       width: 85%;
       height: auto;
       margin: 10px auto 20px auto;
@@ -353,156 +326,205 @@
       border-radius: 12px;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
+    /* Header Section */
     header {
       text-align: center;
-      max-width: 800px;
-      margin-bottom: 35px;
-      background: rgba(4, 15, 30, 0.55);
-      padding: 25px 30px;
-      border-radius: 16px;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid var(--card-border);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      max-width: 700px;
+      margin-bottom: 45px;
       position: relative;
       z-index: 10;
     }
 
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(64, 240, 168, 0.08);
+      border: 1px solid rgba(64, 240, 168, 0.25);
+      color: var(--accent-green);
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
     .site-logo {
-      width: 130px;
-      height: 130px;
+      width: 100px;
+      height: 100px;
       object-fit: contain;
       margin-bottom: 15px;
-      border-radius: 12px;
-      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+      filter: drop-shadow(0 0 20px rgba(64, 240, 168, 0.25));
     }
 
     h1 {
-      color: var(--green);
-      font-size: clamp(1.8rem, 4vw, 2.6rem);
-      margin-bottom: 10px;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 40%, var(--accent-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 14px;
     }
 
     header p.subtitle {
-      color: var(--muted);
-      font-size: 1rem;
-      line-height: 1.5;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      line-height: 1.6;
+      font-weight: 400;
     }
 
-    .seo-text {
-      margin-top: 15px;
-      font-size: 0.95rem;
-      color: #e2f9f0;
-      background: rgba(64, 240, 168, 0.1);
-      padding: 12px 16px;
-      border-radius: 8px;
-      border: 1px solid rgba(64, 240, 168, 0.3);
-      line-height: 1.4;
-    }
-
+    /* Cards Grid */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 24px;
-      width: min(1050px, 100%);
+      width: min(1100px, 100%);
       position: relative;
       z-index: 10;
     }
 
     .card {
       background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 24px;
+      border-radius: 20px;
+      padding: 28px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-      transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-green), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
 
     .card:hover {
-      transform: translateY(-6px);
-      border-color: var(--green);
-      background: rgba(10, 25, 47, 0.65);
+      transform: translateY(-8px);
+      border-color: var(--card-hover-border);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(64, 240, 168, 0.1);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .svg-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .svg-icon-box svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--accent-green);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .card-tag {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 800;
-      color: var(--yellow);
+      color: var(--accent-yellow);
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      margin-bottom: 10px;
+      background: rgba(255, 209, 102, 0.1);
+      padding: 4px 10px;
+      border-radius: 20px;
     }
 
     .card-title {
-      font-size: 1.3rem;
-      color: var(--text);
-      margin-bottom: 12px;
+      font-size: 1.35rem;
+      color: #ffffff;
+      margin-bottom: 10px;
       font-weight: 700;
     }
 
     .card-desc {
-      font-size: 0.9rem;
-      color: var(--muted);
-      line-height: 1.5;
-      margin-bottom: 20px;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 24px;
       flex-grow: 1;
     }
 
     .play-btn {
-      display: inline-block;
-      text-align: center;
-      background: linear-gradient(135deg, #15956e, #0e6b4e);
-      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #ffffff;
+      color: #080c14;
       text-decoration: none;
       font-weight: 700;
-      padding: 12px 18px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 0.95rem;
+      padding: 12px 20px;
+      border-radius: 12px;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .play-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: #080c14;
+      transition: transform 0.2s ease;
     }
 
     .play-btn:hover {
-      background: linear-gradient(135deg, #25c58f, #15956e);
-      box-shadow: 0 0 15px rgba(66, 213, 144, 0.4);
+      background: var(--accent-green);
+      transform: scale(1.02);
+    }
+
+    .play-btn:hover svg {
+      transform: translateX(3px);
     }
 
     footer {
-      margin-top: 50px;
+      margin-top: 60px;
       text-align: center;
       font-size: 0.9rem;
-      color: var(--muted);
-      background: rgba(4, 15, 30, 0.5);
-      padding: 10px 20px;
-      border-radius: 20px;
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      border: 1px solid var(--card-border);
+      color: var(--text-muted);
       position: relative;
       z-index: 10;
     }
 
     footer span {
-      color: var(--yellow);
-      font-weight: bold;
+      color: #ffffff;
+      font-weight: 600;
     }
 
     .privacy-link {
-      color: #ffd166;
+      color: var(--accent-green);
       text-decoration: none;
       margin-left: 10px;
       cursor: pointer;
@@ -515,30 +537,30 @@
 </head>
 <body>
 
+  <!-- Animated Ambient Background Canvas -->
+  <canvas id="bg-canvas"></canvas>
+
   <!-- Initial Privacy Policy Popup Overlay -->
   <div id="privacy-modal-overlay">
     <div class="privacy-document">
       <h1>Privacy Policy</h1>
-      
       <p>Last updated: August 2026</p>
-      
-      <p>Welcome to the Sustainable Development Goals (SDG) Educational Arcade. We value your privacy and are committed to protecting any information generated while using our interactive educational platforms.</p>
+      <p>Welcome to Eco-Games. We value your privacy and are committed to protecting any information generated while using our interactive educational platforms.</p>
       
       <h2>1. Information We Collect</h2>
       <p>Our website operates as an open educational arcade. We do not require account registration, personal names, email addresses, or payment details to play any of our games.</p>
       
       <h2>2. Game Data and Storage</h2>
-      <p>All gameplay scores, puzzle progress, and educational session choices are processed locally within your browser using standard local web technologies. No personal gameplay profiles are compiled or sold to third parties.</p>
+      <p>All gameplay scores, puzzle progress, and session choices are processed locally within your browser using standard local web technologies.</p>
 
       <h2>3. Third-Party Links</h2>
-      <p>Our platform contains links to educational games and resource materials. Clicking on external game links may direct you to hosted project pages governed by their respective standard environment policies.</p>
+      <p>Our platform contains links to educational games. Clicking on external game links may direct you to hosted project pages governed by their respective environment policies.</p>
 
       <h2>4. Cookies and Web Analytics</h2>
       <p>We use essential functional cookies strictly to maintain core website operational features and verify search indexing parameters.</p>
 
-      <!-- Section with the SDG Wheel Background Image at the end -->
       <div class="sdg-footer-section">
-        <p>By clicking "I Agree", you acknowledge that you have read and understood our Privacy Policy and agree to support our mission towards advancing the United Nations Sustainable Development Goals through interactive education.</p>
+        <p>By clicking "I Agree", you acknowledge that you have read and understood our Privacy Policy and agree to support our mission towards advancing Sustainable Development Goals.</p>
         <button class="agree-btn" onclick="closePrivacyModal()">I Agree</button>
       </div>
     </div>
@@ -557,15 +579,13 @@
     <div class="feedback-card">
       <button class="close-feedback-btn" onclick="closeFeedbackModal()">&times;</button>
       
-      <!-- Input Form Section -->
       <div id="feedback-form-section">
-        <img src="image_97cf5b.png" alt="Feedback Emotions" class="feedback-img">
+        <img src="image_97cf5b.png" alt="Feedback Options" class="feedback-img">
         
-        <!-- 3 Emotion Selection Buttons -->
         <div class="emotion-buttons">
-          <button type="button" class="emotion-btn excellent" onclick="selectEmotion(this, 'Excellent')">🟢 Excellent</button>
-          <button type="button" class="emotion-btn normal" onclick="selectEmotion(this, 'Normal')">🟡 Normal</button>
-          <button type="button" class="emotion-btn poorly" onclick="selectEmotion(this, 'Poorly')">🔵 Poorly</button>
+          <button type="button" class="emotion-btn excellent" onclick="selectEmotion(this, 'Excellent')">Excellent</button>
+          <button type="button" class="emotion-btn normal" onclick="selectEmotion(this, 'Normal')">Normal</button>
+          <button type="button" class="emotion-btn poorly" onclick="selectEmotion(this, 'Poorly')">Poorly</button>
         </div>
 
         <label for="feedback-text">How can we improve?</label>
@@ -573,7 +593,6 @@
         <button class="submit-feedback-btn" onclick="submitFeedback()">Submit Feedback</button>
       </div>
 
-      <!-- Thank You View Section -->
       <div id="thankyou-section">
         <img src="image_97d39a.png" alt="Thank You Sticker" class="thankyou-img">
         <button class="submit-feedback-btn" onclick="closeFeedbackModal()">Back to Arcade</button>
@@ -582,68 +601,119 @@
   </div>
 
   <header>
-    <img src="logo.png" alt="Eco-Games Sustainability Logo" class="site-logo">
-    <h1>Sustainability Based Games & SDG Arcade</h1>
-    <p class="subtitle">Explore interactive simulations and puzzle games created to support Sustainable Development Goals!</p>
-    
-    <p class="seo-text">
-      Welcome to the premier hub for <strong>sustainability based games</strong>. Play educational eco-simulations covering climate action, waste reduction, and eco-friendly decision making.
-    </p>
+    <div class="header-badge">Interactive Planet Playground</div>
+    <img src="logo.png" alt="Eco-Games Logo" class="site-logo">
+    <h1>Digital Experiments on Choice & Earth</h1>
+    <p class="subtitle">A collection of minimalist, interactive simulations and games exploring sustainability, climate time, and human decisions.</p>
   </header>
 
   <main class="grid">
+    <!-- Card 1: Trash Dash -->
     <article class="card">
       <div>
-        <div class="card-tag">SDG 12: Responsible Consumption</div>
-        <h2 class="card-title">Trash Dash: The Refuse Revolution</h2>
-        <p class="card-desc">Drive the waste truck, sort recyclable materials, and clear the city streets before disaster strikes!</p>
+        <div class="card-top">
+          <div class="svg-icon-box">
+            <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
+          </div>
+          <span class="card-tag">SDG 12</span>
+        </div>
+        <h2 class="card-title">Trash Dash: Refuse Revolution</h2>
+        <p class="card-desc">Drive the waste truck, sort recyclable materials, and clear the city streets before disaster strikes.</p>
       </div>
-      <a href="Garbage%20Truck%20Game.html" class="play-btn">Play Game</a>
+      <a href="Garbage%20Truck%20Game.html" class="play-btn">
+        Launch Simulation
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
     </article>
 
+    <!-- Card 2: Save Our World -->
     <article class="card">
       <div>
-        <div class="card-tag">SDG Dilemma Simulator</div>
-        <h2 class="card-title">Save the Planet (Or Don't, No Pressure)</h2>
-        <p class="card-desc">Navigate tricky global policy trade-offs across 15 dilemmas and test your decisions against the AI baseline.</p>
+        <div class="card-top">
+          <div class="svg-icon-box">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <span class="card-tag">Dilemma Engine</span>
+        </div>
+        <h2 class="card-title">Save the Planet (Or Don't)</h2>
+        <p class="card-desc">Navigate tricky global policy trade-offs across 15 dilemmas and test your choices against baseline data.</p>
       </div>
-      <a href="Save%20Our%20World.html" class="play-btn">Play Game</a>
+      <a href="Save%20Our%20World.html" class="play-btn">
+        Launch Simulation
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
     </article>
 
+    <!-- Card 3: Word Search -->
     <article class="card">
       <div>
-        <div class="card-tag">SDG Word Search</div>
-        <h2 class="card-title">Eco-Detective: Hunt for Sustainability</h2>
-        <p class="card-desc">Find key eco-friendly terms hidden in the puzzle grid to uncover fun sustainability facts and secrets.</p>
+        <div class="card-top">
+          <div class="svg-icon-box">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <span class="card-tag">Discovery Grid</span>
+        </div>
+        <h2 class="card-title">Eco-Detective: Word Hunt</h2>
+        <p class="card-desc">Find hidden eco-friendly terms in the grid to uncover fun sustainability facts and environmental secrets.</p>
       </div>
-      <a href="Word%20Search%20Game.html" class="play-btn">Play Game</a>
+      <a href="Word%20Search%20Game.html" class="play-btn">
+        Launch Experiment
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
     </article>
 
+    <!-- Card 4: Timer Game -->
     <article class="card">
       <div>
-        <div class="card-tag">SDG 13: Climate Action</div>
+        <div class="card-top">
+          <div class="svg-icon-box">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <span class="card-tag">SDG 13</span>
+        </div>
         <h2 class="card-title">Tick-Tock Climate Shock</h2>
-        <p class="card-desc">Test your precision timing skills to hit climate action goals before the clock runs out.</p>
+        <p class="card-desc">Test your precision timing skills to hit climate action milestones before the clock runs out.</p>
       </div>
-      <a href="Timer%20Game.html" class="play-btn">Play Game</a>
+      <a href="Timer%20Game.html" class="play-btn">
+        Launch Experiment
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
     </article>
 
+    <!-- Card 5: Shredder Game -->
     <article class="card">
       <div>
-        <div class="card-tag">SDG 12: Waste Reduction</div>
-        <h2 class="card-title">The Shred-inator: Recycle or Bust!</h2>
-        <p class="card-desc">Categorize, shred, and recycle hazardous items properly before they clutter the ecosystem.</p>
+        <div class="card-top">
+          <div class="svg-icon-box">
+            <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <span class="card-tag">Physics Sandbox</span>
+        </div>
+        <h2 class="card-title">The Shred-inator: Recycle</h2>
+        <p class="card-desc">Categorize, shred, and process hazardous waste items properly before they clutter the ecosystem.</p>
       </div>
-      <a href="Shredder%20Game.html" class="play-btn">Play Game</a>
+      <a href="Shredder%20Game.html" class="play-btn">
+        Launch Experiment
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
     </article>
 
+    <!-- Card 6: Maze Game -->
     <article class="card">
       <div>
-        <div class="card-tag">SDG 11: Sustainable Cities</div>
+        <div class="card-top">
+          <div class="svg-icon-box">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          </div>
+          <span class="card-tag">SDG 11</span>
+        </div>
         <h2 class="card-title">The Great Carbon Labyrinth</h2>
-        <p class="card-desc">Guide your character through complex eco-mazes while avoiding carbon hazards and finding green targets.</p>
+        <p class="card-desc">Guide your path through complex eco-mazes while avoiding carbon hazards to hit green targets.</p>
       </div>
-      <a href="Maze%20Game.html" class="play-btn">Play Game</a>
+      <a href="Maze%20Game.html" class="play-btn">
+        Launch Experiment
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
     </article>
   </main>
 
@@ -653,6 +723,55 @@
   </footer>
 
   <script>
+    /* Animated Particle Background Canvas */
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 1.5 + 0.5;
+        this.speedX = Math.random() * 0.4 - 0.2;
+        this.speedY = Math.random() * 0.4 - 0.2;
+        this.opacity = Math.random() * 0.5 + 0.1;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+      }
+      draw() {
+        ctx.fillStyle = `rgba(64, 240, 168, ${this.opacity})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 45; i++) {
+      particles.push(new Particle());
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
     /* Privacy Modal Functions */
     function closePrivacyModal() {
       document.getElementById('privacy-modal-overlay').style.display = 'none';
@@ -689,7 +808,6 @@
       const text = document.getElementById('feedback-text').value.trim();
       if (!text && !selectedEmotionValue) return;
 
-      // Submit feedback to Web3Forms using your access key
       fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
@@ -705,7 +823,6 @@
         })
       });
 
-      // Show Thank You Screen
       document.getElementById('feedback-form-section').style.display = 'none';
       document.getElementById('thankyou-section').style.display = 'block';
     }
